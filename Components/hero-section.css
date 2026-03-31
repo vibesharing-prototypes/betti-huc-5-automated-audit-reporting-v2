@@ -1,0 +1,278 @@
+/* ============================================================
+   HERO SECTION COMPONENT
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Two variants:
+     1. .hero-section-workflow  — pills + title + workflow stepper
+     2. .hero-section-notif     — pills + title + notification + pager
+
+   CSS variables used (define in host page or :root):
+     --t-primary    — primary text color          (fallback: #282E37)
+     --t-secondary  — secondary text color         (fallback: #525252)
+     --t-tertiary   — tertiary text color
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. SHARED BASE
+   ──────────────────────────────────────────────────────────────── */
+
+.hero-section-workflow,
+.hero-section-notif {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 20px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. HERO HEADER — pills + title
+   ──────────────────────────────────────────────────────────────── */
+
+.hero-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Pills row */
+.hero-tags {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* H1 title */
+.hero-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: #282E37;
+  line-height: 1.2;
+  margin: 0;
+}
+.hero-title strong { font-weight: 300; }
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. WORKFLOW STEPPER
+   Layout: eyebrow label → 12px gap → step row
+   ──────────────────────────────────────────────────────────────── */
+
+.hero-stepper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 32px;
+}
+
+/* Eyebrow label */
+.hero-stepper-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.4);
+}
+
+/* Steps row */
+.hero-stepper-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Individual step */
+.hero-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--t-secondary, #525252);
+  white-space: nowrap;
+}
+
+/* Step states ─────────────────────────────────────────────────
+   .current  = the step the user is on right now (always bold)
+               Can combine with .active (in-progress), .done (completed),
+               or .pending (awaiting action).
+   .done     = completed step (muted color, normal weight)
+   .active   = step in progress (primary color, bold — always paired with .current)
+   .pending  = awaiting action (primary color, bold — uses Pending.svg icon)
+   Next step = default styling (no modifier class), uses Next.svg icon, 400 weight
+   ──────────────────────────────────────────────────────────── */
+.hero-step.done    { color: var(--t-tertiary); }
+.hero-step.active  { color: var(--t-primary, #282E37); font-weight: 600; }
+.hero-step.pending { color: var(--t-primary, #282E37); font-weight: 600; }
+.hero-step.current { font-weight: 600; color: var(--t-primary, #282E37); }
+
+/* Step icon container */
+.hero-step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hero-step-icon img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Arrow separator between steps */
+.hero-step-arrow {
+  color: var(--t-tertiary);
+  display: flex;
+  align-items: center;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   4. BACKGROUND GLOW
+   Applied to the scroll container / screen wrapper that holds the hero.
+   Glow color is determined by the *current* step's status:
+     Current step is Active   →  .hero-glow-blue    (blue/teal)
+     Current step is Done     →  .hero-glow-green   (green)
+     Current step is Pending  →  .hero-glow-yellow  (yellow, from pill-yellow palette)
+   Previous steps being Done does NOT affect glow — only the current step matters.
+   Transition lets JS swap classes for animated glow color change
+   (e.g. when current step completes: blue → green).
+   ──────────────────────────────────────────────────────────────── */
+
+.hero-glow-blue {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(0,195,215,0.28) 0%, transparent 65%), var(--bg-base);
+  transition: background 1s ease;
+}
+.hero-glow-green {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(114,252,170,0.28) 0%, transparent 65%), var(--bg-base);
+  transition: background 1s ease;
+}
+
+.hero-glow-yellow {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(254,228,0,0.28) 0%, transparent 65%), var(--bg-base);
+  transition: background 1s ease;
+}
+
+/* ── Priority glows (notification variant) ──
+   Glow color matches the priority pill color.
+   High = red, Medium = purple, Low = blue.
+   ──────────────────────────────────────────── */
+.hero-glow-red {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(255,137,129,0.28) 0%, transparent 65%), var(--bg-base);
+  transition: background 1s ease;
+}
+.hero-glow-purple {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(219,139,255,0.28) 0%, transparent 65%), var(--bg-base);
+  transition: background 1s ease;
+}
+.hero-glow-cyan {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(29,217,249,0.28) 0%, transparent 65%), var(--bg-base);
+  transition: background 1s ease;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   5. NOTIFICATION (hero-section-notif variant)
+   Replaces the workflow stepper with a notification message,
+   button array, and pager carousel.
+
+   Structure:
+     .hero-section-notif
+       .hero-header            (shared — pills + title)
+       .hero-notif             (notification container, 32px top gap)
+         .hero-notif-message
+           .hero-notif-title   (16px, 600)
+           .hero-notif-body    (16px, 400)
+         .hero-notif-actions   (btn array: secondary + primary, btn-md)
+         .hero-pager            (carousel dots with chevrons)
+   ──────────────────────────────────────────────────────────────── */
+
+.hero-notif {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 32px;
+}
+
+/* Notification message */
+.hero-notif-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.hero-notif-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0.2px;
+  color: var(--t-primary, #282E37);
+  margin: 0;
+}
+
+.hero-notif-body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0.2px;
+  color: var(--t-secondary, #525252);
+  margin: 0;
+}
+
+/* Button array */
+.hero-notif-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+/* Pager / carousel */
+.hero-pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 24px;
+}
+
+.hero-pager-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--t-secondary, #525252);
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+.hero-pager-btn svg { display: block; }
+
+.hero-pager-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-pager-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #d4d4d8;
+}
+.hero-pager-dot.active {
+  background: #0a0a0a;
+  box-shadow: 0 0 0 2px #f0f0f1, 0 0 0 3.5px #0a0a0a;
+}

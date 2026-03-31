@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test: content-gap placement — 01-Investigation Screen 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base: #f0f0f1;
+  --bg-primary: #f0f0f1;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sidebar: #e8e8ea;
+  --bg-component: #f4f4f5;
+  --bg-header: rgba(240,240,241,0.85);
+  --t-primary: #282E37;
+  --text-primary: #282E37;
+  --t-secondary: #525252;
+  --text-secondary: #525252;
+  --t-tertiary: #6F7377;
+  --text-muted: #6F7377;
+  --text-very-muted: #A0A2A5;
+  --border: rgba(0,0,0,0.09);
+  --border-primary: rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+  --green: #16a34a;
+  --blue: #1d4ed8;
+  --amber: #b45309;
+  --red: #D3222A;
+  --purple: #7c3aed;
+  --orange: #ea580c;
+  --brand: #D3222A;
+  --ui-dark: #1e293b;
+  --ui-darkest: #0f172a;
+  --ui-border-strong: #e2e8f0;
+  --ui-surface-tint: #f1f5f9;
+  --ui-text-dim: #64748b;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+}
+
+/* ---- 01-Investigation uses .s- prefixed classes ---- */
+.s-investigation-body { display: flex; flex: 1; overflow: hidden; background: transparent; }
+.s-left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.s-left-scroll { flex: 1; overflow: hidden auto; padding: 44px 20px 0; display: flex; flex-direction: column; align-items: center; scrollbar-width: none; }
+.s-left-scroll::-webkit-scrollbar { display: none; }
+.s-scroll-inner { width: 100%; max-width: 1024px; }
+
+/* ---- 02-Evidence unprefixed equivalents (for version B) ---- */
+.investigation-body { display: flex; flex: 1; overflow: hidden; background: transparent; }
+.left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.left-scroll { flex: 1; overflow: hidden auto; padding: 44px 20px 0; display: flex; flex-direction: column; align-items: center; scrollbar-width: none; }
+.left-scroll::-webkit-scrollbar { display: none; }
+.left-scroll-inner { width: 100%; max-width: 1024px; }
+
+/* Spacing */
+.content-gap { display: flex; flex-direction: column; gap: 32px; }
+.section-gap { display: flex; flex-direction: column; gap: 24px; }
+.section { display: flex; flex-direction: column; gap: 12px; }
+
+/* Cards */
+.card-default { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+
+/* Section headers */
+.section-header { display: flex; flex-direction: column; gap: 6px; }
+.section-title { font-size: 18px; font-weight: 600; color: var(--t-primary); }
+.section-subtitle { font-size: 14px; color: var(--t-secondary); line-height: 1.5; }
+
+/* Scope table */
+.s-scope-table { display: flex; flex-direction: column; }
+.s-scope-row { display: flex; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 16px; }
+.s-scope-row:last-child { border-bottom: none; }
+.s-scope-key { width: 150px; flex-shrink: 0; font-weight: 600; font-size: 14px; color: var(--t-primary); }
+.s-scope-val { flex: 1; font-size: 14px; color: var(--t-primary); }
+
+/* Hero */
+.lt-s1-hero { text-align: center; }
+.lt-s1-hero-header { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.lt-s1-page-title { font-size: 28px; font-weight: 300; color: var(--t-primary); }
+.lt-s1-page-title strong { font-weight: 600; }
+.ev-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+/* Workflow */
+.s2-workflow { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 8px; }
+.s2-workflow-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--t-tertiary); }
+.s2-workflow-steps { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: center; }
+.s2-workflow-step { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t-tertiary); white-space: nowrap; }
+.s2-workflow-step.active { font-weight: 600; color: var(--t-primary); }
+.s2-step-circle { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s2-workflow-arrow { color: var(--t-tertiary); display: flex; align-items: center; }
+
+/* Pills (inline) */
+.pill { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; border-radius: 999px; white-space: nowrap; }
+.pill-sm { font-size: 12px; padding: 2px 10px; }
+.pill-md { font-size: 13px; padding: 4px 12px; }
+.pill-red { background: rgba(211,34,42,0.08); color: var(--red); }
+.pill-green { background: rgba(22,163,74,0.08); color: var(--green); }
+.pill-yellow { background: rgba(180,83,9,0.08); color: var(--amber); }
+.pill-transparent { background: transparent; border: 1px solid var(--border); color: var(--t-secondary); }
+.pill-icon { gap: 6px; }
+.pill-ico { width: 16px; height: 16px; }
+
+/* Alert cards */
+.alert-card { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 12px; }
+.alert-card-md { font-size: 13px; }
+.alert-card-yellow { background: rgba(180,83,9,0.06); color: var(--amber); }
+.alert-card-icon { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+.alert-card-body { flex: 1; }
+.alert-card-title { font-weight: 600; font-size: 14px; }
+.alert-card-sub { font-size: 13px; color: var(--t-secondary); line-height: 1.5; margin-top: 2px; }
+.alert-card-actions { display: flex; gap: 8px; flex-shrink: 0; align-self: center; }
+
+/* Test controls */
+.test-controls {
+  position: fixed; top: 8px; right: 8px; z-index: 100;
+  background: #282E37; color: #fff; padding: 12px 16px; border-radius: 12px;
+  font-size: 13px; display: flex; flex-direction: column; gap: 8px;
+}
+.test-controls button {
+  background: #D3222A; color: #fff; border: none; border-radius: 8px;
+  padding: 6px 12px; cursor: pointer; font-family: var(--font); font-size: 13px;
+}
+.test-controls .label { font-weight: 600; margin-bottom: 2px; }
+
+/* Debug outlines */
+.debug .s-scroll-inner, .debug .left-scroll-inner { outline: 2px dashed #D3222A; outline-offset: -2px; }
+.debug .s-left-scroll, .debug .left-scroll { outline: 2px dashed #1d4ed8; outline-offset: -2px; }
+.debug .chat-area { outline: 2px dashed #16a34a; outline-offset: -2px; }
+</style>
+<link rel="stylesheet" href="Components/chatbox.css">
+<link rel="stylesheet" href="Components/buttons.css">
+</head>
+<body class="debug">
+
+<div class="test-controls">
+  <div class="label">01-Investigation Screen 3 — structure test</div>
+  <div>
+    <span style="display:inline-block;width:12px;height:12px;background:#1d4ed8;border-radius:2px;"></span> scroll container
+    <span style="display:inline-block;width:12px;height:12px;background:#D3222A;border-radius:2px;margin-left:8px;"></span> scroll-inner (1024px)
+    <span style="display:inline-block;width:12px;height:12px;background:#16a34a;border-radius:2px;margin-left:8px;"></span> chat-area
+  </div>
+  <button onclick="toggle()">Toggle between .s- (current) and unprefixed (02-Ev pattern)</button>
+  <div id="state-label" style="font-size:12px; color:#aaa;">Current: .s- prefixed classes (01-Investigation original)</div>
+</div>
+
+<!-- VERSION A: .s- prefixed (current 01-Investigation pattern) -->
+<div id="version-a" class="s-investigation-body">
+  <div class="s-left-content">
+    <div class="s-left-scroll">
+      <div class="s-scroll-inner content-gap">
+
+        <!-- Hero -->
+        <div class="lt-s1-hero">
+          <div class="lt-s1-hero-header">
+            <div class="ev-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Audit report request
+              </span>
+            </div>
+            <h1 class="lt-s1-page-title"><strong>Finalize the scope</strong> of the audit report.</h1>
+          </div>
+          <div class="s2-workflow">
+            <div class="s2-workflow-label">Workflow status</div>
+            <div class="s2-workflow-steps">
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Done.svg" width="20" height="20"></div>Investigation</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step active"><div class="s2-step-circle"><img src="Icons/Active.svg" width="20" height="20"></div>Scope</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Evidence</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Synthesis</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Edit &amp; Authorize</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Veracity scoring</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Approve</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Scope review</div>
+              <div class="section-subtitle">Here's the full scope I'll be working to. Please review everything before authorizing.</div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Investigation intent</div>
+              <div class="s-scope-table">
+                <div class="s-scope-row"><div class="s-scope-key">Trigger type</div><div class="s-scope-val">Regulatory inquiry — peer SEC enforcement action (cybersecurity controls)</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Investigation scope</div><div class="s-scope-val">Cybersecurity control posture + SEC disclosure readiness</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Audience</div><div class="s-scope-val">Audit Committee</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Urgency</div><div class="s-scope-val"><span class="pill pill-sm pill-red">HIGH</span> Board meeting in 72 hours</div></div>
+              </div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Scope parameters</div>
+              <div class="s-scope-table">
+                <div class="s-scope-row"><div class="s-scope-key">Historical range</div><div class="s-scope-val">24 months</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Vendor cyber risks</div><div class="s-scope-val"><span style="color:var(--green);font-weight:600;">✓ Included</span></div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Speak-up themes</div><div class="s-scope-val"><span style="color:var(--green);font-weight:600;">✓ Included</span> — anonymised themes only, no PII</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Individual names</div><div class="s-scope-val"><span style="color:var(--red);font-weight:600;">✗ Excluded</span> — roles only</div></div>
+              </div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Data domains to query (6 of 7):</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+                <span class="pill pill-md pill-green">✓ Projects</span>
+                <span class="pill pill-md pill-green">✓ Frameworks</span>
+                <span class="pill pill-md pill-green">✓ ERM</span>
+                <span class="pill pill-md pill-green">✓ AI Risk Essentials</span>
+                <span class="pill pill-md pill-green">✓ Compliance Maps</span>
+                <span class="pill pill-md pill-green">✓ 3rd Risk</span>
+                <span class="pill pill-md pill-transparent" style="opacity:0.5;">— Vault</span>
+              </div>
+              <div class="alert-card alert-card-md alert-card-yellow">
+                <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+                <div class="alert-card-body">
+                  <div class="alert-card-title">GC Review Recommended</div>
+                  <div class="alert-card-sub">This investigation covers cybersecurity enforcement exposure and SEC disclosure readiness. Consider notifying General Counsel before proceeding.</div>
+                </div>
+                <div class="alert-card-actions">
+                  <button class="btn btn-secondary btn-sm">Notify GC</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Review details and confirm</div>
+              <div class="section-subtitle">Review the full scope the GRC Assistant has prepared. Authorize it to begin evidence gathering, or go back to adjust any parameter.</div>
+            </div>
+            <div class="card-default">
+              <div class="alert-card alert-card-md alert-card-yellow">
+                <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+                <div class="alert-card-body">
+                  <div class="alert-card-title">HITL Gate 1 of 3</div>
+                  <div class="alert-card-sub">Authorization required before evidence gathering begins.</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;">
+                <button class="btn btn-secondary btn-sm">Go back and edit</button>
+                <button class="btn btn-primary btn-md">Authorize investigation</button>
+              </div>
+            </div>
+          </div>
+        </div><!-- end section-gap -->
+
+      </div><!-- end s-scroll-inner -->
+
+      <div class="chat-area">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Challenge any assumption or ask why before authorizing..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row">
+                <div class="chat-chip">Why did you exclude Vault?</div>
+                <div class="chat-chip">Draft a note to Legal about this scope</div>
+                <div class="chat-chip">What happens if I reduce to 12 months?</div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn-secondary btn-md">Clear</button>
+                <button class="btn btn-primary btn-md" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end s-left-scroll -->
+  </div>
+</div>
+
+<!-- VERSION B: Unprefixed (02-Evidence pattern applied to same content) -->
+<div id="version-b" class="investigation-body" style="display:none;">
+  <div class="left-content">
+    <div class="left-scroll">
+      <div class="left-scroll-inner content-gap">
+
+        <!-- Hero -->
+        <div class="lt-s1-hero">
+          <div class="lt-s1-hero-header">
+            <div class="ev-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Audit report request
+              </span>
+            </div>
+            <h1 class="lt-s1-page-title"><strong>Finalize the scope</strong> of the audit report.</h1>
+          </div>
+          <div class="s2-workflow">
+            <div class="s2-workflow-label">Workflow status</div>
+            <div class="s2-workflow-steps">
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Done.svg" width="20" height="20"></div>Investigation</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step active"><div class="s2-step-circle"><img src="Icons/Active.svg" width="20" height="20"></div>Scope</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Evidence</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Synthesis</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Edit &amp; Authorize</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Veracity scoring</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20"></div>Approve</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Scope review</div>
+              <div class="section-subtitle">Here's the full scope I'll be working to. Please review everything before authorizing.</div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Investigation intent</div>
+              <div class="s-scope-table">
+                <div class="s-scope-row"><div class="s-scope-key">Trigger type</div><div class="s-scope-val">Regulatory inquiry — peer SEC enforcement action (cybersecurity controls)</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Investigation scope</div><div class="s-scope-val">Cybersecurity control posture + SEC disclosure readiness</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Audience</div><div class="s-scope-val">Audit Committee</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Urgency</div><div class="s-scope-val"><span class="pill pill-sm pill-red">HIGH</span> Board meeting in 72 hours</div></div>
+              </div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Scope parameters</div>
+              <div class="s-scope-table">
+                <div class="s-scope-row"><div class="s-scope-key">Historical range</div><div class="s-scope-val">24 months</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Vendor cyber risks</div><div class="s-scope-val"><span style="color:var(--green);font-weight:600;">✓ Included</span></div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Speak-up themes</div><div class="s-scope-val"><span style="color:var(--green);font-weight:600;">✓ Included</span> — anonymised themes only, no PII</div></div>
+                <div class="s-scope-row"><div class="s-scope-key">Individual names</div><div class="s-scope-val"><span style="color:var(--red);font-weight:600;">✗ Excluded</span> — roles only</div></div>
+              </div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Data domains to query (6 of 7):</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+                <span class="pill pill-md pill-green">✓ Projects</span>
+                <span class="pill pill-md pill-green">✓ Frameworks</span>
+                <span class="pill pill-md pill-green">✓ ERM</span>
+                <span class="pill pill-md pill-green">✓ AI Risk Essentials</span>
+                <span class="pill pill-md pill-green">✓ Compliance Maps</span>
+                <span class="pill pill-md pill-green">✓ 3rd Risk</span>
+                <span class="pill pill-md pill-transparent" style="opacity:0.5;">— Vault</span>
+              </div>
+              <div class="alert-card alert-card-md alert-card-yellow">
+                <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+                <div class="alert-card-body">
+                  <div class="alert-card-title">GC Review Recommended</div>
+                  <div class="alert-card-sub">This investigation covers cybersecurity enforcement exposure and SEC disclosure readiness. Consider notifying General Counsel before proceeding.</div>
+                </div>
+                <div class="alert-card-actions">
+                  <button class="btn btn-secondary btn-sm">Notify GC</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Review details and confirm</div>
+              <div class="section-subtitle">Review the full scope the GRC Assistant has prepared. Authorize it to begin evidence gathering, or go back to adjust any parameter.</div>
+            </div>
+            <div class="card-default">
+              <div class="alert-card alert-card-md alert-card-yellow">
+                <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+                <div class="alert-card-body">
+                  <div class="alert-card-title">HITL Gate 1 of 3</div>
+                  <div class="alert-card-sub">Authorization required before evidence gathering begins.</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;">
+                <button class="btn btn-secondary btn-sm">Go back and edit</button>
+                <button class="btn btn-primary btn-md">Authorize investigation</button>
+              </div>
+            </div>
+          </div>
+        </div><!-- end section-gap -->
+
+      </div><!-- end left-scroll-inner -->
+
+      <div class="chat-area">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Challenge any assumption or ask why before authorizing..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row">
+                <div class="chat-chip">Why did you exclude Vault?</div>
+                <div class="chat-chip">Draft a note to Legal about this scope</div>
+                <div class="chat-chip">What happens if I reduce to 12 months?</div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn-secondary btn-md">Clear</button>
+                <button class="btn btn-primary btn-md" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end left-scroll -->
+  </div>
+</div>
+
+<script>
+let showingA = true;
+function toggle() {
+  showingA = !showingA;
+  document.getElementById('version-a').style.display = showingA ? '' : 'none';
+  document.getElementById('version-b').style.display = showingA ? 'none' : '';
+  document.getElementById('state-label').textContent = showingA
+    ? 'Current: .s- prefixed classes (01-Investigation original)'
+    : 'Current: unprefixed classes (02-Evidence pattern)';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typography Test — 01-Investigation Screen 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Components/chatbox.css">
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/headers.css">
+<link rel="stylesheet" href="Components/buttons.css">
+<link rel="stylesheet" href="Components/pills.css">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg-base:         #f0f0f1;
+  --bg-primary:      #f0f0f1;
+  --bg-surface:      #ffffff;
+  --bg-elevated:     #ffffff;
+  --bg-sidebar:      #e8e8ea;
+  --bg-component:    #f4f4f5;
+  --bg-header:       rgba(240,240,241,0.85);
+  --t-primary:       #282E37;
+  --text-primary:    #282E37;
+  --t-secondary:     #525252;
+  --text-secondary:  #525252;
+  --t-tertiary:      #6F7377;
+  --text-muted:      #6F7377;
+  --text-very-muted: #A0A2A5;
+  --border:           rgba(0,0,0,0.09);
+  --border-primary:   rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+  --green:   #16a34a;
+  --blue:    #1d4ed8;
+  --amber:   #b45309;
+  --red:     #D3222A;
+  --purple:  #7c3aed;
+  --orange:  #ea580c;
+  --brand:   #D3222A;
+  --ui-dark:          #1e293b;
+  --ui-darkest:       #0f172a;
+  --ui-border-strong: #e2e8f0;
+  --ui-surface-tint:  #f1f5f9;
+  --ui-text-dim:      #64748b;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography overrides (test only) ── */
+.section-title { font-size: 20px; }
+.card-title { font-size: 16px; }
+.fw600 { font-weight: 600; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.lt-header {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; height: 48px; padding: 0 20px;
+  background: #ffffff; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.lt-logo { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: var(--t-primary); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.lt-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+.lt-logo-mark img { width: 24px; height: 24px; display: block; }
+.lt-spacer { flex: 1; }
+.lt-header-nav { display: flex; align-items: center; gap: 8px; }
+.lt-activity-pill {
+  display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 20px; background: #ffffff;
+  font-size: 13px; font-weight: 400; color: var(--ui-dark); cursor: pointer; white-space: nowrap;
+}
+.lt-activity-pill svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--ui-dark); }
+.lt-activity-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ui-surface-tint); border-radius: 20px; padding: 1px 7px;
+  font-size: 12px; font-weight: 500; color: var(--ui-text-dim);
+}
+.lt-icon-btn {
+  position: relative; width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #ffffff; cursor: pointer; color: var(--ui-dark); flex-shrink: 0;
+}
+.lt-icon-btn svg { width: 16px; height: 16px; }
+.lt-notif-dot { position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; background: var(--ui-darkest); border-radius: 50%; border: 1.5px solid #ffffff; }
+.lt-avatar { width: 32px; height: 32px; background: #bae6fd; color: #0369a1; border-radius: 10px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.s-investigation-body { display: flex; flex: 1; overflow: hidden; background: transparent; }
+.s-left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.s-left-scroll { flex: 1; overflow: hidden auto; padding: 44px 20px 0; display: flex; flex-direction: column; align-items: center; scrollbar-width: none; }
+.s-left-scroll::-webkit-scrollbar { display: none; }
+.s-scroll-inner { width: 100%; max-width: 1024px; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.lt-s1-hero { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; border-radius: 0; padding: 0 0 20px; }
+.lt-s1-hero-header { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.lt-s1-page-title { font-size: 40px; font-weight: 300; letter-spacing: -0.02em; color: var(--t-primary); line-height: 1.2; }
+.lt-s1-page-title strong { font-weight: 700; }
+.ev-tags { display: flex; gap: 10px; justify-content: center; }
+.s2-workflow { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 20px; }
+.s2-workflow-label { font-size: var(--card-body-xs); font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(0,0,0,0.4); }
+.s2-workflow-steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.s2-workflow-step { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t-secondary); }
+.s2-workflow-step.active { color: var(--t-primary); font-weight: 700; }
+.s2-step-circle { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s2-workflow-arrow { color: var(--t-tertiary); display: flex; align-items: center; }
+
+/* ============================================================
+   EDIT TABLE — uses card-body-md (14px) via classes on HTML
+   No local font-size rules — typography comes from .card-body-* classes
+   ============================================================ */
+.s-edit-table { border: none; border-radius: 0; overflow: visible; }
+.s-edit-row { display: flex; align-items: center; border-bottom: 1px solid var(--border); padding: 10px 8px 10px 0; gap: 16px; cursor: pointer; transition: background 0.15s; }
+.s-edit-row:last-child { border-bottom: none; }
+.s-edit-row:hover { background: var(--bg-base); }
+.s-edit-row:hover .s-edit-btn { opacity: 1; }
+.s-edit-key { font-weight: 600; color: var(--t-primary); width: 130px; flex-shrink: 0; }
+.s-edit-val { flex: 1; color: var(--t-primary); display: flex; align-items: center; gap: 8px; }
+.s-edit-btn { display: flex; align-items: center; gap: 4px; color: var(--t-secondary); opacity: 0; transition: opacity 0.15s; white-space: nowrap; }
+
+/* ============================================================
+   TOGGLE ROW — uses card-body-md (14px) via classes on HTML
+   No local font-size rules
+   ============================================================ */
+.s-toggle-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.s-toggle-row:last-child { border-bottom: none; }
+.s-toggle-label { flex: 1; color: var(--t-primary); line-height: 1.43; }
+.s-toggle-rec { color: #16a34a; }
+.s-toggle { width: 36px; height: 20px; background: #8EE400; border-radius: 10px; position: relative; flex-shrink: 0; cursor: pointer; }
+.s-toggle.off { background: var(--bg-base); border: 1px solid var(--border); }
+.s-toggle::after { content: ''; position: absolute; width: 16px; height: 16px; background: #fff; border-radius: 50%; top: 50%; transform: translateY(-50%); right: 2px; }
+.s-toggle.off::after { right: auto; left: 2px; background: var(--t-tertiary); }
+
+/* ============================================================
+   TIME BUTTONS
+   ============================================================ */
+.s-time-btn-group { display: flex; gap: 8px; }
+.s-time-btn-group .btn.btn-sm { padding: 7px 10px; border-radius: 8px; }
+
+/* ============================================================
+   DOMAIN GRID — uses card-body-sm / card-body-xs via classes
+   No local font-size rules
+   ============================================================ */
+.s-domain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s-domain-card { background: var(--bg-base); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
+.s-domain-card.on  { border-color: rgba(22,163,74,0.3); background: rgba(22,163,74,0.03); }
+.s-domain-card.off { opacity: 0.6; }
+.s-domain-card > div:first-child { flex: 1; min-width: 0; }
+.s-domain-card > div:last-child { flex-shrink: 0; }
+.s-domain-name { font-weight: 600; color: var(--t-primary); }
+.s-domain-desc { color: var(--t-tertiary); margin-top: 2px; }
+.s-domain-tag  { color: #16a34a; margin-top: 4px; }
+.s-domain-tag.optional { color: #b45309; }
+
+/* Wrapper */
+.screen-wrap { display: flex; flex-direction: column; height: 100vh; }
+
+</style>
+</head>
+<body>
+
+<div class="screen-wrap">
+  <div class="lt-header">
+    <div class="lt-logo"><div class="lt-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>Diligent  •  Automated Audit Reporting</div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity<span class="lt-activity-count">5</span>
+      </div>
+      <div class="lt-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="lt-notif-dot"></span></div>
+      <div class="lt-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div>
+      <div class="lt-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="s-investigation-body">
+    <div class="s-left-content">
+      <div class="s-left-scroll">
+        <div class="s-scroll-inner content-gap">
+
+        <!-- Hero -->
+        <div class="lt-s1-hero">
+          <div class="lt-s1-hero-header">
+            <div class="ev-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Audit report request
+              </span>
+            </div>
+            <h1 class="lt-s1-page-title">Audit reporting <strong>investigation</strong> has started.</h1>
+          </div>
+          <div class="s2-workflow">
+            <div class="s2-workflow-label">Workflow status</div>
+            <div class="s2-workflow-steps">
+              <div class="s2-workflow-step active">
+                <div class="s2-step-circle active"><img src="Icons/Active.svg" width="20" height="20" alt=""></div>
+                Investigation
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>Scope</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>Evidence</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>Synthesis</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>Edit &amp; Authorize</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>Veracity scoring</div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step"><div class="s2-step-circle"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>Approve</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+
+        <!-- Section 1: Investigation scope -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Investigation scope identified</div>
+            <div class="section-subtitle">Click any row to edit</div>
+          </div>
+          <div class="card-default">
+            <div class="s-edit-table">
+              <div class="s-edit-row">
+                <div class="s-edit-key card-body-md">Trigger type</div>
+                <div class="s-edit-val card-body-md">Regulatory inquiry — peer SEC enforcement action</div>
+                <div class="s-edit-btn card-body-sm"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+              <div class="s-edit-row">
+                <div class="s-edit-key card-body-md">Scope</div>
+                <div class="s-edit-val card-body-md">Cybersecurity control posture + SEC disclosure readiness</div>
+                <div class="s-edit-btn card-body-sm"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+              <div class="s-edit-row">
+                <div class="s-edit-key card-body-md">Audience</div>
+                <div class="s-edit-val card-body-md">Audit Committee</div>
+                <div class="s-edit-btn card-body-sm"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+              <div class="s-edit-row">
+                <div class="s-edit-key card-body-md">Urgency</div>
+                <div class="s-edit-val card-body-md">
+                  <span class="pill pill-sm pill-red">HIGH</span>
+                  Board meeting in 72 hours
+                </div>
+                <div class="s-edit-btn card-body-sm"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Clarifying options -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Clarifying options</div>
+            <div class="section-subtitle">Set parameters before investigation begins</div>
+          </div>
+          <div class="card-default">
+            <div class="card-title">Scope parameters</div>
+            <div class="s-toggle-row">
+              <div class="s-toggle-label card-body-md">Include third-party vendor cyber risks?</div>
+              <div class="s-toggle-rec card-body-xs fw600">Recommended</div>
+              <div class="s-toggle"></div>
+            </div>
+            <div class="s-toggle-row">
+              <div class="s-toggle-label card-body-md">Include speak-up / Vault data (themes only, no PII)?</div>
+              <div class="s-toggle-rec card-body-xs fw600">Recommended</div>
+              <div class="s-toggle"></div>
+            </div>
+            <div class="s-toggle-row" style="border-bottom:none;">
+              <div class="s-toggle-label card-body-md">Historical range:</div>
+              <div class="s-time-btn-group">
+                <button class="btn btn-primary btn-sm">24 months</button>
+                <button class="btn btn-secondary btn-sm">12 months</button>
+                <button class="btn btn-secondary btn-sm">36 months</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-default" style="gap:12px;">
+            <div class="card-header">
+              <div class="card-title">Data domains to query</div>
+              <div class="card-subtitle">All 6 recommended domains are pre-selected. Vault is optional — speak-up themes only, no PII ever exposed.</div>
+            </div>
+            <div class="s-domain-grid">
+              <div class="s-domain-card on">
+                <div><div class="s-domain-name card-body-md">Projects</div><div class="s-domain-desc card-body-sm">Findings, walkthroughs, remediation</div><div class="s-domain-tag card-body-xs fw600">Recommended</div></div>
+                <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+              </div>
+              <div class="s-domain-card on">
+                <div><div class="s-domain-name card-body-md">Frameworks</div><div class="s-domain-desc card-body-sm">Risk control matrix, test plans</div><div class="s-domain-tag card-body-xs fw600">Recommended</div></div>
+                <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+              </div>
+              <div class="s-domain-card on">
+                <div><div class="s-domain-name card-body-md">ERM</div><div class="s-domain-desc card-body-sm">Risk register, appetite, velocity</div><div class="s-domain-tag card-body-xs fw600">Recommended</div></div>
+                <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+              </div>
+              <div class="s-domain-card on">
+                <div><div class="s-domain-name card-body-md">AI Risk Essentials</div><div class="s-domain-desc card-body-sm">AI risk scores, peer benchmarks</div><div class="s-domain-tag card-body-xs fw600">Recommended</div></div>
+                <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+              </div>
+              <div class="s-domain-card on">
+                <div><div class="s-domain-name card-body-md">Compliance Maps</div><div class="s-domain-desc card-body-sm">Obligations, gaps, SEC requirements</div><div class="s-domain-tag card-body-xs fw600">Recommended</div></div>
+                <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+              </div>
+              <div class="s-domain-card on">
+                <div><div class="s-domain-name card-body-md">3rd Risk</div><div class="s-domain-desc card-body-sm">Vendor cyber scores, questionnaires</div><div class="s-domain-tag card-body-xs fw600">Recommended</div></div>
+                <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+              </div>
+              <div class="s-domain-card off" style="grid-column:span 2;">
+                <div><div class="s-domain-name card-body-md">Vault</div><div class="s-domain-desc card-body-sm">Speak-up themes only — no PII</div><div class="s-domain-tag card-body-xs fw600 optional">Optional</div></div>
+                <div><div class="s-toggle off" style="width:32px;height:18px;"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Review & Confirm -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Review details and confirm</div>
+            <div class="section-subtitle">Happy with the scope and data domains? Confirm to generate the full scope plan for your review before any investigation begins.</div>
+          </div>
+          <div class="card-default">
+            <div class="card-title">Next steps</div>
+            <ol style="margin:0;padding:0;display:flex;flex-direction:column;gap:10px;list-style:none;">
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">1</span><span class="card-body-md" style="color:var(--t-primary);line-height:1.5;">GRC Assistant confirms scope and identifies the right data sources to query</span></li>
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">2</span><span class="card-body-md" style="color:var(--t-primary);line-height:1.5;">Evidence gathering runs in parallel across all selected sources</span></li>
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">3</span><span class="card-body-md" style="color:var(--t-primary);line-height:1.5;">Risk synthesis and board narrative generated</span></li>
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">4</span><span class="card-body-md" style="color:var(--t-primary);line-height:1.5;">You select focus areas for deep dive</span></li>
+            </ol>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;">
+              <button class="btn btn-primary btn-md">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /section-gap -->
+        </div><!-- /s-scroll-inner -->
+
+      <div class="chat-area">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Override any setting or add something the GRC assistant missed..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row">
+                <div class="chat-chip">Include financial controls too</div>
+                <div class="chat-chip">Change audience to regulator, not board</div>
+                <div class="chat-chip">Extend scope to include M&amp;A activity</div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn-secondary btn-md">Clear</button>
+                <button class="btn btn-primary btn-md" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div><!-- /s-left-scroll -->
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

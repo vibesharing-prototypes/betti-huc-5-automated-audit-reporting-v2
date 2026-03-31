@@ -1,0 +1,30 @@
+/* ============================================================
+   CARD BODY TYPOGRAPHY
+   Single source of truth for card content font sizes.
+
+   Classes:
+     .card-body        — default body text    16px / 400
+     .card-body-md     — medium body text     14px / 400
+     .card-body-sm     — small / secondary    12px / 400
+     .card-body-xs     — eyebrows, captions   11px / 400
+
+   CSS custom properties (--card-body-*) allow tables and other
+   components to reference the same scale without importing classes.
+   .table th uses --card-body-sm, .table td uses --card-body-md.
+
+   Usage:
+     <link rel="stylesheet" href="Components/card-typography.css">
+     <p class="card-body-md">Row label text</p>
+   ============================================================ */
+
+:root {
+  --card-body:    16px;
+  --card-body-md: 14px;
+  --card-body-sm: 12px;
+  --card-body-xs: 11px;
+}
+
+.card-body    { font-size: var(--card-body);    font-weight: 400; color: var(--t-secondary, #525252); line-height: 1.5; }
+.card-body-md { font-size: var(--card-body-md); font-weight: 400; color: var(--t-secondary, #525252); line-height: 1.5; }
+.card-body-sm { font-size: var(--card-body-sm); font-weight: 400; color: var(--t-secondary, #525252); line-height: 1.5; }
+.card-body-xs { font-size: var(--card-body-xs); font-weight: 400; color: var(--t-tertiary, #6F7377);  line-height: 1.45; }

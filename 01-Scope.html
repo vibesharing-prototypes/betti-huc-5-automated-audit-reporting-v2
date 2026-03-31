@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01-Scope</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:wght@300;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Components/layout.css">
+<link rel="stylesheet" href="Components/app-chrome.css">
+<link rel="stylesheet" href="Components/hero-section.css">
+<link rel="stylesheet" href="Components/chatbox.css">
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/alert-cards.css">
+<link rel="stylesheet" href="Components/headers.css">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg-base:         #f0f0f1;
+  --bg-primary:      #f0f0f1;
+  --bg-surface:      #ffffff;
+  --bg-elevated:     #ffffff;
+  --bg-sidebar:      #e8e8ea;
+  --bg-component:    #f4f4f5;
+  --bg-header:       rgba(240,240,241,0.85);
+
+  --t-primary:       #282E37;
+  --text-primary:    #282E37;
+  --t-secondary:     #525252;
+  --text-secondary:  #525252;
+  --t-tertiary:      #6F7377;
+  --text-muted:      #6F7377;
+  --text-very-muted: #A0A2A5;
+
+  --border:           rgba(0,0,0,0.09);
+  --border-primary:   rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+
+  --green:   #16a34a;
+  --blue:    #1d4ed8;
+  --amber:   #b45309;
+  --red:     #D3222A;
+  --purple:  #7c3aed;
+  --orange:  #ea580c;
+  --brand:   #D3222A;
+
+  --ui-dark:          #1e293b;
+  --ui-darkest:       #0f172a;
+  --ui-border-strong: #e2e8f0;
+  --ui-surface-tint:  #f1f5f9;
+  --ui-text-dim:      #64748b;
+
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   SCREEN 0 — Boards Overview (2-column: book list + floating sidebar)
+   ============================================================ */
+
+/* Screen system — absolute positioning (Screen 0 has unique body layout) */
+#lt-screens { overflow: hidden; position: relative; height: 100%; }
+.lt-screen { display: none; flex-direction: column; position: absolute; inset: 0; }
+.lt-screen.active { display: flex; }
+.lt-screen .app-header { position: relative; flex-shrink: 0; }
+.lt-screen .lt-body { flex: 1; height: auto; min-height: 0; }
+
+/* Screen 1: page-inner needs flex:1 to push chat to bottom when content is short */
+#lt-screen-1 .page-inner { flex: 1; }
+
+/* App header needs sticky in this file (app-chrome.css doesn't set position) */
+.app-header { position: sticky; top: 0; }
+
+/* Body layout — 2 columns centered at 1024px */
+.lt-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 48px);
+}
+#lt-screen-0 .lt-body {
+  justify-content: center;
+  background: var(--bg-base);
+  padding: 20px;
+}
+.lt-main {
+  flex: 1;
+  background: var(--bg-base);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#lt-screen-0 .lt-main {
+  max-width: 1024px;
+  width: 100%;
+}
+.lt-main-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Center column — topbar + list */
+.lt-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-base);
+}
+.lt-topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 24px 24px 32px;
+  flex-shrink: 0;
+}
+.lt-topbar-title {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--t-primary);
+  line-height: 1.2;
+}
+
+/* Left panel — book list */
+.lt-left {
+  flex: 1;
+  padding: 0 24px 24px;
+  overflow-y: auto;
+  background: var(--bg-base);
+}
+.lt-book-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+.lt-book-item:last-child { margin-bottom: 0; }
+.lt-book-icon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.lt-book-icon:empty { display: none; }
+.lt-book-info { flex: 1; }
+.lt-book-title { font-size: 16px; font-weight: 600; color: var(--t-primary); margin-bottom: 3px; }
+.lt-book-meta  { font-size: 12px; color: var(--t-tertiary); }
+
+/* Right panel — floating card sidebar */
+.lt-right {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--bg-base);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+.lt-float-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.lt-float-header { padding: 20px 20px 4px; }
+.lt-float-eyebrow {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--t-tertiary); margin-bottom: 4px;
+}
+.lt-float-heading {
+  font-size: 18px; font-weight: 600;
+  color: var(--t-primary); line-height: 1.3; margin-bottom: 8px;
+}
+.lt-float-items {
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.lt-float-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.lt-float-item-title { font-size: 14px; font-weight: 600; color: var(--t-primary); line-height: 1.4; margin-bottom: 6px; }
+.lt-float-item-body  { font-size: 13px; color: var(--t-secondary); line-height: 1.5; margin-bottom: 12px; }
+.lt-float-item-open {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--t-tertiary); cursor: pointer;
+  display: inline-block; transition: color 0.15s;
+}
+.lt-float-item-open:hover { color: var(--t-primary); }
+
+
+/* ============================================================
+   SCREEN 1 — CAE Handoff (activity cards, status grid)
+   ============================================================ */
+.lt-s1-activity {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.lt-s1-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.lt-s1-dot.amber { background: rgba(210,153,34,1); }
+.lt-s1-dot.green { background: #22c55e; }
+.lt-s1-activity-info { flex: 1; }
+.lt-s1-activity-title { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 3px; }
+.lt-s1-activity-sub   { font-size: 12px; color: var(--t-tertiary); }
+
+/* Activity section wrapper */
+.lt-s1-section { display: flex; flex-direction: column; gap: 12px; }
+
+/* 2-col status grid */
+.lt-s1-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lt-s1-card { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.lt-s1-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 3px; }
+.lt-s1-card-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+.lt-s1-card-title { font-size: 13px; font-weight: 600; color: var(--t-primary); }
+.lt-s1-card-body  { font-size: 12px; color: var(--t-secondary); line-height: 1.5; padding-left: 22px; }
+
+
+/* ============================================================
+   SCREENS 2 & 3 — Form controls (edit table, toggles, domains, scope)
+   ============================================================ */
+
+/* Content column inside page-body */
+.s-left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* Edit table */
+.s-edit-table { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.s-edit-row { display: flex; align-items: center; border-bottom: 1px solid var(--border); padding: 10px 16px; gap: 16px; cursor: pointer; transition: background 0.15s; }
+.s-edit-row:last-child { border-bottom: none; }
+.s-edit-row:hover { background: var(--bg-base); }
+.s-edit-row:hover .s-edit-btn { opacity: 1; }
+.s-edit-key { font-size: 14px; font-weight: 600; color: var(--t-primary); width: 130px; flex-shrink: 0; }
+.s-edit-val { flex: 1; font-size: 14px; font-weight: 400; color: var(--t-primary); display: flex; align-items: center; gap: 8px; }
+.s-edit-btn { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--t-secondary); opacity: 0; transition: opacity 0.15s; white-space: nowrap; }
+#lt-screen-2 .s-edit-table { border: none; border-radius: 0; overflow: visible; }
+#lt-screen-2 .section:first-of-type .s-edit-row { padding-left: 0; padding-right: 8px; }
+
+/* Toggle row */
+.s-toggle-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.s-toggle-row:last-child { border-bottom: none; }
+.s-toggle-label { flex: 1; font-size: 14px; font-weight: 400; color: var(--t-primary); line-height: 1.43; }
+.s-toggle-rec { font-size: 12px; color: #16a34a; font-weight: 600; }
+.s-toggle { width: 36px; height: 20px; background: #8EE400; border-radius: 10px; position: relative; flex-shrink: 0; cursor: pointer; }
+.s-toggle.off { background: var(--bg-base); border: 1px solid var(--border); }
+.s-toggle::after { content: ''; position: absolute; width: 16px; height: 16px; background: #fff; border-radius: 50%; top: 50%; transform: translateY(-50%); right: 2px; }
+.s-toggle.off::after { right: auto; left: 2px; background: var(--t-tertiary); }
+
+/* Time btn */
+.s-time-btn-group { display: flex; gap: 8px; }
+.s-time-btn-group .btn.btn-sm { padding: 7px 10px; border-radius: 8px; font-size: 12px; }
+
+/* Domain grid */
+.s-domain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s-domain-card { background: var(--bg-base); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
+.s-domain-card > div:first-child { flex: 1; min-width: 0; }
+.s-domain-card > div:last-child { flex-shrink: 0; }
+.s-domain-card.on  { border-color: rgba(22,163,74,0.3); background: rgba(22,163,74,0.03); }
+.s-domain-card.off { opacity: 0.6; }
+.s-domain-name { font-size: 12px; font-weight: 600; color: var(--t-primary); }
+.s-domain-desc { font-size: 11px; color: var(--t-tertiary); margin-top: 2px; }
+.s-domain-tag  { font-size: 11px; font-weight: 600; color: #16a34a; margin-top: 4px; }
+.s-domain-tag.optional { color: #b45309; }
+
+/* Scope table */
+.s-scope-table { margin-bottom: 0; }
+.s-scope-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.s-scope-row:last-child { border-bottom: none; }
+.s-scope-key { width: 160px; flex-shrink: 0; color: var(--t-tertiary); font-size: 14px; font-weight: 600; }
+.s-scope-val { flex: 1; color: var(--t-tertiary); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.s-pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.s-scope-pill-off { background: var(--bg-base); border-color: var(--border) !important; color: var(--t-tertiary); }
+.s-text-green { color: #16a34a; font-weight: 600; }
+
+/* Utilities */
+.s-mt8  { margin-top: 8px; }
+.s-mb8  { margin-bottom: 8px; }
+
+</style>
+</head>
+<body>
+
+<div id="lt-screens">
+
+<!-- ============================================================
+     SCREEN 0 — BOARDS OVERVIEW
+     ============================================================ -->
+<div class="lt-screen active" id="lt-screen-0">
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="app-logo">
+    <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+    Diligent  •  Boards Cloud
+  </div>
+  <div class="app-spacer"></div>
+  <div class="app-header-nav">
+    <!-- Activity pill -->
+    <div class="app-activity-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Recent system activity
+      <span class="app-activity-count">5</span>
+    </div>
+    <!-- Bell with notification dot -->
+    <div class="app-icon-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="app-notif-dot"></span>
+    </div>
+    <!-- Kebab menu -->
+    <div class="app-icon-btn">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    </div>
+    <!-- Avatar -->
+    <div class="app-avatar">AC</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     BODY
+     ============================================================ -->
+<div class="lt-body">
+
+  <!-- Main area -->
+  <div class="lt-main">
+
+    <!-- Top bar — spans full width (center + sidebar) -->
+    <div class="lt-topbar">
+      <h1 class="lt-topbar-title">Overview</h1>
+    </div>
+
+    <div class="lt-main-row">
+
+    <!-- Center column: book list -->
+    <div class="lt-center">
+
+      <!-- Left: Book list -->
+      <div class="lt-left">
+        <div class="section-title" style="margin-bottom:12px;">Books — Board materials</div>
+
+        <div class="lt-book-item">
+          <div class="lt-book-icon"></div>
+          <div class="lt-book-info">
+            <div class="lt-book-title">Audit Committee — Q1 2026 Pre-Read</div>
+            <div class="lt-book-meta">Mar 3–5 · Audit Committee</div>
+          </div>
+          <button class="btn btn-secondary btn-md"><img src="Icons/AI.svg" style="height:16px;width:16px;"> Smart summary</button>
+        </div>
+
+        <div class="lt-book-item">
+          <div class="lt-book-icon"></div>
+          <div class="lt-book-info">
+            <div class="lt-book-title">Finance Committee — Feb 27, 2026</div>
+            <div class="lt-book-meta">Feb 27 · Finance</div>
+          </div>
+        </div>
+
+        <div class="lt-book-item">
+          <div class="lt-book-icon"></div>
+          <div class="lt-book-info">
+            <div class="lt-book-title">Board Meeting Materials — Feb 19, 2026</div>
+            <div class="lt-book-meta">Feb 19 · Full Board</div>
+          </div>
+          <button class="btn btn-secondary btn-md"><img src="Icons/AI.svg" style="height:16px;width:16px;"> Smart summary</button>
+        </div>
+      </div>
+
+    </div><!-- end lt-center -->
+
+    <!-- Right: floating card sidebar — full height, runs top to bottom -->
+    <div class="lt-right">
+      <div class="lt-float-card">
+
+        <!-- Card header: eyebrow above heading, matching image style -->
+        <div class="lt-float-header">
+          <div class="lt-float-eyebrow">✦ AI Curated</div>
+          <div class="lt-float-heading">Competitor updates</div>
+        </div>
+
+        <!-- Inner item cards -->
+        <div class="lt-float-items">
+
+          <!-- Enforcement alert — uses alert-card component (red, small) -->
+          <div class="lt-float-item" style="border-color:transparent;border-left:none;padding:0;background:transparent;">
+            <div class="alert-card alert-card-sm alert-card-red">
+              <div class="alert-card-content">
+                <div class="alert-card-header">
+                  <div class="alert-card-icon"><img src="Icons/Error.svg" style="width:100%;height:100%;"></div>
+                  <div class="alert-card-title">Enforcement alert</div>
+                </div>
+                <div class="alert-card-sub">SEC enforcement: peer fintech deficient cybersecurity controls — $18M fine. Board-level disclosure required within 4 business days.<br><br>SEC.gov · Feb 20, 2026</div>
+                <div style="display:flex;margin-top:8px;">
+                  <button class="btn btn-primary btn-md" onclick="ltShow(1)"><img src="Icons/AI.svg" style="height:16px;width:16px;filter:invert(1);"> Request assurance report</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status card — blue small alert -->
+          <div class="alert-card alert-card-sm alert-card-blue">
+            <div class="alert-card-content">
+              <div class="alert-card-header">
+                <div class="alert-card-icon"><img src="Icons/Inprogress.svg" style="width:100%;height:100%;"></div>
+                <div class="alert-card-title">Investigation in progress</div>
+              </div>
+              <div class="alert-card-sub">Regulatory Cyber Report · High</div>
+            </div>
+          </div>
+
+          <!-- News items -->
+          <div class="lt-float-item">
+            <div class="lt-float-item-title">BlackRock GIP / EQT partnership expands infrastructure reach</div>
+            <div class="lt-float-item-body">Financial Times · Feb 25, 2026</div>
+            <span class="lt-float-item-open">Open</span>
+          </div>
+
+          <div class="lt-float-item">
+            <div class="lt-float-item-title">CVC Capital raises €26B fund; Goldman Sachs joins as anchor LP</div>
+            <div class="lt-float-item-body">Bloomberg · Feb 24, 2026</div>
+            <span class="lt-float-item-open">Open</span>
+          </div>
+
+        </div><!-- end lt-float-items -->
+      </div><!-- end lt-float-card -->
+    </div><!-- end lt-right -->
+
+    </div><!-- end lt-main-row -->
+
+  </div><!-- end lt-main -->
+
+</div><!-- end lt-body -->
+
+</div><!-- end lt-screen-0 -->
+
+<!-- ============================================================
+     SCREEN 1 — CAE HANDOFF
+     ============================================================ -->
+<div class="lt-screen" id="lt-screen-1">
+
+  <!-- Full-width app header -->
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+      Diligent  •  Automated Audit Reporting
+    </div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="app-activity-count">5</span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="app-notif-dot"></span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <!-- Scrollable content + chat -->
+  <div class="page-scroll hero-glow-red">
+    <div class="page-inner content-gap">
+
+          <!-- Hero — notification variant -->
+          <div class="hero-section-notif">
+            <div class="hero-header">
+              <div class="hero-tags">
+                <span class="pill pill-md pill-icon pill-red">
+                  <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                  High priority
+                </span>
+                <span class="pill pill-md pill-icon pill-transparent">
+                  <img class="pill-ico" src="Icons/Audit.svg">
+                  Assurance report request
+                </span>
+              </div>
+              <h1 class="hero-title">Hi Alexandra, <strong>1 high priority task</strong> needs your attention.</h1>
+            </div>
+            <div class="hero-notif">
+              <div class="hero-notif-message">
+                <div class="hero-notif-title" style="font-weight:600;">Your Board member Thomas Chen has requested an assurance report.</div>
+                <div class="hero-notif-body">Assess cybersecurity control posture and SEC disclosure readiness before Thursday's Audit Committee meeting.</div>
+              </div>
+              <div class="hero-notif-actions">
+                <button class="btn btn-secondary btn-md">Delegate</button>
+                <button class="btn btn-primary btn-md" onclick="ltShow(2)">Review</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agent Activity section -->
+          <div class="lt-s1-section">
+          <div class="section-title">Agent Activity</div>
+
+          <div class="lt-s1-activity">
+            <div class="lt-s1-dot amber"></div>
+            <div class="lt-s1-activity-info">
+              <div class="lt-s1-activity-title">Q4 Compliance Review — remediation follow-up</div>
+              <div class="lt-s1-activity-sub">3 of 8 actions outstanding · in progress</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Review</button>
+          </div>
+
+          <div class="lt-s1-activity">
+            <div class="lt-s1-dot green"></div>
+            <div class="lt-s1-activity-info">
+              <div class="lt-s1-activity-title">Annual Controls Assessment — signed off</div>
+              <div class="lt-s1-activity-sub">Completed Feb 18, 2026</div>
+            </div>
+          </div>
+
+          <!-- Status grid -->
+          <div class="lt-s1-grid">
+            <div class="lt-s1-card">
+              <div class="lt-s1-card-header">
+                <div class="lt-s1-card-dot"></div>
+                <div class="lt-s1-card-title">Entity Sync</div>
+              </div>
+              <div class="lt-s1-card-body">Last sync 2 hours ago · 3 records updated</div>
+            </div>
+            <div class="lt-s1-card">
+              <div class="lt-s1-card-header">
+                <div class="lt-s1-card-dot"></div>
+                <div class="lt-s1-card-title">Compliance Agent</div>
+              </div>
+              <div class="lt-s1-card-body">All obligations current · No gaps</div>
+            </div>
+          </div>
+          </div><!-- end lt-s1-section -->
+
+    </div><!-- end page-inner -->
+
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div><!-- end page-scroll -->
+
+</div><!-- end lt-screen-1 -->
+
+<!-- ============================================================
+     SCREEN 2 — Investigation (dark)
+     ============================================================ -->
+<div class="lt-screen" id="lt-screen-2">
+  <div class="app-header">
+    <div class="app-logo"><div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>Diligent  •  Automated Audit Reporting</div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity<span class="app-activity-count">5</span>
+      </div>
+      <div class="app-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="app-notif-dot"></span></div>
+      <div class="app-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- Left content -->
+    <div class="s-left-content">
+      <div class="page-scroll hero-glow-blue">
+        <div class="page-inner content-gap">
+
+        <!-- Hero — workflow variant -->
+        <div class="hero-section-workflow">
+          <div class="hero-header">
+            <div class="hero-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Assurance report request
+              </span>
+            </div>
+            <h1 class="hero-title">Scope refinement — <strong>Starting assurance report.</strong></h1>
+          </div>
+          <div class="hero-stepper">
+            <div class="hero-stepper-label">Workflow status</div>
+            <div class="hero-stepper-steps">
+              <div class="hero-step active current">
+                <div class="hero-step-icon"><img src="Icons/Active.svg" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Evidence
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Synthesis &amp; Edit
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Preview &amp; Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+        <!-- Agent Block 1: Scope Identified -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Assurance report scope identified</div>
+            <div class="section-subtitle">Click any row to edit</div>
+          </div>
+          <div class="card-default">
+            <div class="s-edit-table">
+              <div class="s-edit-row">
+                <div class="s-edit-key">Trigger type</div>
+                <div class="s-edit-val">Regulatory inquiry — peer SEC enforcement action</div>
+                <div class="s-edit-btn"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+              <div class="s-edit-row">
+                <div class="s-edit-key">Scope</div>
+                <div class="s-edit-val">Cybersecurity control posture + SEC disclosure readiness</div>
+                <div class="s-edit-btn"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+              <div class="s-edit-row">
+                <div class="s-edit-key">Audience</div>
+                <div class="s-edit-val">Audit Committee</div>
+                <div class="s-edit-btn"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+              <div class="s-edit-row">
+                <div class="s-edit-key">Urgency</div>
+                <div class="s-edit-val">
+                  <span class="pill pill-sm pill-red">HIGH</span>
+                  Board meeting in 72 hours
+                </div>
+                <div class="s-edit-btn"><img src="Icons/Edit.svg" width="14" height="14" alt="">Edit</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent Block 2: Clarifying options -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Clarifying options</div>
+            <div class="section-subtitle">Set parameters before investigation begins</div>
+          </div>
+          <div class="card-default">
+
+          <div class="card-title">Scope parameters</div>
+          <div class="s-toggle-row">
+            <div class="s-toggle-label">Include third-party vendor cyber risks?</div>
+            <div class="s-toggle-rec">Recommended</div>
+            <div class="s-toggle"></div>
+          </div>
+          <div class="s-toggle-row">
+            <div class="s-toggle-label">Include speak-up / Vault data (themes only, no PII)?</div>
+            <div class="s-toggle-rec">Recommended</div>
+            <div class="s-toggle"></div>
+          </div>
+          <div class="s-toggle-row" style="border-bottom:none;">
+            <div class="s-toggle-label">Historical range:</div>
+            <div class="s-time-btn-group">
+              <button class="btn btn-primary btn-sm">24 months</button>
+              <button class="btn btn-secondary btn-sm">12 months</button>
+              <button class="btn btn-secondary btn-sm">36 months</button>
+            </div>
+          </div>
+
+          </div>
+          <div class="card-default" style="gap:12px;">
+          <div class="card-header" style="gap:0;">
+            <div class="card-title">Data domains to query</div>
+            <div class="card-subtitle">All 6 recommended domains are pre-selected. Vault is optional — speak-up themes only, no PII ever exposed.</div>
+          </div>
+          <div class="section-title" style="margin:0;">Diligent data sources</div>
+          <div class="s-domain-grid">
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">Projects</div><div class="s-domain-desc">Findings, walkthroughs, remediation</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">Frameworks</div><div class="s-domain-desc">Risk control matrix, test plans</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">ERM</div><div class="s-domain-desc">Risk register, appetite, velocity</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">AI Risk Essentials</div><div class="s-domain-desc">AI risk scores, peer benchmarks</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">Compliance Maps</div><div class="s-domain-desc">Obligations, gaps, SEC requirements</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">3rd Risk</div><div class="s-domain-desc">Vendor cyber scores, questionnaires</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card off">
+              <div><div class="s-domain-name">Vault</div><div class="s-domain-desc">Speak-up themes only — no PII</div><div class="s-domain-tag optional">Optional</div></div>
+              <div><div class="s-toggle off" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card" style="visibility:hidden;"></div>
+          </div>
+          <div class="section-title" style="margin:0;">Suggested external sources</div>
+          <div class="s-domain-grid">
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">SEC EDGAR</div><div class="s-domain-desc">Enforcement actions, filings, disclosures</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">NIST NVD</div><div class="s-domain-desc">Vulnerability data, CVE records</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card on">
+              <div><div class="s-domain-name">Peer Benchmarks</div><div class="s-domain-desc">Industry control maturity comparisons</div><div class="s-domain-tag">Recommended</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+            <div class="s-domain-card off">
+              <div><div class="s-domain-name">News &amp; Media</div><div class="s-domain-desc">Regulatory signals, sector incidents</div><div class="s-domain-tag optional">Optional</div></div>
+              <div><div class="s-toggle off" style="width:32px;height:18px;"></div></div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end;">
+            <button class="btn btn-secondary btn-md" id="s2-add-source-btn"><img src="Icons/AI.svg" style="height:16px;width:16px;"> Add another external source</button>
+          </div>
+          <!-- Hidden ACFE card — revealed by animation -->
+          <div id="s2-acfe-card" style="display:none;">
+            <div class="s-domain-card on" style="animation: fadeSlideIn 0.4s ease forwards;">
+              <div><div class="s-domain-name">ACFE</div><div class="s-domain-desc">Report to the Nations — fraud trends archive</div><div class="s-domain-tag">Added</div></div>
+              <div><div class="s-toggle" style="width:32px;height:18px;"></div></div>
+            </div>
+          </div>
+          </div>
+        </div><!-- end s-section -->
+
+        <!-- Review & Confirm section -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Review details and confirm</div>
+            <div class="section-subtitle">Happy with the scope and data domains? Confirm to generate the full scope plan for your review before any investigation begins.</div>
+          </div>
+          <div class="card-default">
+            <div class="card-title">Next steps</div>
+            <ol style="margin:0;padding:0;display:flex;flex-direction:column;gap:10px;list-style:none;">
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">1</span><span style="font-size:14px;font-weight:400;color:var(--t-primary);line-height:1.5;">GRC Assistant confirms scope and identifies the right data sources to query</span></li>
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">2</span><span style="font-size:14px;font-weight:400;color:var(--t-primary);line-height:1.5;">Evidence gathering runs in parallel across all selected sources</span></li>
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">3</span><span style="font-size:14px;font-weight:400;color:var(--t-primary);line-height:1.5;">Risk synthesis and board narrative generated</span></li>
+              <li style="display:flex;align-items:center;gap:10px;"><span class="pill pill-num" style="flex-shrink:0;font-weight:600;">4</span><span style="font-size:14px;font-weight:400;color:var(--t-primary);line-height:1.5;">You select focus areas for deep dive</span></li>
+            </ol>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;">
+              <button class="btn btn-primary btn-md" onclick="ltShow(3)">Confirm</button>
+            </div>
+          </div>
+        </div>
+        </div><!-- end section-gap -->
+
+        </div><!-- end s-scroll-inner -->
+
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input id="s2-chat-input" type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button id="s2-chat-send" style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div><!-- end s-left-scroll -->
+    </div>
+
+  </div>
+</div><!-- end lt-screen-2 -->
+
+<!-- ============================================================
+     SCREEN 3 — Scope Finalization
+     ============================================================ -->
+<div class="lt-screen" id="lt-screen-3">
+  <div class="app-header">
+    <div class="app-logo"><div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>Diligent  •  Automated Audit Reporting</div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity<span class="app-activity-count">5</span>
+      </div>
+      <div class="app-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="app-notif-dot"></span></div>
+      <div class="app-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- Left content -->
+    <div class="s-left-content">
+      <div class="page-scroll hero-glow-blue">
+        <div class="page-inner content-gap">
+
+        <!-- Hero — workflow variant (Scope active) -->
+        <div class="hero-section-workflow">
+          <div class="hero-header">
+            <div class="hero-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Assurance report request
+              </span>
+            </div>
+            <h1 class="hero-title">Scope finalization — <strong>Authorize assurance report.</strong></h1>
+          </div>
+          <div class="hero-stepper">
+            <div class="hero-stepper-label">Workflow status</div>
+            <div class="hero-stepper-steps">
+              <div class="hero-step active current">
+                <div class="hero-step-icon"><img src="Icons/Active.svg" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Evidence
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Synthesis &amp; Edit
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Preview &amp; Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Scope review</div>
+            <div class="section-subtitle">Here's the full scope I'll be working to. Please review everything before authorizing.</div>
+          </div>
+          <div class="card-default">
+            <div class="card-title">Investigation intent</div>
+            <div class="s-scope-table">
+              <div class="s-scope-row"><div class="s-scope-key">Trigger type</div><div class="s-scope-val">Regulatory inquiry — peer SEC enforcement action (cybersecurity controls)</div></div>
+              <div class="s-scope-row"><div class="s-scope-key">Investigation scope</div><div class="s-scope-val">Cybersecurity control posture + SEC disclosure readiness</div></div>
+              <div class="s-scope-row"><div class="s-scope-key">Audience</div><div class="s-scope-val">Audit Committee</div></div>
+              <div class="s-scope-row"><div class="s-scope-key">Urgency</div><div class="s-scope-val"><span class="pill pill-sm pill-red">HIGH</span> Board meeting in 72 hours</div></div>
+            </div>
+          </div>
+          <div class="card-default">
+            <div class="card-title">Scope parameters</div>
+            <div class="s-scope-table">
+              <div class="s-scope-row"><div class="s-scope-key">Historical range</div><div class="s-scope-val">24 months</div></div>
+              <div class="s-scope-row"><div class="s-scope-key">Vendor cyber risks</div><div class="s-scope-val"><span class="s-text-green"><img src="Icons/Checked.svg" style="width:16px;height:16px;vertical-align:middle;"> Included</span></div></div>
+              <div class="s-scope-row"><div class="s-scope-key">Speak-up themes</div><div class="s-scope-val"><span class="s-text-green"><img src="Icons/Checked.svg" style="width:16px;height:16px;vertical-align:middle;"> Included</span> — anonymised themes only, no PII</div></div>
+              <div class="s-scope-row"><div class="s-scope-key">Individual names</div><div class="s-scope-val"><span style="color:#da3633;font-weight:600;"><img src="Icons/X.svg" style="width:16px;height:16px;vertical-align:middle;"> Excluded</span> — roles only</div></div>
+            </div>
+          </div>
+          <div class="card-default">
+            <div class="card-title">Data domains to query (9 of 11):</div>
+            <div class="s-pill-row s-mb8">
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">Projects</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">Frameworks</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">ERM</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">AI Risk Essentials</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">Compliance Maps</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">3rd Risk</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">SEC EDGAR</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">NIST NVD</span>
+              <span class="pill pill-md pill-icon pill-green"><img class="pill-ico" src="Icons/Checked.svg">Peer Benchmarks</span>
+              <span class="pill pill-md pill-transparent s-scope-pill-off">Vault</span>
+              <span class="pill pill-md pill-transparent s-scope-pill-off">News &amp; Media</span>
+            </div>
+            <div class="alert-card alert-card-md alert-card-yellow">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+              <div class="alert-card-body">
+                <div class="alert-card-title">CISO Review Recommended</div>
+                <div class="alert-card-sub">Consider notifying your Chief Information Security Officer before proceeding.</div>
+              </div>
+              <button class="btn btn-secondary btn-md">Notify CISO</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review & Authorize section -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Review details and confirm</div>
+            <div class="section-subtitle">Review the full scope the GRC Assistant has prepared. Authorize it to begin evidence gathering, or go back to adjust any parameter.</div>
+          </div>
+          <div class="card-default">
+            <div class="alert-card alert-card-md alert-card-yellow">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+              <div class="alert-card-body">
+                <div class="alert-card-title">HITL Gate 1 of 3</div>
+                <div class="alert-card-sub">Authorization required before evidence gathering begins.</div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;">
+              <button class="btn btn-secondary btn-md" onclick="ltShow(2)">Go back and edit</button>
+              <button class="btn btn-primary btn-md" onclick="ltShow(3)">Authorize assurance report</button>
+            </div>
+          </div>
+        </div>
+        </div><!-- end section-gap -->
+
+        </div><!-- end s-scroll-inner -->
+
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div><!-- end s-left-scroll -->
+    </div>
+
+  </div>
+</div><!-- end lt-screen-3 -->
+
+</div><!-- end lt-screens -->
+
+<script>
+function ltShow(n) {
+  document.querySelectorAll('.lt-screen').forEach((s, i) => s.classList.toggle('active', i === n));
+  document.querySelectorAll('.lt-pill').forEach((p, i) => p.classList.toggle('active', i === n));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Toggle interactivity for screens 2 & 3
+document.addEventListener('click', e => {
+  const toggle = e.target.closest('.s-toggle');
+  if (toggle) {
+    toggle.classList.toggle('off');
+    const card = toggle.closest('.s-domain-card');
+    if (card) {
+      card.classList.toggle('on', !toggle.classList.contains('off'));
+      card.classList.toggle('off', toggle.classList.contains('off'));
+      card.style.opacity = toggle.classList.contains('off') ? '0.6' : '';
+    }
+  }
+  const timeBtn = e.target.closest('.s-time-btn');
+  if (timeBtn) {
+    const group = timeBtn.closest('.s-time-btn-group');
+    if (group) {
+      group.querySelectorAll('.s-time-btn').forEach(b => b.classList.remove('active'));
+      timeBtn.classList.add('active');
+    }
+  }
+});
+
+/* ── Add External Source animation ── */
+(function() {
+  var state = 0; // 0=idle, 1=prefilled, 2=url typed, 3=done
+  var prefill = 'Add this source to the list: ';
+  var url = 'https://www.acfe.com/fraud-resources/report-to-the-nations-archive';
+
+  var addBtn = document.getElementById('s2-add-source-btn');
+  var input  = document.getElementById('s2-chat-input');
+  var send   = document.getElementById('s2-chat-send');
+  var acfe   = document.getElementById('s2-acfe-card');
+  var extGrid = null;
+
+  if (!addBtn || !input || !send || !acfe) return;
+
+  // Find the external sources grid (second s-domain-grid inside the data domains card)
+  var grids = acfe.closest('.card-default').querySelectorAll('.s-domain-grid');
+  if (grids.length >= 2) extGrid = grids[1];
+
+  // Step 1: click "Add another external source" → prefill chatbox
+  addBtn.addEventListener('click', function() {
+    if (state !== 0) return;
+    state = 1;
+    input.value = prefill;
+    input.focus();
+    input.placeholder = '';
+  });
+
+  // Step 2: click/focus on input → typewriter URL
+  // Walk up: input → flex row → rounded wrapper
+  var chatbox = input.parentElement ? input.parentElement.parentElement : null;
+
+  input.addEventListener('focus', function() {
+    if (state !== 1) return;
+    state = 2;
+    if (chatbox) {
+      chatbox.style.boxShadow = '0 4px 24px rgba(0,0,0,0.18), 0 -4px 32px rgba(0,0,0,0.12)';
+    }
+    var i = 0;
+    var timer = setInterval(function() {
+      if (i < url.length) {
+        input.value = prefill + url.substring(0, i + 1);
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 18);
+  });
+
+  // Step 3: press Enter or click Send → show ACFE card
+  function submitSource() {
+    if (state !== 2) return;
+    state = 3;
+    input.value = '';
+    input.placeholder = 'Ask about risks, assign owners, draft disclosures…';
+    if (chatbox) {
+      chatbox.style.boxShadow = '0 -4px 32px rgba(0,0,0,0.10)';
+    }
+
+    // Show the ACFE card inside the external sources grid
+    if (extGrid) {
+      var cardEl = acfe.querySelector('.s-domain-card');
+      if (cardEl) {
+        var clone = cardEl.cloneNode(true);
+        extGrid.appendChild(clone);
+      }
+    }
+    acfe.remove();
+
+    // Scroll to make the new card visible
+    var scrollContainer = addBtn.closest('.s-left-scroll') || addBtn.closest('.page-scroll');
+    if (scrollContainer) {
+      setTimeout(function() {
+        var lastCard = extGrid ? extGrid.lastElementChild : null;
+        if (lastCard) lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  }
+
+  send.addEventListener('click', submitSource);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitSource();
+  });
+})();
+</script>
+
+<style>
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script src="workflow-bridge.js"></script>
+</body>
+</html>

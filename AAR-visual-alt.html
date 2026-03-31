@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAR Visual Alt — Full Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #18181b; }
+  body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* ── Step indicator ── */
+  /* z-index: 100 — below proto-panel (z-index: 200) */
+  .wf-step-bar {
+    background: #1e293b;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.04em;
+    z-index: 100;
+  }
+  .wf-step {
+    padding: 3px 10px;
+    border-radius: 14px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .wf-step.active {
+    background: #fff;
+    color: #1e293b;
+    font-weight: 600;
+  }
+  .wf-step.done {
+    color: #4ade80;
+  }
+  .wf-step:not(.active) {
+    cursor: pointer;
+  }
+  .wf-step:not(.active):hover {
+    color: #cbd5e1;
+  }
+  .wf-arrow {
+    color: #475569;
+  }
+
+  /* ── Iframe ── */
+  .wf-frame {
+    flex: 1;
+    border: none;
+    width: 100%;
+    background: #f0f0f1;          /* match content bg — hides white flash between loads */
+    visibility: hidden;            /* prevent any rendering until theme is ready */
+    opacity: 0;
+  }
+</style>
+</head>
+<body>
+
+<script src="proto-panel.js"
+        data-description="AAR Visual Alt"
+        data-theme-toggle="false"
+        data-state-toggle="false"></script>
+
+<!-- Step indicator -->
+<div class="wf-step-bar">
+  <span class="wf-step active" data-step="0">01. Scope</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="1">02. Evidence</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="2">03. Synthesis and Edit</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="3">04. Veracity scoring</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="4">05. Preview and Approve</span>
+</div>
+
+<iframe class="wf-frame" id="wf-frame"></iframe>
+
+<script>
+  const frame = document.getElementById('wf-frame');
+  const steps = document.querySelectorAll('.wf-step[data-step]');
+  let currentStep = -1;
+
+  // Flow definition — bridge script in each source file handles button hooking
+  const flow = [
+    { file: '01-Scope.html' },
+    { file: '02-Evidence-v2.html' },
+    { file: '03-Synthesis-to-Chat.html' },
+    { file: '04-Veracity-scoring.html' },
+    { file: '05-Preview-Approve.html' }
+  ];
+
+  // Listen for postMessage from iframes to advance steps
+  // file:// origin is "null" (string) — allow it so local preview works
+  window.addEventListener('message', (e) => {
+    if (e.origin !== 'null' && e.origin !== location.origin) return;
+    if (e.data && typeof e.data.wfAdvance === 'number') {
+      goToStep(e.data.wfAdvance);
+    }
+  });
+
+  function updateStepIndicator(stepIndex) {
+    steps.forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i < stepIndex) s.classList.add('done');
+      if (i === stepIndex) s.classList.add('active');
+    });
+  }
+
+  // ── HUC6 Theme Injection ──
+  // Injects theme CSS, replaces app bar and chat bar in each iframe
+  function applyHUC6Theme(iframeDoc, stepIndex, onReady) {
+    // 1. Inject theme-huc6.css — wait for it to load before revealing
+    const link = iframeDoc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'Components/theme-huc6.css';
+    link.onload = () => { if (onReady) onReady(); };
+    link.onerror = () => { if (onReady) onReady(); };  // show anyway on error
+    iframeDoc.head.appendChild(link);
+
+    // 2. Replace ALL app bar content (some files have one per screen)
+    // "Boards Cloud" on: 01-Investigation screen 0, 05-Preview-Approve screen 0
+    // "Automated Audit Reporting" on everything else
+    const boardsCloudScreens = {
+      0: ['lt-screen-0'],       // 01-Investigation first screen
+      4: ['screen-0', null]     // 05-Preview-Approve first screen (null = not inside any screen div)
+    };
+
+    // User profiles
+    const thomasChen = { name: 'Thomas Chen', role: 'Board Member', photo: 'https://randomuser.me/api/portraits/men/32.jpg' };
+    const alexandraChen = { name: 'Alexandra Chen', role: 'Chief Audit Executive', photo: 'https://randomuser.me/api/portraits/women/44.jpg' };
+
+    const headers = iframeDoc.querySelectorAll('.app-header');
+    headers.forEach(header => {
+      // Determine which screen this header belongs to
+      const screenParent = header.closest('[id^="lt-screen-"], [id^="screen-"]');
+      const screenId = screenParent ? screenParent.id : null;
+
+      // Check if this header should show "Boards Cloud"
+      const bcScreens = boardsCloudScreens[stepIndex];
+      const isBoardsCloud = bcScreens && (bcScreens.includes(screenId) || (!screenParent && bcScreens.includes(null)));
+      const logoText = isBoardsCloud ? 'Boards Cloud' : 'Automated Audit Reporting';
+
+      // Thomas Chen only on 01-Investigation screen 0, Alexandra everywhere else
+      const user = (stepIndex === 0 && screenId === 'lt-screen-0') ? thomasChen : alexandraChen;
+
+      header.innerHTML = `
+        <div class="app-logo"><div class="app-logo-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="Diligent"></div>${logoText}</div>
+        <div class="app-spacer"></div>
+        <div class="app-header-nav">
+          <button class="btn btn-secondary btn-sm" style="border-radius:8px; font-size:13px; gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8a7 7 0 0113.22-3.18"/><path d="M15 8a7 7 0 01-13.22 3.18"/><path d="M14.24 1v3.82h-3.82"/><path d="M1.76 15v-3.82h3.82"/></svg>
+            Restart scan
+          </button>
+          <div class="app-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="app-notif-dot" style="background:#ef4444;"></span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding-left:4px;">
+            <img src="${user.photo}" alt="${user.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
+            <div style="display:flex; flex-direction:column; line-height:1.3;">
+              <span style="font-size:13px; font-weight:400; color:#1e293b;">${user.name}</span>
+              <span style="font-size:11px; color:#94a3b8;">${user.role}</span>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    // 3. Replace ALL chat areas with floating pill
+    const chatAreas = iframeDoc.querySelectorAll('.chat-area');
+    chatAreas.forEach(chatArea => {
+      const pill = iframeDoc.createElement('div');
+      pill.style.cssText = 'position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;';
+      pill.innerHTML = `
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>`;
+      chatArea.parentNode.replaceChild(pill, chatArea);
+    });
+
+    // 4. Clean up page-specific chat-area CSS rules and padding
+    const styles = iframeDoc.querySelectorAll('style');
+    styles.forEach(style => {
+      // Remove fixed-position chat-area rules (05-Preview-Approve)
+      style.textContent = style.textContent.replace(/#screen-0\s*\.chat-area\s*\{[^}]*\}/g, '');
+    });
+
+    // 5. Add bottom spacing so floating chat pill doesn't cover content
+    const overrideStyle = iframeDoc.createElement('style');
+    overrideStyle.textContent = `
+      /* Bottom gap so floating chat pill doesn't cover active content.
+         Pill top edge is ~78px from viewport bottom (20px padding + 58px pill).
+         102px = 78px pill + 24px clearance above it.
+         Only on actual scroll containers — NOT on nested children like .page-inner. */
+      .page-scroll { padding-bottom: 102px !important; }
+      .s0-editor-scroll { padding-bottom: 102px !important; }
+      .lt-left { padding-bottom: 102px !important; }
+
+      /* Force all hero titles to 300 — no bold anywhere */
+      .hero-title, .hero-title strong,
+      .ev-hero-title, .ev-hero-title strong,
+      [class*="hero-title"], [class*="hero-title"] strong {
+        font-weight: 300 !important;
+      }
+
+      /* Prevent hero titles from wrapping to two lines */
+      .hero-title {
+        white-space: nowrap !important;
+      }
+
+      /* Center confidence pills in veracity scoring table */
+      .col-confidence {
+        text-align: center !important;
+      }
+    `;
+    iframeDoc.head.appendChild(overrideStyle);
+  }
+
+  frame.addEventListener('load', () => {
+    try {
+      const iframeDoc = frame.contentDocument || frame.contentWindow.document;
+      applyHUC6Theme(iframeDoc, currentStep, () => {
+        // 50ms delay after CSS loads — ensures browser has parsed + painted themed content
+        setTimeout(() => {
+          frame.style.visibility = 'visible';
+          frame.style.transition = 'opacity 0.18s ease-in';
+          frame.style.opacity = '1';
+        }, 50);
+      });
+    } catch(e) {
+      console.warn('⚠️ HUC6 theme injection failed — are you using file:// protocol? Use a local server instead.\n  python3 -m http.server 8080\n  Then open http://localhost:8080/AAR-visual-alt.html', e);
+      frame.style.opacity = '1';  // show anyway on error
+    }
+  });
+
+  function goToStep(stepIndex) {
+    if (stepIndex < 0 || stepIndex >= flow.length) return;
+    currentStep = stepIndex;
+    const step = flow[stepIndex];
+    updateStepIndicator(stepIndex);
+    frame.style.transition = 'none';
+    frame.style.visibility = 'hidden';
+    frame.style.opacity = '0';
+    frame.src = step.file + '?v=' + Date.now();
+  }
+
+  // Make tabs clickable
+  steps.forEach(step => {
+    step.addEventListener('click', () => {
+      const idx = parseInt(step.dataset.step, 10);
+      if (idx !== currentStep) goToStep(idx);
+    });
+  });
+
+  // Start the flow
+  goToStep(0);
+</script>
+
+</body>
+</html>

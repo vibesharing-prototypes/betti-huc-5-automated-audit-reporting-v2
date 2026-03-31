@@ -1,0 +1,2716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02-Evidence-v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* === Components/huc-components.css (inlined) === */
+/* ============================================================
+   HUC COMPONENTS — CORE PRIMITIVES
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Core design system primitives — buttons, cards, pills, tables,
+   layout spacing, typography (section/card headers).
+
+   Composite components (separate files):
+     chatbox.css       — standard chatbox
+     chat-w-glow.css   — chatbox with glow effect (Sunrise-glow)
+     hero-section.css  — hero section (workflow + notification variants)
+     alert-cards.css   — alert card component
+     card-hero.css     — stat/metric hero cards
+
+   CSS variables used (define in host page or :root):
+     --bg-surface   — card / surface background  (fallback: #ffffff)
+     --border       — border color               (fallback: #E0E0E0)
+     --t-primary    — primary text color          (fallback: #282E37)
+     --t-secondary  — secondary text color        (fallback: #525252)
+     --t-tertiary   — tertiary text color
+     --font         — font family
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. BUTTONS
+   Classes:
+     .btn                   — base (always required)
+     .btn-primary           — dark fill, white text
+     .btn-secondary         — transparent, bordered
+     .btn-tertiary          — transparent, no border
+     .btn-md                — medium size
+     .btn-sm                — small size
+
+   Usage:
+     <button class="btn btn-primary btn-md">Label</button>
+     <button class="btn btn-secondary btn-sm">Label</button>
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Base ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+/* ── Primary ────────────────────────────────────────────── */
+.btn.btn-primary {
+  background: #282E37;
+  color: #ffffff;
+}
+.btn.btn-primary:hover {
+  background: #464E53;
+}
+
+/* ── Secondary ──────────────────────────────────────────── */
+.btn.btn-secondary {
+  background: transparent;
+  color: #282E37;
+  border: 1px solid #A0A2A5;
+}
+.btn.btn-secondary:hover {
+  background: #F3F3F3;
+}
+
+/* ── Tertiary ──────────────────────────────────────────── */
+.btn.btn-tertiary {
+  background: transparent;
+  color: #282E37;
+  border: 1px solid transparent;
+}
+.btn.btn-tertiary:hover {
+  background: #F3F3F3;
+}
+
+/* ── Medium ─────────────────────────────────────────────── */
+.btn.btn-md {
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+/* ── Small ──────────────────────────────────────────────── */
+.btn.btn-sm {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* ── Icon visibility ───────────────────────────────────── */
+.btn.btn-icon-hidden img {
+  display: none;
+}
+
+/* ── Icon padding adjustments ─────────────────────────── */
+/* Medium: reduce by 4px per icon side */
+.btn.btn-md:has(img:first-child)  { padding-left: 14px; }
+.btn.btn-md:has(img:last-child)   { padding-right: 14px; }
+
+/* Small: reduce by 2px per icon side */
+.btn.btn-sm:has(img:first-child)  { padding-left: 10px; }
+.btn.btn-sm:has(img:last-child)   { padding-right: 10px; }
+
+/* ── Disabled ───────────────────────────────────────────── */
+.btn:disabled {
+  cursor: not-allowed;
+}
+.btn.btn-primary:disabled {
+  background: rgba(40, 46, 55, 0.30);
+}
+.btn.btn-secondary:disabled {
+  opacity: 0.5;
+}
+.btn.btn-tertiary:disabled {
+  opacity: 0.5;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   1b. LAYOUT — Vertical spacing hierarchy
+
+   Spacing model (top → bottom):
+     .content-gap    32px   Hero → section-gap wrapper
+     .section-gap    24px   Section → Section
+     .section        12px   Section header → card(s)        (headers.css)
+     .section-header  6px   Section title → subtitle         (headers.css)
+     .card-header     6px   Card title → subtitle
+     .card-default   12px   Card internal gap (header → content, card → card)
+     .card-section-gap 16px Stacked sections inside a card (e.g. Results in 02-Evidence-3)
+
+   Usage:
+     <div class="scroll-wrapper content-gap">
+       <div class="hero">…</div>
+       <div class="section-gap">
+         <div class="section">
+           <div class="section-header">
+             <div class="section-title">…</div>
+             <div class="section-subtitle">…</div>
+           </div>
+           <div class="card-default card-section-gap">
+             <div>…section 1…</div>
+             <div>…section 2…</div>
+           </div>
+         </div>
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+.content-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.section-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.card-section-gap {
+  gap: 16px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. CARDS
+   Classes:
+     .card-default               — 16px radius, 16px padding
+     .card-sm                    — 16px radius, 14px padding
+
+   When to use each size:
+     .card-default  — single card spanning the content area (full-width)
+     .card-sm       — cards stacking horizontally (side-by-side grids)
+
+   Inner child classes (optional):
+     .card-title                 — bold heading inside card
+     .card-body                  — body text inside card
+
+   Structure:
+     <div class="card-default">
+       <div class="card-title">Heading</div>
+       <div class="card-body">Body text</div>
+     </div>
+
+   Notes:
+     - Both sizes use border: 1px solid var(--border)
+     - Background defaults to var(--bg-surface, #ffffff)
+     - Overflow: hidden is NOT set by default (add inline if needed)
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Shared ─────────────────────────────────────────────── */
+.card-default,
+.card-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border, #E0E0E0);
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Default (full-width) ────────────────────────────── */
+.card-default {
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* ── Small (horizontal stacking) ─────────────────────── */
+.card-sm {
+  border-radius: 16px;
+  padding: 14px;
+  gap: 8px;
+}
+
+/* ── Card body typography vars ──
+   Classes live in Components/card-typography.css (not yet included).
+   Vars kept here so .table th/td can reference them.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --card-body:    16px;
+  --card-body-md: 14px;
+  --card-body-sm: 12px;
+  --card-body-xs: 11px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2b. SECTION & CARD HEADERS — typography
+   Naming:
+     Section:  .section-title  / .section-subtitle  → .section-header
+     Card:     .card-title     / .card-subtitle     → .card-header
+
+   Universal rule: any header → 12px gap → content
+
+   Spacing summary:
+     Section title → subtitle:      8px
+     Section header → card:         12px
+     Between sections:              32px
+     Card title → subtitle:         4px
+     Card header → content:         12px
+     Between card sections:         16px
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Section ─────────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+/* ── Card header ─────────────────────────────────────────── */
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+/* ── Label ──────────────────────────────────────────────── */
+.label-sm {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t-secondary, #525252);
+}
+
+/* ── Card sections (multiple sections in one card) ───────── */
+.card-sections {
+  gap: 16px;
+}
+
+.card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Card grid — 3-column layout for side-by-side card-sm ── */
+.card-grid-1-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. PILLS
+   Classes:
+     .pill                — base (always required)
+     .pill-md             — medium size
+     .pill-sm             — small size
+     .pill-icon           — reduces left padding for icon
+     .pill-num            — fixed 24x24 number badge
+
+   Colors:
+     .pill-yellow, .pill-green, .pill-blue,
+     .pill-purple, .pill-red, .pill-transparent
+
+   Structure:
+     <span class="pill pill-md pill-green pill-icon">
+       <img class="pill-ico" src="icon.svg">Label
+     </span>
+   ──────────────────────────────────────────────────────────────── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 400;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* ── Size: medium ── */
+.pill-md {
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #282E37;
+}
+.pill-md.pill-icon { padding-left: 12px; }
+.pill-md .pill-ico { width: 20px; height: 20px; }
+
+/* ── Size: small ── */
+.pill-sm {
+  padding: 3px 10px;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+}
+.pill-sm.pill-icon { padding-left: 8px; }
+.pill-sm .pill-ico { width: 16px; height: 16px; }
+
+/* ── Color: yellow ── */
+.pill-yellow { background: #FFF2AA; border-color: #FEE400; }
+.pill-yellow .pill-ico { color: #6A5F00; }
+.pill-sm.pill-yellow { color: #6A5F00; }
+
+/* ── Color: green ── */
+.pill-green { background: #D2FF9C; border-color: #8EE400; }
+.pill-green .pill-ico { color: #3F6900; }
+.pill-sm.pill-green { color: #3F6900; }
+
+/* ── Color: blue ── */
+.pill-blue { background: #D7F6FF; border-color: #1DD9F9; }
+.pill-blue .pill-ico { color: #006879; }
+.pill-sm.pill-blue { color: #006879; }
+
+/* ── Color: purple ── */
+.pill-purple { background: #F7D8FF; border-color: #DB8BFF; }
+.pill-purple .pill-ico { color: #7300A1; }
+.pill-sm.pill-purple { color: #7300A1; }
+
+/* ── Color: red ── */
+.pill-red { background: #FFEDEB; border-color: #FF8981; }
+.pill-red .pill-ico { color: #921A1D; }
+.pill-sm.pill-red { color: #921A1D; }
+
+/* ── Color: transparent ── */
+.pill-transparent { background: none; border-color: #A0A2A5; }
+.pill-transparent .pill-ico { color: #6F7377; }
+.pill-sm.pill-transparent { color: #282E37; }
+
+/* ── Size: number (fixed 24x24) ── */
+.pill-num {
+  width: 24px; height: 24px;
+  padding: 0;
+  justify-content: center;
+  background: none; border-color: #DADADA;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: #282E37;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   4. TABLES
+   Table sits on a card (.card-default or equivalent).
+   No dedicated wrapper — the card provides bg, border, radius.
+
+   Classes:
+     .table                — base
+     .participant-cell     — flex row with avatar + name
+     .participant-avatar   — 36x36 rounded avatar
+     .avatar-1 … .avatar-8 — avatar color slots
+     .row-check            — 20x20 status icon
+     .text-center          — center-align utility
+     .table-footer         — button row below table
+     .table-footer-note    — small note below footer
+
+   Structure:
+     <div class="card-default">
+       <table class="table">
+         <thead><tr><th>…</th></tr></thead>
+         <tbody><tr><td>…</td></tr></tbody>
+       </table>
+       <div class="table-footer">
+         <button class="btn btn-primary btn-sm">Action</button>
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+/* Table base */
+.table { width: 100%; border-collapse: collapse; }
+
+/* Header row */
+.table thead tr { border-bottom: 1px solid var(--border); }
+.table th {
+  padding: 8px 12px;
+  font-size: var(--card-body-sm, 12px);
+  font-weight: 600;
+  color: var(--t-secondary);
+  text-align: left;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* Body rows */
+.table tbody tr { border-bottom: 1px solid var(--border); }
+.table tbody tr:last-child { border-bottom: none; }
+.table td {
+  padding: 8px 12px;
+  font-size: var(--card-body-md, 14px);
+  color: var(--t-secondary);
+  vertical-align: middle;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* ── First-column weight rule ───────────────────────────────
+   If td:first-child has text → that cell is bold (600).
+   If td:first-child has only icon/avatar/indicator (no text)
+   → td:nth-child(2) is bold (600).
+   ─────────────────────────────────────────────────────────── */
+.table td:first-child { font-weight: 600; }
+.table td:first-child:has(img, svg, .row-check):not(:has(.participant-cell)) { font-weight: 400; }
+.table td:first-child:has(img, svg, .row-check):not(:has(.participant-cell)) ~ td:nth-child(2) { font-weight: 600; }
+
+/* ── Participants column — avatar display ───────────────── */
+.table .participant-cell { display: flex; align-items: center; gap: 16px; }
+.table .participant-cell > span:not(.participant-avatar) { font-weight: 600; }
+.table .participant-avatar {
+  width: 36px; height: 36px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 11px; font-weight: 600;
+  font-family: var(--font); letter-spacing: 0.02em;
+}
+.table .participant-avatar.avatar-1 { background: #bae6fd; color: #0369a1; }
+.table .participant-avatar.avatar-2 { background: #a7f3d0; color: #047857; }
+.table .participant-avatar.avatar-3 { background: #e9d5ff; color: #6b21a8; }
+.table .participant-avatar.avatar-4 { background: #fed7aa; color: #c2410c; }
+.table .participant-avatar.avatar-5 { background: #fecdd3; color: #be123c; }
+.table .participant-avatar.avatar-6 { background: #c7d2fe; color: #3730a3; }
+.table .participant-avatar.avatar-7 { background: #ddd6fe; color: #5b21b6; }
+.table .participant-avatar.avatar-8 { background: #99f6e4; color: #0f766e; }
+
+/* ── Visual-only cell alignment ─────────────────────────── */
+.table td:has(.pill) { text-align: center; }
+.table .text-center { text-align: center; }
+
+/* ── Status indicators ──────────────────────────────────── */
+.table .row-check { width: 20px; height: 20px; display: block; margin: 0 auto; }
+
+/* ── Table footer ───────────────────────────────────────── */
+.table-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+}
+.table-footer-note {
+  font-size: 10px; color: var(--t-tertiary); margin-top: -4px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   5. CHATBOX
+   Standard chatbox with frosted-glass sticky footer.
+
+   Classes:
+     .chat-area          — outer wrapper (sticky, frosted glass)
+     .chat-inner         — content column (max-width 1064px)
+     .chat-input-row     — white card with gradient accent line
+     .chat-bottom        — chips left, actions right
+     .chat-chips-row     — suggestion chip container
+     .chat-chip          — individual chip
+     .chat-actions       — button group (Clear / Send)
+
+   Structure:
+     <div class="chat-area">
+       <div class="chat-inner">
+         <div class="chat-input-row">
+           <textarea placeholder="..."></textarea>
+           <div class="chat-bottom">
+             <div class="chat-chips-row">
+               <div class="chat-chip">Chip label</div>
+             </div>
+             <div class="chat-actions">
+               <button class="btn btn-secondary btn-md">Clear</button>
+               <button class="btn btn-primary btn-md" disabled>Send</button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+   Requires host page to define:
+     --bg-base, --border, --t-primary, --t-secondary, --t-tertiary, --font
+   Requires: buttons (section 1) for Clear / Send buttons
+   ──────────────────────────────────────────────────────────────── */
+
+/* Outer wrapper — sticky at scroll-container bottom, frosted glass.
+   Negative margins break out of parent's horizontal padding for edge-to-edge.
+   Host scroll container should use overflow-x: hidden (or clip) to prevent
+   horizontal scroll caused by the breakout. */
+.chat-area {
+  padding: 24px 0;
+  background: rgba(240, 240, 241, 0.30);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
+  box-sizing: border-box;
+  z-index: 10; /* chat area — above scrollable content */
+  isolation: isolate;
+}
+
+/* Content column — 1024px content + 40px safe-area padding = 1064px.
+   This makes the chat-input-row align exactly with the 1024px content above. */
+.chat-inner {
+  width: 100%;
+  max-width: 1064px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* White card with gradient accent line at top */
+.chat-input-row {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+.chat-input-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+}
+
+/* Textarea */
+.chat-input-row textarea {
+  width: 100%;
+  height: 56px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  color: var(--t-primary);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+.chat-input-row textarea::placeholder { color: var(--t-tertiary); }
+
+/* Bottom row: chips left, actions right */
+.chat-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Suggestion chips */
+.chat-chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chat-chip {
+  font-size: 14px;
+  color: var(--t-secondary);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { border-color: #cbd5e1; color: var(--t-primary); }
+
+/* Button group — buttons styled by section 1 */
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+
+
+</style>
+<style>
+/* === Components/alert-cards.css (inlined) === */
+/* ============================================================
+   ALERT CARDS COMPONENT
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Extracted from HUC-components.css (composite component).
+
+   Classes:
+     .alert-card                 — base (always required)
+     .alert-card-md              — medium size
+     .alert-card-sm              — small size
+     .alert-card-blue            — blue color
+     .alert-card-yellow          — yellow color
+     .alert-card-red             — red color
+     .alert-card-green           — green color
+     .alert-card-transparent     — neutral / transparent
+
+   Structure (medium — uses btn-md):
+     <div class="alert-card alert-card-md alert-card-blue">
+       <div class="alert-card-icon"><!-- SVG --></div>
+       <div class="alert-card-body">
+         <div class="alert-card-title">Title</div>
+         <div class="alert-card-sub">Subtitle text</div>
+       </div>
+       <div class="alert-card-actions">
+         <button class="btn btn-secondary btn-md">Btn 1</button>
+         <button class="btn btn-primary btn-md">Btn 2</button>
+       </div>
+     </div>
+
+   Structure (small — icon + title inline):
+     <div class="alert-card alert-card-sm alert-card-blue">
+       <div class="alert-card-content">
+         <div class="alert-card-header">
+           <div class="alert-card-icon"><!-- SVG --></div>
+           <div class="alert-card-title">Title</div>
+         </div>
+         <div class="alert-card-sub">Subtitle text</div>
+       </div>
+       <div class="alert-card-actions">
+         <button class="btn btn-secondary btn-sm">Btn 1</button>
+         <button class="btn btn-primary btn-sm">Btn 2</button>
+       </div>
+     </div>
+
+   Visibility:
+     .alert-card-actions-hidden  — hides the actions area
+
+   Requires: buttons (HUC-components.css) for action buttons.
+
+   ⛔ AI: Alert cards need base + size + color.
+      Medium uses .alert-card-body for text; small uses
+      .alert-card-content > .alert-card-header wrapper.
+      NEVER mix the two structures.
+      Buttons inside alert cards follow the same size:
+      alert-card-md → btn-md, alert-card-sm → btn-sm.
+      Do not create new alert color variants.
+   ============================================================ */
+
+/* ── Base ───────────────────────────────────────────────── */
+.alert-card {
+  display: flex;
+  align-items: flex-start;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-sizing: border-box;
+}
+
+/* ── Icon ───────────────────────────────────────────────── */
+.alert-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.alert-card-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Body ───────────────────────────────────────────────── */
+.alert-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-card-title {
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.alert-card-sub {
+  line-height: 1.5;
+}
+
+/* ── Actions ────────────────────────────────────────────── */
+.alert-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.alert-card-actions-hidden {
+  display: none;
+}
+
+/* ── Content wrapper (used in small + actions) ──────────── */
+.alert-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Size: medium ──────────────────────────────────────── */
+.alert-card.alert-card-md {
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+}
+.alert-card-md .alert-card-icon {
+  width: 24px;
+  height: 24px;
+}
+.alert-card-md .alert-card-title {
+  font-size: 14px;
+}
+.alert-card-md .alert-card-sub {
+  font-size: 14px;
+  margin-top: 2px;
+}
+.alert-card-md:has(.alert-card-actions) {
+  align-items: center;
+}
+
+/* ── Size: small ───────────────────────────────────────── */
+.alert-card.alert-card-sm {
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.alert-card-sm .alert-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.alert-card-sm .alert-card-icon {
+  width: 18px;
+  height: 18px;
+}
+.alert-card-sm .alert-card-title {
+  font-size: 13px;
+}
+.alert-card-sm .alert-card-sub {
+  font-size: 13px;
+}
+.alert-card-sm:has(.alert-card-actions) {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* ── Color: green ──────────────────────────────────────── */
+.alert-card-green {
+  background: #D2FF9C;
+}
+.alert-card-green .alert-card-icon  { color: #3F6900; }
+.alert-card-green .alert-card-title { color: #3F6900; }
+.alert-card-green .alert-card-sub   { color: #3F6900; }
+
+/* ── Color: blue ───────────────────────────────────────── */
+.alert-card-blue {
+  background: #D7F6FF;
+}
+.alert-card-blue .alert-card-icon  { color: #006879; }
+.alert-card-blue .alert-card-title { color: #006879; }
+.alert-card-blue .alert-card-sub   { color: #006879; }
+
+/* ── Color: yellow ─────────────────────────────────────── */
+.alert-card-yellow {
+  background: #FFF2AA;
+}
+.alert-card-yellow .alert-card-icon  { color: #6A5F00; }
+.alert-card-yellow .alert-card-title { color: #6A5F00; }
+.alert-card-yellow .alert-card-sub   { color: #6A5F00; }
+
+/* ── Color: red ────────────────────────────────────────── */
+.alert-card-red {
+  background: #FFEDEB;
+}
+.alert-card-red .alert-card-icon  { color: #921A1D; }
+.alert-card-red .alert-card-title { color: #921A1D; }
+.alert-card-red .alert-card-sub   { color: #921A1D; }
+
+/* ── Color: transparent ────────────────────────────────── */
+.alert-card-transparent {
+  background: #ffffff;
+  border: 1px solid #DADADA;
+}
+.alert-card-transparent .alert-card-icon  { color: #6F7377; }
+.alert-card-transparent .alert-card-title { color: #282E37; }
+.alert-card-transparent .alert-card-sub   { color: #6F7377; }
+
+</style>
+<style>
+/* === Components/card-hero.css (inlined) === */
+/* ============================================================
+   CARD-HERO COMPONENT
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Extracted from HUC-components.css (composite component).
+   Stat/metric cards with large hero numbers and small descriptors.
+
+   Classes:
+     .card-hero-row          — flex row, grey bg (#F9F9FC), 16px radius
+     .card-hero              — individual stat column (flex: 1, 20px padding)
+     .card-hero-label        — header text + icon (13px, 600)
+     .card-hero-value        — large number (36px, 600)
+     .card-hero-desc         — descriptor text (12px, 400)
+
+   Structure:
+     <div class="card-hero-row">
+       <div class="card-hero">
+         <div class="card-hero-label">
+           <svg>…</svg> Label
+         </div>
+         <div class="card-hero-value">42 <span class="card-hero-desc">description</span></div>
+       </div>
+     </div>
+
+   CSS variables used:
+     --t-primary    — primary text color
+     --t-secondary  — secondary text color
+     --t-tertiary   — tertiary text color
+
+   ⛔ AI: Do not override hero font sizes or padding.
+      .card-hero-row background is #F9F9FC — do not change.
+      .card-hero-value is 36px 600 weight — do not scale.
+   ============================================================ */
+
+.card-hero-row {
+  display: flex;
+  align-items: stretch;
+  background: #F9F9FC;
+  border-radius: 16px;
+}
+.card-hero {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card-hero-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t-secondary);
+}
+.card-hero-label svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  stroke-width: 2.2;
+  color: var(--t-secondary);
+}
+.card-hero-value {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--t-primary);
+  letter-spacing: -0.02em;
+}
+.card-hero-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--t-tertiary);
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+</style>
+<style>
+/* === Components/headers.css (inlined) === */
+/* ============================================================
+   HEADERS — Section & Card header typography
+
+   Layout hierarchy:
+     Section  = Section header  + 1+ Cards
+     Card     = Card header     + Card content + Card footer
+
+   Naming:
+     Section:  .section-title  / .section-subtitle  → .section-header
+     Card:     .card-title     / .card-subtitle     → .card-header
+
+   Universal rule: any header → 12px gap → content
+
+   CSS variables used (define in host page or :root):
+     --font  — font family (fallback: 'Plus Jakarta Sans', sans-serif)
+
+   Requires: cards from huc-components.css
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. SECTION
+   Container for section header + cards.
+
+   Classes:
+     .section              — vertical flex container
+     .section-header       — title + optional subtitle
+     .section-title        — 20px / 600
+     .section-subtitle     — 16px / 400
+
+   Spacing:
+     Between section title & subtitle:    6px
+     Between section header & cards:      12px  (gap on .section)
+     Between two .section elements:       24px  (use .section-gap on parent wrapper)
+
+   Structure:
+     <div class="section">
+       <div class="section-header">
+         <h2 class="section-title">Evidence pack collection</h2>
+         <p class="section-subtitle">Optional description</p>
+       </div>
+       <div class="card-default">…</div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. CARD HEADER
+   Title + optional subtitle at the top of a card.
+
+   Classes:
+     .card-header          — title + optional subtitle
+     .card-title           — 16px / 600
+     .card-subtitle        — 14px / 400
+
+   Spacing:
+     Between card title & subtitle:       4px
+     Between card header & card content:  12px  (gap on card-section / card)
+
+   Structure:
+     <div class="card-default">
+       <div class="card-header">
+         <h3 class="card-title">General progress</h3>
+         <p class="card-subtitle">Optional description</p>
+       </div>
+       <!-- card content -->
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. CARD SECTION DIVIDER
+   When a card has multiple sections, separate them with
+   .card-section. Vertical gap between card sections: 16px.
+
+   Structure:
+     <div class="card-default card-sections">
+       <div class="card-section">
+         <div class="card-header">…</div>
+         <!-- content -->
+       </div>
+       <div class="card-section">
+         <div class="card-header">…</div>
+         <!-- content -->
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.card-sections {
+  gap: 16px;
+}
+
+.card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+</style>
+<style>
+/* === Components/chatbox.css (inlined) === */
+/* ============================================================
+   CHATBOX COMPONENT
+   Usage:
+     HTML structure:
+       <div class="chat-area">
+         <div class="chat-inner">
+           <div class="chat-input-row">
+             <textarea placeholder="..."></textarea>
+             <div class="chat-bottom">
+               <div class="chat-chips-row">
+                 <div class="chat-chip">Chip label</div>
+               </div>
+               <div class="chat-actions">
+                 <button class="btn btn-secondary btn-md">Clear</button>
+                 <button class="btn btn-primary btn-md" disabled>Send</button>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+
+     Requires host page to define:
+       --bg-base, --border, --t-primary, --t-secondary, --t-tertiary, --font
+     Requires: Components/buttons.css for Clear / Send buttons
+   ============================================================ */
+
+/* Outer wrapper — sticky at scroll-container bottom, frosted glass.
+   Negative margins break out of parent's horizontal padding for edge-to-edge.
+   Host scroll container should use overflow-x: hidden (or clip) to prevent
+   horizontal scroll caused by the breakout. */
+.chat-area {
+  padding: 24px 0;
+  background: rgba(240, 240, 241, 0.30);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
+  box-sizing: border-box;
+  z-index: 10; /* chat area — above scrollable content */
+  isolation: isolate;
+}
+
+/* Content column — 1024px content + 40px safe-area padding = 1064px.
+   This makes the chat-input-row align exactly with the 1024px content above. */
+.chat-inner {
+  width: 100%;
+  max-width: 1064px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* White card with gradient accent line at top */
+.chat-input-row {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+.chat-input-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+}
+
+/* Textarea */
+.chat-input-row textarea {
+  width: 100%;
+  height: 56px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  color: var(--t-primary);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+.chat-input-row textarea::placeholder { color: var(--t-tertiary); }
+
+/* Bottom row: chips left, actions right */
+.chat-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Suggestion chips */
+.chat-chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chat-chip {
+  font-size: 14px;
+  color: var(--t-secondary);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { border-color: #cbd5e1; color: var(--t-primary); }
+
+/* Button group — buttons styled by buttons.css */
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+</style>
+<style>
+
+/* ============================================================
+   DESIGN TOKENS — avo.re bw light translation
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --bg-base:       #f0f0f1;
+  --bg-surface:    #ffffff;
+  --bg-sidebar:    #e8e8ea;
+
+  /* Dark-alias names -> light values (keeps var() refs working) */
+  --bg-primary:    #f0f0f1;
+  --bg-elevated:   #ffffff;
+  --bg-component:  #f4f4f5;
+
+  /* Text */
+  --t-primary:     #282E37;
+  --t-secondary:   #525252;
+  --t-tertiary:    #6F7377;
+
+  /* Text aliases */
+  --text-primary:    #282E37;
+  --text-secondary:  #525252;
+  --text-muted:      #6F7377;
+  --text-very-muted: #A0A2A5;
+
+  /* Borders */
+  --border:           rgba(0,0,0,0.09);
+  --border-primary:   rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+
+  /* Semantic palette — adapted for light bg */
+  --green:  #16a34a;
+  --blue:   #1d4ed8;
+  --amber:  #b45309;
+  --red:    #D3222A;
+  --purple: #7c3aed;
+  --orange: #ea580c;
+  --brand:  #D3222A;
+
+  /* Header */
+  --bg-header:       rgba(240,240,241,0.85);
+
+  /* UI chrome */
+  --ui-dark:          #1e293b;
+  --ui-darkest:       #0f172a;
+  --ui-border-strong: #e2e8f0;
+  --ui-surface-tint:  #f1f5f9;
+  --ui-text-dim:      #64748b;
+
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   SCREENS WRAPPER
+   ============================================================ */
+#screens-wrapper {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+.screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+}
+.screen.active { display: flex; }
+
+/* ============================================================
+   PULSE / LOADING ANIMATIONS
+   ============================================================ */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse { animation: pulse 1.4s ease-in-out infinite; }
+
+/* ============================================================
+   APP HEADER
+   ============================================================ */
+.lt-header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.lt-logo {
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--t-primary);
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.lt-logo:hover { opacity: 0.7; }
+.lt-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+.lt-logo-mark img { width: 24px; height: 24px; display: block; }
+.lt-spacer { flex: 1; }
+.lt-header-nav { display: flex; align-items: center; gap: 8px; }
+.lt-activity-pill {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: #ffffff;
+  font-size: 13px; font-weight: 400; color: var(--ui-dark);
+  cursor: pointer; white-space: nowrap; transition: border-color 0.15s;
+}
+.lt-activity-pill:hover { border-color: var(--ui-border-strong); }
+.lt-activity-pill svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--ui-dark); }
+.lt-activity-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ui-surface-tint); border-radius: 20px; padding: 1px 7px;
+  font-size: 12px; font-weight: 400; color: var(--ui-text-dim);
+}
+.lt-icon-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #ffffff; cursor: pointer; color: var(--ui-dark);
+  flex-shrink: 0; transition: border-color 0.15s;
+}
+.lt-icon-btn:hover { border-color: var(--ui-border-strong); }
+.lt-icon-btn svg { width: 16px; height: 16px; }
+.lt-notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 9px; height: 9px;
+  background: var(--ui-darkest); border-radius: 50%; border: 1.5px solid #ffffff;
+}
+.lt-avatar {
+  width: 32px; height: 32px;
+  background: #bae6fd; color: #0369a1;
+  border-radius: 10px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   INVESTIGATION LAYOUT
+   ============================================================ */
+.s-investigation-body { display: flex; flex: 1; overflow: hidden; background: transparent; }
+.s-left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.s-left-scroll { flex: 1; overflow: hidden auto; padding: 44px 20px 0; display: flex; flex-direction: column; align-items: center; scrollbar-width: none; }
+.s-left-scroll::-webkit-scrollbar { display: none; }
+.s-scroll-inner { width: 100%; max-width: 1024px; }
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.lt-s1-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border-radius: 0;
+  padding: 0 0 20px;
+}
+.lt-s1-hero-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.lt-s1-page-title {
+  font-size: 40px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--t-primary);
+  line-height: 1.2;
+}
+.lt-s1-page-title strong { font-weight: 600; }
+
+/* ── Hero title crossfade ── */
+.hero-title-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+}
+.hero-title-a,
+.hero-title-b {
+  transition: opacity 3s ease;
+}
+.hero-title-a {
+  opacity: 1;
+}
+.hero-title-b {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stage-2 .hero-title-a {
+  opacity: 0;
+}
+.stage-2 .hero-title-b {
+  opacity: 1;
+}
+
+/* ── Hero glow backgrounds ── */
+.hero-glow-teal {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(0,195,215,0.28) 0%, transparent 65%), var(--bg-base);
+  transition: background 1s ease;
+}
+.hero-glow-green {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(142,228,0,0.22) 0%, transparent 65%), var(--bg-base);
+}
+
+/* Workflow */
+.s2-workflow {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 20px;
+}
+.s2-workflow-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(0,0,0,0.4); }
+.s2-workflow-steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.s2-workflow-step { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t-secondary); }
+.s2-workflow-step.active { color: var(--t-primary); font-weight: 600; }
+.s2-step-circle { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s2-workflow-arrow { color: var(--t-tertiary); display: flex; align-items: center; }
+
+/* ============================================================
+   EVIDENCE TAGS
+   ============================================================ */
+.ev-tags { display: flex; gap: 10px; justify-content: center; }
+
+/* ============================================================
+   PROGRESS BARS
+   ============================================================ */
+.ev-progress-row { display: flex; align-items: center; }
+.ev-progress-item { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.ev-progress-label { font-size: 13px; font-weight: 600; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-track { flex: 1; height: 3px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden; }
+.ev-progress-fill  { height: 100%; border-radius: 2px; transition: width 0.15s linear; }
+.ev-progress-count { font-size: 13px; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-dot   { color: var(--t-tertiary); font-size: 6px; flex-shrink: 0; margin: 0 20px; }
+
+/* ============================================================
+   DONUT + TASK LIST
+   ============================================================ */
+.ev-currently-body { display: flex; gap: 16px; align-items: flex-start; }
+.ev-donut-box {
+  background: transparent;
+  width: 100px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 0;
+}
+.ev-donut-wrap { position: relative; width: 76px; height: 76px; }
+.ev-donut {
+  width: 76px; height: 76px; border-radius: 50%;
+  --donut-deg: 120;
+  --donut-fill: #1DD9F9;
+  background: conic-gradient(from 0deg, var(--donut-fill) 0deg calc(var(--donut-deg) * 1deg), #e5e7eb calc(var(--donut-deg) * 1deg) 360deg);
+  transition: background 0.15s linear;
+}
+.ev-donut.ev-donut-complete { --donut-fill: #8EE400; }
+.ev-donut-inner {
+  position: absolute; inset: 10px; background: #ffffff; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+.ev-donut-num { font-size: 18px; font-weight: 600; color: var(--t-primary); line-height: 1; }
+.ev-donut-lbl { font-size: 10px; color: var(--t-tertiary); line-height: 1.2; }
+
+.ev-task-group { flex: 1; min-width: 0; }
+.ev-task-source { font-size: 16px; font-weight: 600; color: var(--t-primary); margin-bottom: 10px; line-height: 1.5; }
+.ev-task-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; color: var(--t-secondary); line-height: 1.43;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.ev-task-row:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-task-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.ev-task-row.active   { font-weight: 600; color: var(--t-primary); }
+.ev-task-row.done     { font-weight: 400; color: var(--t-secondary); }
+
+/* ============================================================
+   ACCORDION ROWS (Upcoming / Completed)
+   ============================================================ */
+.ev-acc-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.ev-acc-row:first-of-type { padding-top: 0; }
+.ev-acc-row:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-acc-row > div > div:first-child { font-weight: 600; }
+.ev-acc-chev { flex-shrink: 0; color: var(--t-tertiary); margin-top: 3px; margin-left: 8px; }
+
+/* ============================================================
+   CHANGE LOG
+   ============================================================ */
+.ev-log-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.ev-log-row:first-child { padding-top: 0; }
+.ev-log-row:last-child  { border-bottom: none; padding-bottom: 0; }
+.ev-log-icon { flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+.ev-log-body { font-size: 14px; color: var(--t-secondary); line-height: 1.43; }
+.ev-log-body strong { color: var(--t-primary); font-weight: 600; }
+.ev-log-sub { font-size: 12px; color: var(--t-tertiary); margin-top: 3px; }
+
+/* ============================================================
+   COMPLETE ALERT — slide-in
+   ============================================================ */
+#ev-complete-alert-wrap {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#ev-complete-alert-wrap.visible {
+  height: auto;
+}
+
+
+/* ============================================================
+   MICROINTERACTIONS
+   ============================================================ */
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.mt4  { margin-top: 4px; }
+.mt8  { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mb8  { margin-bottom: 8px; }
+.mb12 { margin-bottom: 12px; }
+.flex-row { display: flex; align-items: center; gap: 8px; }
+.text-muted  { color: var(--t-tertiary); }
+.text-green  { color: #16a34a; }
+.text-amber  { color: #b45309; }
+.text-blue   { color: #1d4ed8; }
+.text-red    { color: #D3222A; }
+.fw600 { font-weight: 600; }
+.fz11  { font-size: 11px; }
+.fz12  { font-size: 12px; }
+
+/* ============================================================
+   SCREEN 1 — Evidence collection complete (from 02-Evidence-3)
+   ============================================================ */
+
+/* Screen background gradient */
+#screen-1 {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(114,252,170,0.28) 0%, transparent 65%), var(--bg-base);
+}
+
+/* Agent block */
+.agent-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  color: var(--t-tertiary);
+  text-transform: uppercase;
+}
+.agent-label.orange    { color: #ea580c; }
+.agent-label.synth     { color: #7c3aed; }
+.agent-label.grc       { color: #1d4ed8; }
+.agent-label.forensic  { color: #ea580c; }
+.agent-label.confidence { color: #16a34a; }
+.agent-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--t-primary);
+  line-height: 1.4;
+}
+.agent-subtitle { font-size: 12px; color: var(--t-tertiary); }
+.agent-body {
+  font-size: 13px;
+  color: var(--t-secondary);
+  line-height: 1.6;
+}
+.agent-msg {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.agent-text { font-size: 13px; color: var(--t-secondary); line-height: 1.6; }
+.agent-text p { margin: 0 0 8px; }
+.agent-text p:last-child { margin-bottom: 0; }
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.badge-red    { background: rgba(211,34,42,0.08);  color: #D3222A; border: 1px solid rgba(211,34,42,0.2); }
+.badge-green  { background: rgba(22,163,74,0.08);  color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+.badge-blue   { background: rgba(29,78,216,0.08);  color: #1d4ed8; border: 1px solid rgba(29,78,216,0.2); }
+.badge-amber  { background: rgba(180,83,9,0.08);   color: #b45309; border: 1px solid rgba(180,83,9,0.2); }
+.badge-orange { background: rgba(234,88,12,0.08);  color: #ea580c; border: 1px solid rgba(234,88,12,0.2); }
+.badge-muted  { background: #f4f4f5; color: var(--t-tertiary); border: 1px solid var(--border); }
+
+/* Toggle */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { flex: 1; font-size: 14px; color: var(--t-secondary); }
+.toggle-rec { font-size: 10px; color: #16a34a; font-weight: 600; }
+.toggle {
+  width: 36px;
+  height: 20px;
+  background: #16a34a;
+  border-radius: 10px;
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.toggle.off { background: #e4e4e7; border: 1px solid var(--border); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px;
+  right: 2px;
+  transition: left 0.2s cubic-bezier(0.34,1.56,0.64,1), right 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toggle.off::after { right: auto; left: 2px; background: #a1a1aa; }
+
+/* Scope table */
+.scope-table { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+.scope-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.scope-row:last-child { border-bottom: none; }
+.scope-key { width: 160px; flex-shrink: 0; color: var(--t-tertiary); font-size: 14px; font-weight: 600; }
+.scope-val { flex: 1; color: var(--t-secondary); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+
+/* Scope pills */
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.scope-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; padding: 4px 10px; border-radius: 20px;
+  background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.2); color: #16a34a;
+}
+.scope-pill.off { background: #f4f4f5; border-color: var(--border); color: var(--t-tertiary); text-decoration: line-through; }
+
+/* Warn box */
+.warn-box {
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.warn-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; color: #92400e; }
+.warn-content { flex: 1; }
+.warn-title { font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 4px; }
+.warn-body  { font-size: 12px; color: var(--t-tertiary); line-height: 1.5; }
+.warn-btn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px; font-weight: 600;
+  color: #92400e;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+/* Info box */
+.info-box {
+  background: rgba(29,78,216,0.04);
+  border: 1px solid rgba(29,78,216,0.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.info-content { flex: 1; font-size: 12px; color: var(--t-secondary); line-height: 1.5; }
+.info-content strong { color: #1d4ed8; }
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px; font-weight: 600;
+  color: #1d4ed8;
+  background: rgba(29,78,216,0.06);
+  border: 1px solid rgba(29,78,216,0.18);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* Evidence tag variants */
+.ev-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 400; font-family: var(--font);
+  line-height: 1.4;
+  padding: 6px 14px 6px 10px; border-radius: 9999px; border: 1px solid;
+  color: #000000;
+}
+.ev-tag svg { flex-shrink: 0; }
+.ev-tag-priority { background: #ffedeb; border-color: #ee312e; }
+.ev-tag-request  { background: transparent; border-color: #A0A2A5; }
+
+/* Screen-1 hero */
+#screen-1 .ev-hero {
+  background: transparent;
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+#screen-1 .ev-hero-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+#screen-1 .ev-hero-title {
+  font-size: 40px;
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--t-primary);
+  text-align: center;
+}
+#screen-1 .ev-hero-title strong { font-weight: 700; }
+#screen-1 .ev-workflow {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 20px;
+}
+#screen-1 .ev-workflow-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.4);
+}
+#screen-1 .ev-workflow-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+#screen-1 .ev-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--t-secondary);
+  white-space: nowrap;
+}
+#screen-1 .ev-step.done  { color: var(--t-tertiary); }
+#screen-1 .ev-step.active { color: var(--t-primary); font-weight: 700; }
+#screen-1 .ev-step-circle {
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+#screen-1 .ev-step-arrow { color: var(--t-tertiary); display: flex; align-items: center; }
+
+/* Screen-1 progress bar row */
+#screen-1 .ev-progress-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border);
+}
+#screen-1 .ev-progress-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#screen-1 .ev-progress-item + .ev-progress-item {
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+  margin-left: 16px;
+}
+#screen-1 .ev-progress-label { white-space: nowrap; flex-shrink: 0; }
+#screen-1 .ev-progress-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 60px;
+}
+#screen-1 .ev-progress-fill {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 99px;
+}
+#screen-1 .ev-progress-value { font-size: 13px; font-weight: 400; color: var(--t-tertiary); white-space: nowrap; flex-shrink: 0; }
+#screen-1 .ev-progress-bullet {
+  width: 5px; height: 5px;
+  background: var(--border);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin: 0 8px;
+}
+
+/* Screen-1 status */
+#screen-1 .ev-progress-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px 28px;
+}
+#screen-1 .ev-status-check {
+  width: 20px; height: 20px;
+  background: #84cc16;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+#screen-1 .ev-status-check svg { width: 11px; height: 11px; color: #fff; }
+#screen-1 .ev-status-text-primary { font-size: 14px; font-weight: 600; color: var(--t-primary); }
+#screen-1 .ev-status-text-secondary { font-size: 13px; color: var(--t-secondary); line-height: 1.5; margin-top: 3px; }
+
+/* Screen-1 alerts */
+#screen-1 .ev-alert-yellow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFF2AA;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #6A5F00;
+}
+#screen-1 .ev-alert-yellow svg { width: 24px; height: 24px; flex-shrink: 0; color: #6A5F00; }
+#screen-1 .ev-alert-green {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #D2FF9C;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+#screen-1 .ev-alert-green-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+#screen-1 .ev-alert-green-icon svg { width: 24px; height: 24px; color: #3F6900; }
+#screen-1 .ev-alert-green-body { flex: 1; }
+#screen-1 .ev-alert-green-title { font-size: 14px; font-weight: 600; color: #3F6900; }
+#screen-1 .ev-alert-green-sub { font-size: 13px; color: #3F6900; margin-top: 2px; }
+#screen-1 .ev-open-btn {
+  background: #ffffff; color: var(--ui-dark);
+  border: 1px solid var(--ui-border-strong); border-radius: 10px;
+  padding: 8px 16px; font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--font);
+  white-space: nowrap; flex-shrink: 0;
+  transition: all 0.15s;
+}
+#screen-1 .ev-open-btn:hover { background: #f8fafc; border-color: var(--ui-border-strong); }
+
+</style>
+</head>
+<body>
+
+<!-- SCREENS WRAPPER -->
+<div id="screens-wrapper">
+
+<!-- ============================================================
+     SCREEN 0 — Evidence Gathering (animated)
+     ============================================================ -->
+<div class="screen active hero-glow-teal" id="screen-0">
+  <div class="lt-header">
+    <div class="lt-logo">
+      <div class="lt-logo-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="Diligent"></div>
+      Diligent  &middot;  Automated Audit Reporting
+    </div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="lt-activity-count">5</span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="lt-notif-dot"></span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="lt-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="s-investigation-body">
+    <div class="s-left-content">
+      <div class="s-left-scroll">
+        <div class="s-scroll-inner content-gap">
+
+        <!-- Hero -->
+        <div class="lt-s1-hero">
+          <div class="lt-s1-hero-header">
+            <div class="ev-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUuNzc0MDIgMTUuNDg1NUw1IDE0LjcxMTVMOS43MTE1MiAxMEwxNC40MjMgMTQuNzExNUwxMy42NDkgMTUuNDg1NUw5LjcxMTUyIDExLjU0TDUuNzc0MDIgMTUuNDg1NVpNNS43NzQwMiAxMC40ODU1TDUgOS43MTE1Mkw5LjcxMTUyIDVMMTQuNDIzIDkuNzExNTJMMTMuNjQ5IDEwLjQ4NTVMOS43MTE1MiA2LjU0MDAyTDUuNzc0MDIgMTAuNDg1NVoiIGZpbGw9IiM5MjFBMUQiLz4KPC9zdmc+Cg==" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkuOTk5ODIgMi40MTY4N0M4Ljk2MTM2IDIuNDE2ODcgNy45ODEzOSAyLjYxNDUyIDcuMDU5OTIgMy4wMDk4M0M2LjEzODQ1IDMuNDA1MTIgNS4zMzE4MyAzLjk0ODY1IDQuNjQwMDcgNC42NDA0M0MzLjk0ODI5IDUuMzMyMiAzLjQwNDc1IDYuMTM4NTMgMy4wMDk0NiA3LjA1OTQzQzIuNjE0MTYgNy45ODAzMiAyLjQxNjUgOC45NjM3NSAyLjQxNjUgMTAuMDA5N0MyLjQxNjUgMTEuMDU1NyAyLjYxNDE2IDEyLjAzNiAzLjAwOTQ2IDEyLjk1MDVDMy40MDQ3NSAxMy44NjUgMy45NDgyOSAxNC42NjgyIDQuNjQwMDcgMTUuMzU5OUM1LjMzMTgzIDE2LjA1MTcgNi4xMzcxNCAxNi41OTUyIDcuMDU2IDE2Ljk5MDVDNy45NzQ4OCAxNy4zODU4IDguOTU2MTUgMTcuNTgzNSA5Ljk5OTgyIDE3LjU4MzVDMTEuOTI5MyAxNy41ODM1IDEzLjU5MjQgMTYuOTYzMiAxNC45ODkyIDE1LjcyMjdDMTYuMzg1OSAxNC40ODIxIDE3LjIyMDYgMTIuOTM4NCAxNy40OTM0IDExLjA5MTVIMTYuMzg2OUMxNi4yMDc5IDEyLjIwMTYgMTUuNzcyMyAxMy4xODkgMTUuMDggMTQuMDUzOEMxNC4zODc2IDE0LjkxODcgMTMuNTI3NiAxNS41NjU5IDEyLjQ5OTggMTUuOTk1NFYxNS41MDAyQzEyLjQ5OTggMTUuMDg3NyAxMi4zNTI5IDE0LjczNDYgMTIuMDU5MiAxNC40NDA4QzExLjc2NTQgMTQuMTQ3MSAxMS40MTIzIDE0LjAwMDIgMTAuOTk5OCAxNC4wMDAySDguOTk5ODJWMTMuMDAwMkM4Ljk5OTgyIDEyLjcxNjggOC45MDM5OCAxMi40NzkzIDguNzEyMzIgMTIuMjg3N0M4LjUyMDY1IDEyLjA5NiA4LjI4MzE1IDEyLjAwMDIgNy45OTk4MiAxMi4wMDAySDYuOTk5ODJWMTAuMDAwMkg3LjkzNTcxVjguMDAwMThINi45OTk4MkwzLjY0NTY1IDExLjM1NDNDMy42MDkxOSAxMS4xMzIxIDMuNTc1NzcgMTAuOTA5OSAzLjU0NTQgMTAuNjg3N0MzLjUxNTAxIDEwLjQ2NTUgMy40OTk4MiAxMC4yMzYzIDMuNDk5ODIgMTAuMDAwMkMzLjQ5OTgyIDguMTk0NjMgNC4xMzE3NiA2LjY1OTkxIDUuMzk1NjUgNS4zOTYwMkM2LjY1OTU0IDQuMTMyMTMgOC4xOTQyNiAzLjUwMDE4IDkuOTk5ODIgMy41MDAxOFYyLjQxNjg3Wk0xNi45MDUzIDIuODIwNzJMMTQuMjM4NiA1LjQ3MTM3QzEzLjk4MjIgNS4yODU0NyAxMy43MDkxIDUuMTQ2NTggMTMuNDE5NCA1LjA1NDdDMTMuMTI5NiA0Ljk2MjgyIDEyLjgyMzEgNC45MTY4NyAxMi40OTk4IDQuOTE2ODdDMTEuNjM5OCA0LjkxNjg3IDEwLjkxMDkgNS4yMTU3NSAxMC4zMTMxIDUuODEzNUM5LjcxNTM4IDYuNDExMjYgOS40MTY1IDcuMTQwMTYgOS40MTY1IDguMDAwMThDOS40MTY1IDguODYwMjEgOS43MTUzOCA5LjU4OTExIDEwLjMxMzEgMTAuMTg2OUMxMC45MTA5IDEwLjc4NDYgMTEuNjM5OCAxMS4wODM1IDEyLjQ5OTggMTEuMDgzNUMxMy4zNTk4IDExLjA4MzUgMTQuMDg4NyAxMC43ODUgMTQuNjg2NSAxMC4xODc5QzE1LjI4NDMgOS41OTA4NyAxNS41ODMxIDguODYyODQgMTUuNTgzMSA4LjAwMzgxQzE1LjU4MzEgNy42NzU1NCAxNS41MzU5IDcuMzY0NTEgMTUuNDQxMyA3LjA3MDdDMTUuMzQ2NyA2Ljc3NjkgMTUuMjAzOCA2LjUwMTc5IDE1LjAxMjYgNi4yNDUzOUwxNy42NzkzIDMuNTk0NzVMMTYuOTA1MyAyLjgyMDcyWk0xMi40OTUxIDYuMDAwMThDMTMuMDUzOCA2LjAwMDE4IDEzLjUyNzYgNi4xOTMwNiAxMy45MTY1IDYuNTc4ODNDMTQuMzA1NCA2Ljk2NDU4IDE0LjQ5OTggNy40MzY4IDE0LjQ5OTggNy45OTU0OUMxNC40OTk4IDguNTU0MTggMTQuMzA2OSA5LjAyNzk2IDEzLjkyMTIgOS40MTY4NUMxMy41MzU0IDkuODA1NzQgMTMuMDYzMiAxMC4wMDAyIDEyLjUwNDUgMTAuMDAwMkMxMS45NDU4IDEwLjAwMDIgMTEuNDcyIDkuODA3MyAxMS4wODMxIDkuNDIxNTRDMTAuNjk0MyA5LjAzNTc5IDEwLjQ5OTggOC41NjM1NyAxMC40OTk4IDguMDA0ODdDMTAuNDk5OCA3LjQ0NjE5IDEwLjY5MjcgNi45NzI0MSAxMS4wNzg1IDYuNTgzNTJDMTEuNDY0MiA2LjE5NDYzIDExLjkzNjQgNi4wMDAxOCAxMi40OTUxIDYuMDAwMThaIiBmaWxsPSIjNkY3Mzc3Ii8+Cjwvc3ZnPgo=">
+                Audit report request
+              </span>
+            </div>
+            <div class="hero-title-wrap">
+              <h1 class="lt-s1-page-title hero-title-a"><strong>Collecting evidence</strong> has started.</h1>
+              <div class="hero-title-b">
+                <h1 class="lt-s1-page-title"><strong>Scanning sources</strong> is complete.</h1>
+              </div>
+            </div>
+          </div>
+          <div class="s2-workflow">
+            <div class="s2-workflow-label">Workflow Status</div>
+            <div class="s2-workflow-steps">
+              <div class="s2-workflow-step" style="color:var(--t-tertiary);">
+                <div class="s2-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Investigation
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step" style="color:var(--t-tertiary);">
+                <div class="s2-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step active" id="ev-workflow-evidence">
+                <div class="s2-step-circle active" id="ev-workflow-evidence-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiMxREQ5RjkiLz4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt="" id="ev-workflow-evidence-icon"></div>
+                Evidence
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Synthesis
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Edit &amp; Authorize
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+
+        <!-- Complete Alert (hidden, slides in at end) -->
+        <div id="ev-complete-alert-wrap">
+          <div class="section">
+            <div class="alert-card alert-card-md alert-card-green">
+              <div class="alert-card-icon">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjU4MDggMTYuMjUzOEwxNy4zMDM4IDkuNTMwNzVMMTYuMjUgOC40NzY5M0wxMC41ODA4IDE0LjE0NjJMNy43MzA3NSAxMS4yOTYyTDYuNjc2OTMgMTIuMzVMMTAuNTgwOCAxNi4yNTM4Wk0xMi4wMDE2IDIxLjVDMTAuNjg3NyAyMS41IDkuNDUyNjggMjEuMjUwNiA4LjI5NjU1IDIwLjc1MkM3LjE0MDQgMjAuMjUzMyA2LjEzNDcyIDE5LjU3NjUgNS4yNzk1IDE4LjcyMTdDNC40MjQyNyAxNy44NjY5IDMuNzQ3MjEgMTYuODYxNiAzLjI0ODMzIDE1LjcwNkMyLjc0OTQ0IDE0LjU1MDQgMi41IDEzLjMxNTYgMi41IDEyLjAwMTdDMi41IDEwLjY4NzcgMi43NDkzMyA5LjQ1MjY4IDMuMjQ4IDguMjk2NTVDMy43NDY2NyA3LjE0MDQgNC40MjM0MiA2LjEzNDcyIDUuMjc4MjUgNS4yNzk1QzYuMTMzMSA0LjQyNDI3IDcuMTM4MzQgMy43NDcyMSA4LjI5Mzk4IDMuMjQ4MzNDOS40NDk1OSAyLjc0OTQ0IDEwLjY4NDQgMi41IDExLjk5ODMgMi41QzEzLjMxMjIgMi41IDE0LjU0NzMgMi43NDkzMyAxNS43MDM0IDMuMjQ4QzE2Ljg1OTYgMy43NDY2NyAxNy44NjUyIDQuNDIzNDIgMTguNzIwNSA1LjI3ODI1QzE5LjU3NTcgNi4xMzMxIDIwLjI1MjcgNy4xMzgzNCAyMC43NTE2IDguMjkzOThDMjEuMjUwNSA5LjQ0OTU5IDIxLjUgMTAuNjg0NCAyMS41IDExLjk5ODNDMjEuNSAxMy4zMTIyIDIxLjI1MDYgMTQuNTQ3MyAyMC43NTIgMTUuNzAzNEMyMC4yNTMzIDE2Ljg1OTYgMTkuNTc2NSAxNy44NjUyIDE4LjcyMTcgMTguNzIwNUMxNy44NjY5IDE5LjU3NTcgMTYuODYxNiAyMC4yNTI3IDE1LjcwNiAyMC43NTE2QzE0LjU1MDQgMjEuMjUwNSAxMy4zMTU2IDIxLjUgMTIuMDAxNiAyMS41Wk0xMiAyMEMxNC4yMzMzIDIwIDE2LjEyNSAxOS4yMjUgMTcuNjc1IDE3LjY3NUMxOS4yMjUgMTYuMTI1IDIwIDE0LjIzMzMgMjAgMTJDMjAgOS43NjY2NCAxOS4yMjUgNy44NzQ5OCAxNy42NzUgNi4zMjQ5OEMxNi4xMjUgNC43NzQ5OCAxNC4yMzMzIDMuOTk5OTggMTIgMy45OTk5OEM5Ljc2NjY0IDMuOTk5OTggNy44NzQ5OCA0Ljc3NDk4IDYuMzI0OTggNi4zMjQ5OEM0Ljc3NDk4IDcuODc0OTggMy45OTk5OCA5Ljc2NjY0IDMuOTk5OTggMTJDMy45OTk5OCAxNC4yMzMzIDQuNzc0OTggMTYuMTI1IDYuMzI0OTggMTcuNjc1QzcuODc0OTggMTkuMjI1IDkuNzY2NjQgMjAgMTIgMjBaIiBmaWxsPSIjM0Y2OTAwIi8+Cjwvc3ZnPgo=" width="24" height="24" alt="">
+              </div>
+              <div class="alert-card-body">
+                <div class="alert-card-title">Scanning sources is now complete</div>
+                <div class="alert-card-sub">View results to read the summary about the collected evidences, risks and gaps.</div>
+              </div>
+              <div class="alert-card-actions">
+                <button class="btn btn-secondary btn-sm" id="ev-view-results-btn">View results</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- General Progress -->
+        <div class="section">
+          <div class="section-title">General progress</div>
+          <div class="card-default">
+            <div class="ev-progress-row">
+              <div class="ev-progress-item">
+                <span class="ev-progress-label label-sm">Findings</span>
+                <div class="ev-progress-track"><div class="ev-progress-fill" id="ev-fill-findings" style="width:39%;background:#1DD9F9;"></div></div>
+                <span class="ev-progress-count" id="ev-count-findings">47 / 120</span>
+              </div>
+              <span class="ev-progress-dot">&bull;</span>
+              <div class="ev-progress-item">
+                <span class="ev-progress-label label-sm">Controls</span>
+                <div class="ev-progress-track"><div class="ev-progress-fill" id="ev-fill-controls" style="width:45%;background:#8B5CF6;"></div></div>
+                <span class="ev-progress-count" id="ev-count-controls">180 / 400</span>
+              </div>
+              <span class="ev-progress-dot">&bull;</span>
+              <div class="ev-progress-item">
+                <span class="ev-progress-label label-sm">Obligations</span>
+                <div class="ev-progress-track"><div class="ev-progress-fill" id="ev-fill-obligations" style="width:40%;background:#F472B6;"></div></div>
+                <span class="ev-progress-count" id="ev-count-obligations">12 / 30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scanning Queue -->
+        <div class="section">
+          <div class="section-title">Scanning queue</div>
+          <div class="card-grid-1-3">
+
+            <!-- Currently -->
+            <div class="card-sm">
+              <div class="card-title">Currently</div>
+              <div class="ev-currently-body">
+                <div class="ev-donut-box">
+                  <div class="ev-donut-wrap">
+                    <div class="ev-donut" id="ev-donut" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="3"></div>
+                    <div class="ev-donut-inner">
+                      <span class="ev-donut-num" id="ev-donut-num">1/3</span>
+                      <span class="ev-donut-lbl">Tasks</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="ev-task-group" id="ev-currently-tasks">
+                  <div class="ev-task-source">ERM</div>
+                  <div class="ev-task-row active" data-task="0">
+                    <div class="ev-task-icon"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiMxREQ5RjkiLz4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt="" class="ev-task-img"></div>
+                    Risk register scanning
+                  </div>
+                  <div class="ev-task-row" data-task="1">
+                    <div class="ev-task-icon"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt="" class="ev-task-img"></div>
+                    Appetite threshold
+                  </div>
+                  <div class="ev-task-row" data-task="2">
+                    <div class="ev-task-icon"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt="" class="ev-task-img"></div>
+                    Velocity data
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upcoming -->
+            <div class="card-sm">
+              <div class="card-title">Upcoming</div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>AI Risk Essentials</div>
+                  <div>15 AI alerts + peer benchmarks</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>Compliance Maps, 3rd Risk, External Intel</div>
+                  <div>5 sources waiting</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+
+            <!-- Completed -->
+            <div class="card-sm">
+              <div class="card-title">Completed</div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>Projects</div>
+                  <div>3 tasks completed</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>Frameworks</div>
+                  <div>2 tasks completed</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Change Log -->
+        <div class="section">
+          <div class="section-title">Change log</div>
+          <div class="card-default">
+            <div class="ev-log-row" id="ev-log-erm">
+              <div class="ev-log-icon"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiMxREQ5RjkiLz4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt="" id="ev-log-erm-icon"></div>
+              <div>
+                <div class="ev-log-body"><strong>ERM scanning</strong> — retrieving risk register, appetite thresholds and velocity data</div>
+              </div>
+            </div>
+            <div class="ev-log-row">
+              <div class="ev-log-icon done"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+              <div>
+                <div class="ev-log-body"><strong>Frameworks complete</strong> — 180 controls scanned, 8 flagged ineffective.</div>
+              </div>
+            </div>
+            <div class="ev-log-row">
+              <div class="ev-log-icon done"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+              <div>
+                <div class="ev-log-body"><strong>Projects complete</strong> — 47 findings retrieved (12 high/critical). Remediation data included.</div>
+              </div>
+            </div>
+            <div class="ev-log-row">
+              <div class="ev-log-icon done"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+              <div>
+                <div class="ev-log-body"><strong>Evidence gathering started</strong> — scanning 8 sources in parallel</div>
+                <div class="ev-log-sub">Results surface as each source completes. You can continue working — I'll notify you when the Evidence Pack is ready for review.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div><!-- end section-gap -->
+
+        </div><!-- end s-scroll-inner -->
+
+      <div class="chat-area">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Ask about evidence, steer the scan, or reprioritise sources..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row">
+                <div class="chat-chip">Prioritise Compliance Maps first</div>
+                <div class="chat-chip">Show gaps in evidence base</div>
+                <div class="chat-chip">Skip External Intel</div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn-secondary btn-md">Clear</button>
+                <button class="btn btn-primary btn-md" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div><!-- end s-left-scroll -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 1 — Evidence collection complete
+     ============================================================ -->
+<div class="screen" id="screen-1">
+  <div class="lt-header">
+    <div class="lt-logo">
+      <div class="lt-logo-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="Diligent"></div>
+      Diligent  &middot;  Automated Audit Reporting
+    </div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="lt-activity-count">5</span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="lt-notif-dot"></span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="lt-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="s-investigation-body">
+    <div class="s-left-content">
+      <div class="s-left-scroll">
+        <div class="s-scroll-inner content-gap">
+
+        <!-- Hero (02-Evidence-05) -->
+        <div class="ev-hero">
+          <div class="ev-hero-header">
+            <div class="ev-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUuNzc0MDIgMTUuNDg1NUw1IDE0LjcxMTVMOS43MTE1MiAxMEwxNC40MjMgMTQuNzExNUwxMy42NDkgMTUuNDg1NUw5LjcxMTUyIDExLjU0TDUuNzc0MDIgMTUuNDg1NVpNNS43NzQwMiAxMC40ODU1TDUgOS43MTE1Mkw5LjcxMTUyIDVMMTQuNDIzIDkuNzExNTJMMTMuNjQ5IDEwLjQ4NTVMOS43MTE1MiA2LjU0MDAyTDUuNzc0MDIgMTAuNDg1NVoiIGZpbGw9IiM5MjFBMUQiLz4KPC9zdmc+Cg==" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkuOTk5ODIgMi40MTY4N0M4Ljk2MTM2IDIuNDE2ODcgNy45ODEzOSAyLjYxNDUyIDcuMDU5OTIgMy4wMDk4M0M2LjEzODQ1IDMuNDA1MTIgNS4zMzE4MyAzLjk0ODY1IDQuNjQwMDcgNC42NDA0M0MzLjk0ODI5IDUuMzMyMiAzLjQwNDc1IDYuMTM4NTMgMy4wMDk0NiA3LjA1OTQzQzIuNjE0MTYgNy45ODAzMiAyLjQxNjUgOC45NjM3NSAyLjQxNjUgMTAuMDA5N0MyLjQxNjUgMTEuMDU1NyAyLjYxNDE2IDEyLjAzNiAzLjAwOTQ2IDEyLjk1MDVDMy40MDQ3NSAxMy44NjUgMy45NDgyOSAxNC42NjgyIDQuNjQwMDcgMTUuMzU5OUM1LjMzMTgzIDE2LjA1MTcgNi4xMzcxNCAxNi41OTUyIDcuMDU2IDE2Ljk5MDVDNy45NzQ4OCAxNy4zODU4IDguOTU2MTUgMTcuNTgzNSA5Ljk5OTgyIDE3LjU4MzVDMTEuOTI5MyAxNy41ODM1IDEzLjU5MjQgMTYuOTYzMiAxNC45ODkyIDE1LjcyMjdDMTYuMzg1OSAxNC40ODIxIDE3LjIyMDYgMTIuOTM4NCAxNy40OTM0IDExLjA5MTVIMTYuMzg2OUMxNi4yMDc5IDEyLjIwMTYgMTUuNzcyMyAxMy4xODkgMTUuMDggMTQuMDUzOEMxNC4zODc2IDE0LjkxODcgMTMuNTI3NiAxNS41NjU5IDEyLjQ5OTggMTUuOTk1NFYxNS41MDAyQzEyLjQ5OTggMTUuMDg3NyAxMi4zNTI5IDE0LjczNDYgMTIuMDU5MiAxNC40NDA4QzExLjc2NTQgMTQuMTQ3MSAxMS40MTIzIDE0LjAwMDIgMTAuOTk5OCAxNC4wMDAySDguOTk5ODJWMTMuMDAwMkM4Ljk5OTgyIDEyLjcxNjggOC45MDM5OCAxMi40NzkzIDguNzEyMzIgMTIuMjg3N0M4LjUyMDY1IDEyLjA5NiA4LjI4MzE1IDEyLjAwMDIgNy45OTk4MiAxMi4wMDAySDYuOTk5ODJWMTAuMDAwMkg3LjkzNTcxVjguMDAwMThINi45OTk4MkwzLjY0NTY1IDExLjM1NDNDMy42MDkxOSAxMS4xMzIxIDMuNTc1NzcgMTAuOTA5OSAzLjU0NTQgMTAuNjg3N0MzLjUxNTAxIDEwLjQ2NTUgMy40OTk4MiAxMC4yMzYzIDMuNDk5ODIgMTAuMDAwMkMzLjQ5OTgyIDguMTk0NjMgNC4xMzE3NiA2LjY1OTkxIDUuMzk1NjUgNS4zOTYwMkM2LjY1OTU0IDQuMTMyMTMgOC4xOTQyNiAzLjUwMDE4IDkuOTk5ODIgMy41MDAxOFYyLjQxNjg3Wk0xNi45MDUzIDIuODIwNzJMMTQuMjM4NiA1LjQ3MTM3QzEzLjk4MjIgNS4yODU0NyAxMy43MDkxIDUuMTQ2NTggMTMuNDE5NCA1LjA1NDdDMTMuMTI5NiA0Ljk2MjgyIDEyLjgyMzEgNC45MTY4NyAxMi40OTk4IDQuOTE2ODdDMTEuNjM5OCA0LjkxNjg3IDEwLjkxMDkgNS4yMTU3NSAxMC4zMTMxIDUuODEzNUM5LjcxNTM4IDYuNDExMjYgOS40MTY1IDcuMTQwMTYgOS40MTY1IDguMDAwMThDOS40MTY1IDguODYwMjEgOS43MTUzOCA5LjU4OTExIDEwLjMxMzEgMTAuMTg2OUMxMC45MTA5IDEwLjc4NDYgMTEuNjM5OCAxMS4wODM1IDEyLjQ5OTggMTEuMDgzNUMxMy4zNTk4IDExLjA4MzUgMTQuMDg4NyAxMC43ODUgMTQuNjg2NSAxMC4xODc5QzE1LjI4NDMgOS41OTA4NyAxNS41ODMxIDguODYyODQgMTUuNTgzMSA4LjAwMzgxQzE1LjU4MzEgNy42NzU1NCAxNS41MzU5IDcuMzY0NTEgMTUuNDQxMyA3LjA3MDdDMTUuMzQ2NyA2Ljc3NjkgMTUuMjAzOCA2LjUwMTc5IDE1LjAxMjYgNi4yNDUzOUwxNy42NzkzIDMuNTk0NzVMMTYuOTA1MyAyLjgyMDcyWk0xMi40OTUxIDYuMDAwMThDMTMuMDUzOCA2LjAwMDE4IDEzLjUyNzYgNi4xOTMwNiAxMy45MTY1IDYuNTc4ODNDMTQuMzA1NCA2Ljk2NDU4IDE0LjQ5OTggNy40MzY4IDE0LjQ5OTggNy45OTU0OUMxNC40OTk4IDguNTU0MTggMTQuMzA2OSA5LjAyNzk2IDEzLjkyMTIgOS40MTY4NUMxMy41MzU0IDkuODA1NzQgMTMuMDYzMiAxMC4wMDAyIDEyLjUwNDUgMTAuMDAwMkMxMS45NDU4IDEwLjAwMDIgMTEuNDcyIDkuODA3MyAxMS4wODMxIDkuNDIxNTRDMTAuNjk0MyA5LjAzNTc5IDEwLjQ5OTggOC41NjM1NyAxMC40OTk4IDguMDA0ODdDMTAuNDk5OCA3LjQ0NjE5IDEwLjY5MjcgNi45NzI0MSAxMS4wNzg1IDYuNTgzNTJDMTEuNDY0MiA2LjE5NDYzIDExLjkzNjQgNi4wMDAxOCAxMi40OTUxIDYuMDAwMThaIiBmaWxsPSIjNkY3Mzc3Ii8+Cjwvc3ZnPgo=">
+                Audit report request
+              </span>
+            </div>
+            <h1 class="ev-hero-title"><strong>Evidence collection is complete.</strong> Review and proceed.</h1>
+          </div>
+          <div class="ev-workflow">
+            <div class="ev-workflow-label">Workflow status</div>
+            <div class="ev-workflow-steps">
+              <div class="ev-step done">
+                <div class="ev-step-circle done"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Investigation
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step done">
+                <div class="ev-step-circle done"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step done">
+                <div class="ev-step-circle done"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Evidence
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Synthesis
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Edit &amp; Authorize
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content (02-Evidence-05) -->
+        <div class="section-gap">
+
+          <div class="section" id="ev-section-results">
+            <div class="section-title">Results</div>
+            <div class="alert-card alert-card-md alert-card-green">
+              <div class="alert-card-icon">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjU4MDggMTYuMjUzOEwxNy4zMDM4IDkuNTMwNzVMMTYuMjUgOC40NzY5M0wxMC41ODA4IDE0LjE0NjJMNy43MzA3NSAxMS4yOTYyTDYuNjc2OTMgMTIuMzVMMTAuNTgwOCAxNi4yNTM4Wk0xMi4wMDE2IDIxLjVDMTAuNjg3NyAyMS41IDkuNDUyNjggMjEuMjUwNiA4LjI5NjU1IDIwLjc1MkM3LjE0MDQgMjAuMjUzMyA2LjEzNDcyIDE5LjU3NjUgNS4yNzk1IDE4LjcyMTdDNC40MjQyNyAxNy44NjY5IDMuNzQ3MjEgMTYuODYxNiAzLjI0ODMzIDE1LjcwNkMyLjc0OTQ0IDE0LjU1MDQgMi41IDEzLjMxNTYgMi41IDEyLjAwMTdDMi41IDEwLjY4NzcgMi43NDkzMyA5LjQ1MjY4IDMuMjQ4IDguMjk2NTVDMy43NDY2NyA3LjE0MDQgNC40MjM0MiA2LjEzNDcyIDUuMjc4MjUgNS4yNzk1QzYuMTMzMSA0LjQyNDI3IDcuMTM4MzQgMy43NDcyMSA4LjI5Mzk4IDMuMjQ4MzNDOS40NDk1OSAyLjc0OTQ0IDEwLjY4NDQgMi41IDExLjk5ODMgMi41QzEzLjMxMjIgMi41IDE0LjU0NzMgMi43NDkzMyAxNS43MDM0IDMuMjQ4QzE2Ljg1OTYgMy43NDY2NyAxNy44NjUyIDQuNDIzNDIgMTguNzIwNSA1LjI3ODI1QzE5LjU3NTcgNi4xMzMxIDIwLjI1MjcgNy4xMzgzNCAyMC43NTE2IDguMjkzOThDMjEuMjUwNSA5LjQ0OTU5IDIxLjUgMTAuNjg0NCAyMS41IDExLjk5ODNDMjEuNSAxMy4zMTIyIDIxLjI1MDYgMTQuNTQ3MyAyMC43NTIgMTUuNzAzNEMyMC4yNTMzIDE2Ljg1OTYgMTkuNTc2NSAxNy44NjUyIDE4LjcyMTcgMTguNzIwNUMxNy44NjY5IDE5LjU3NTcgMTYuODYxNiAyMC4yNTI3IDE1LjcwNiAyMC43NTE2QzE0LjU1MDQgMjEuMjUwNSAxMy4zMTU2IDIxLjUgMTIuMDAxNiAyMS41Wk0xMiAyMEMxNC4yMzMzIDIwIDE2LjEyNSAxOS4yMjUgMTcuNjc1IDE3LjY3NUMxOS4yMjUgMTYuMTI1IDIwIDE0LjIzMzMgMjAgMTJDMjAgOS43NjY2NCAxOS4yMjUgNy44NzQ5OCAxNy42NzUgNi4zMjQ5OEMxNi4xMjUgNC43NzQ5OCAxNC4yMzMzIDMuOTk5OTggMTIgMy45OTk5OEM5Ljc2NjY0IDMuOTk5OTggNy44NzQ5OCA0Ljc3NDk4IDYuMzI0OTggNi4zMjQ5OEM0Ljc3NDk4IDcuODc0OTggMy45OTk5OCA5Ljc2NjY0IDMuOTk5OTggMTJDMy45OTk5OCAxNC4yMzMzIDQuNzc0OTggMTYuMTI1IDYuMzI0OTggMTcuNjc1QzcuODc0OTggMTkuMjI1IDkuNzY2NjQgMjAgMTIgMjBaIiBmaWxsPSIjM0Y2OTAwIi8+Cjwvc3ZnPgo=" width="24" height="24" alt="">
+              </div>
+              <div class="alert-card-body">
+                <div class="alert-card-title">Evidence Pack assembled — 8 of 8 sources complete.</div>
+                <div class="alert-card-sub">All sources returned data. The pack has been saved to Boards as a supporting document. Review the summary below and confirm before synthesis begins.</div>
+              </div>
+            </div>
+            <div class="card-default ev-card-general-progress">
+              <div class="card-title">General progress</div>
+              <div class="card-hero-row" style="padding:16px 20px;">
+                <div class="ev-progress-row" style="width:100%;">
+                  <div class="ev-progress-item">
+                    <span class="ev-progress-label label-sm">Findings</span>
+                    <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+                    <span class="ev-progress-count">120 / 120</span>
+                  </div>
+                  <span class="ev-progress-dot">&#9679;</span>
+                  <div class="ev-progress-item">
+                    <span class="ev-progress-label label-sm">Controls</span>
+                    <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+                    <span class="ev-progress-count">400 / 400</span>
+                  </div>
+                  <span class="ev-progress-dot">&#9679;</span>
+                  <div class="ev-progress-item">
+                    <span class="ev-progress-label label-sm">Obligations</span>
+                    <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+                    <span class="ev-progress-count">30 / 30</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-title" style="margin-top:16px;">Pack summary</div>
+              <div class="card-hero-row">
+                <div class="card-hero">
+                  <div class="card-hero-label label-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    Data points
+                  </div>
+                  <div class="card-hero-value">312 <span class="card-hero-desc">total</span></div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label label-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                    Sources completed
+                  </div>
+                  <div class="card-hero-value">8 <span class="card-hero-desc">of</span> 8</div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label label-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+                    Data freshness
+                  </div>
+                  <div class="card-hero-value">7 <span class="card-hero-desc">current</span> 1 <span class="card-hero-desc">recent</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" id="ev-section-evidence-pack">
+            <div class="section-header">
+              <div class="section-title">Evidence pack collection</div>
+              <p class="section-subtitle">312 data points across 8 sources</p>
+            </div>
+
+              <div class="card-default">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th class="col-result text-center">Result</th>
+                      <th class="col-source">Source</th>
+                      <th class="col-records">Records</th>
+                      <th class="col-fresh text-center">Freshness</th>
+                      <th class="col-download text-center">Download pack</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Projects — Findings &amp; Controls</td>
+                      <td class="col-records">47 findings &middot; 180 controls</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMjI5MTUgMTMuNzc0TDUuMDEyODIgMTAuNTM2OEw1Ljc1ODAxIDkuNzkxNjdMOC4yMjkxNSAxMi4yNDJMMTQuMjQyIDYuMjVMMTQuOTg3MiA3LjAxNkw4LjIyOTE1IDEzLjc3NFoiIGZpbGw9IiMzRjY5MDAiLz4KPC9zdmc+Cg==" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Frameworks — Risk Control Matrix</td>
+                      <td class="col-records">180 controls &middot; 8 ineffective</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMjI5MTUgMTMuNzc0TDUuMDEyODIgMTAuNTM2OEw1Ljc1ODAxIDkuNzkxNjdMOC4yMjkxNSAxMi4yNDJMMTQuMjQyIDYuMjVMMTQuOTg3MiA3LjAxNkw4LjIyOTE1IDEzLjc3NFoiIGZpbGw9IiMzRjY5MDAiLz4KPC9zdmc+Cg==" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">ERM — Risk Register &amp; Appetite</td>
+                      <td class="col-records">22 risks &middot; 3 above appetite</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMjI5MTUgMTMuNzc0TDUuMDEyODIgMTAuNTM2OEw1Ljc1ODAxIDkuNzkxNjdMOC4yMjkxNSAxMi4yNDJMMTQuMjQyIDYuMjVMMTQuOTg3MiA3LjAxNkw4LjIyOTE1IDEzLjc3NFoiIGZpbGw9IiMzRjY5MDAiLz4KPC9zdmc+Cg==" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">AI Risk Essentials — Alerts</td>
+                      <td class="col-records">15 AI alerts &middot; peer benchmarks</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMjI5MTUgMTMuNzc0TDUuMDEyODIgMTAuNTM2OEw1Ljc1ODAxIDkuNzkxNjdMOC4yMjkxNSAxMi4yNDJMMTQuMjQyIDYuMjVMMTQuOTg3MiA3LjAxNkw4LjIyOTE1IDEzLjc3NFoiIGZpbGw9IiMzRjY5MDAiLz4KPC9zdmc+Cg==" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Compliance Maps — SEC Obligations</td>
+                      <td class="col-records">12 obligations &middot; 3 gaps</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMjI5MTUgMTMuNzc0TDUuMDEyODIgMTAuNTM2OEw1Ljc1ODAxIDkuNzkxNjdMOC4yMjkxNSAxMi4yNDJMMTQuMjQyIDYuMjVMMTQuOTg3MiA3LjAxNkw4LjIyOTE1IDEzLjc3NFoiIGZpbGw9IiMzRjY5MDAiLz4KPC9zdmc+Cg==" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">3rd Risk — Vendor Assessments</td>
+                      <td class="col-records">8 vendors &middot; 3 high-risk</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-yellow"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjkzNTcgMTMuMzk3NUwxMy43MDk3IDEyLjYyMzVMMTAuNTQxNSA5LjQ1NVY1LjAwMDA2SDkuNDU4MTdWOS45MTk5NEwxMi45MzU3IDEzLjM5NzVaTTEwLjAwMTIgMTcuNTgzNEM4Ljk1NjYxIDE3LjU4MzQgNy45NzQ3MyAxNy4zODYgNy4wNTU1NSAxNi45OTEzQzYuMTM2MzcgMTYuNTk2NiA1LjMzMDg1IDE2LjA1MzQgNC42MzkgMTUuMzYxOUMzLjk0NzE0IDE0LjY3MDQgMy40MDM3NiAxMy44NjQyIDMuMDA4ODYgMTIuOTQzNEMyLjYxMzk2IDEyLjAyMjcgMi40MTY1IDExLjAzODggMi40MTY1IDkuOTkxOTJDMi40MTY1IDguOTQ1IDIuNjEzODcgNy45NjA2NSAzLjAwODU5IDcuMDM4ODdDMy40MDMzMSA2LjExNzA4IDMuOTQ2NDMgNS4zMTM3NCA0LjYzNzk2IDQuNjI4ODNDNS4zMjk1IDMuOTQzOTIgNi4xMzU2NiAzLjQwNDAxIDcuMDU2NDQgMy4wMDkxQzcuOTc3MjIgMi42MTQyIDguOTYxMDYgMi40MTY3NSAxMC4wMDggMi40MTY3NUMxMS4wNTQ5IDIuNDE2NzUgMTIuMDM5MyAyLjYxNTc4IDEyLjk2MTEgMy4wMTM4M0MxMy44ODMgMy40MTE4OSAxNC42ODQ5IDMuOTUyMSAxNS4zNjY4IDQuNjM0NDZDMTYuMDQ4OCA1LjMxNjgzIDE2LjU4ODYgNi4xMTkyNiAxNi45ODY0IDcuMDQxNzNDMTcuMzg0MiA3Ljk2NDE5IDE3LjU4MzEgOC45NDk4MyAxNy41ODMxIDkuOTk4NjdDMTcuNTgzMSAxMS4wNDMzIDE3LjM4NTggMTIuMDI1MiAxNi45OTEgMTIuOTQ0M0MxNi41OTYzIDEzLjg2MzUgMTYuMDU2NyAxNC42NjkgMTUuMzcyMSAxNS4zNjA5QzE0LjY4NzUgMTYuMDUyNyAxMy44ODM2IDE2LjU5NjEgMTIuOTYwNCAxNi45OTFDMTIuMDM3MyAxNy4zODU5IDExLjA1MDkgMTcuNTgzNCAxMC4wMDEyIDE3LjU4MzRaTTEwLjAwOTggMTYuNTAwMUMxMS44MDggMTYuNTAwMSAxMy4zMzkzIDE1Ljg2NDYgMTQuNjAzNSAxNC41OTM4QzE1Ljg2NzcgMTMuMzIzIDE2LjQ5OTggMTEuNzg4NCAxNi40OTk4IDkuOTkwMTJDMTYuNDk5OCA4LjE5MTgzIDE1Ljg2NzcgNi42NjA1OCAxNC42MDM1IDUuMzk2MzdDMTMuMzM5MyA0LjEzMjE3IDExLjgwOCAzLjUwMDA2IDEwLjAwOTggMy41MDAwNkM4LjIxMTQ2IDMuNTAwMDYgNi42NzY5IDQuMTMyMTcgNS40MDYwNyA1LjM5NjM3QzQuMTM1MjMgNi42NjA1OCAzLjQ5OTgyIDguMTkxODMgMy40OTk4MiA5Ljk5MDEyQzMuNDk5ODIgMTEuNzg4NCA0LjEzNTIzIDEzLjMyMyA1LjQwNjA3IDE0LjU5MzhDNi42NzY5IDE1Ljg2NDYgOC4yMTE0NiAxNi41MDAxIDEwLjAwOTggMTYuNTAwMVoiIGZpbGw9IiM2QTVGMDAiLz4KPC9zdmc+Cg==" class="pill-ico">Recent</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Vault — Speak-up Themes</td>
+                      <td class="col-records">4 themes &middot; anonymised</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMjI5MTUgMTMuNzc0TDUuMDEyODIgMTAuNTM2OEw1Ljc1ODAxIDkuNzkxNjdMOC4yMjkxNSAxMi4yNDJMMTQuMjQyIDYuMjVMMTQuOTg3MiA3LjAxNkw4LjIyOTE1IDEzLjc3NFoiIGZpbGw9IiMzRjY5MDAiLz4KPC9zdmc+Cg==" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">External Intel — Peer Enforcement</td>
+                      <td class="col-records">6 enforcement actions</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMjI5MTUgMTMuNzc0TDUuMDEyODIgMTAuNTM2OEw1Ljc1ODAxIDkuNzkxNjdMOC4yMjkxNSAxMi4yNDJMMTQuMjQyIDYuMjVMMTQuOTg3MiA3LjAxNkw4LjIyOTE1IDEzLjc3NFoiIGZpbGw9IiMzRjY5MDAiLz4KPC9zdmc+Cg==" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result" style="border-top:1px solid rgba(0,0,0,0.2);"></td>
+                      <td colspan="3" style="border-top:1px solid rgba(0,0,0,0.2); font-weight:600; color:var(--t-secondary);">Packs total: 8</td>
+                      <td class="col-download text-center" style="border-top:1px solid rgba(0,0,0,0.2);"><button class="btn btn-secondary btn-sm">Download all</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="table-footer">
+                  <button class="btn btn-secondary btn-md" style="border:none">Re-run a source</button>
+                  <button class="btn btn-primary btn-md" id="ev-confirm-pack-btn">Confirm Evidence pack</button>
+                </div>
+              </div>
+
+              <div class="ev-alert-yellow">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.86523 20.4999L11.9998 3L22.1343 20.4999H1.86523ZM4.44978 18.9999H19.5498L11.9998 5.99993L4.44978 18.9999ZM11.9998 17.8076C12.2286 17.8076 12.4205 17.7302 12.5753 17.5754C12.7301 17.4206 12.8075 17.2288 12.8075 16.9999C12.8075 16.7711 12.7301 16.5793 12.5753 16.4245C12.4205 16.2697 12.2286 16.1923 11.9998 16.1923C11.7709 16.1923 11.5791 16.2697 11.4243 16.4245C11.2695 16.5793 11.1921 16.7711 11.1921 16.9999C11.1921 17.2288 11.2695 17.4206 11.4243 17.5754C11.5791 17.7302 11.7709 17.8076 11.9998 17.8076ZM11.2498 15.1923H12.7498V10.1923H11.2498V15.1923Z" fill="currentColor"/></svg>
+                HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.
+              </div>
+
+              <div class="alert-card alert-card-md alert-card-green">
+                <div class="alert-card-icon">
+                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjU4MDggMTYuMjUzOEwxNy4zMDM4IDkuNTMwNzVMMTYuMjUgOC40NzY5M0wxMC41ODA4IDE0LjE0NjJMNy43MzA3NSAxMS4yOTYyTDYuNjc2OTMgMTIuMzVMMTAuNTgwOCAxNi4yNTM4Wk0xMi4wMDE2IDIxLjVDMTAuNjg3NyAyMS41IDkuNDUyNjggMjEuMjUwNiA4LjI5NjU1IDIwLjc1MkM3LjE0MDQgMjAuMjUzMyA2LjEzNDcyIDE5LjU3NjUgNS4yNzk1IDE4LjcyMTdDNC40MjQyNyAxNy44NjY5IDMuNzQ3MjEgMTYuODYxNiAzLjI0ODMzIDE1LjcwNkMyLjc0OTQ0IDE0LjU1MDQgMi41IDEzLjMxNTYgMi41IDEyLjAwMTdDMi41IDEwLjY4NzcgMi43NDkzMyA5LjQ1MjY4IDMuMjQ4IDguMjk2NTVDMy43NDY2NyA3LjE0MDQgNC40MjM0MiA2LjEzNDcyIDUuMjc4MjUgNS4yNzk1QzYuMTMzMSA0LjQyNDI3IDcuMTM4MzQgMy43NDcyMSA4LjI5Mzk4IDMuMjQ4MzNDOS40NDk1OSAyLjc0OTQ0IDEwLjY4NDQgMi41IDExLjk5ODMgMi41QzEzLjMxMjIgMi41IDE0LjU0NzMgMi43NDkzMyAxNS43MDM0IDMuMjQ4QzE2Ljg1OTYgMy43NDY2NyAxNy44NjUyIDQuNDIzNDIgMTguNzIwNSA1LjI3ODI1QzE5LjU3NTcgNi4xMzMxIDIwLjI1MjcgNy4xMzgzNCAyMC43NTE2IDguMjkzOThDMjEuMjUwNSA5LjQ0OTU5IDIxLjUgMTAuNjg0NCAyMS41IDExLjk5ODNDMjEuNSAxMy4zMTIyIDIxLjI1MDYgMTQuNTQ3MyAyMC43NTIgMTUuNzAzNEMyMC4yNTMzIDE2Ljg1OTYgMTkuNTc2NSAxNy44NjUyIDE4LjcyMTcgMTguNzIwNUMxNy44NjY5IDE5LjU3NTcgMTYuODYxNiAyMC4yNTI3IDE1LjcwNiAyMC43NTE2QzE0LjU1MDQgMjEuMjUwNSAxMy4zMTU2IDIxLjUgMTIuMDAxNiAyMS41Wk0xMiAyMEMxNC4yMzMzIDIwIDE2LjEyNSAxOS4yMjUgMTcuNjc1IDE3LjY3NUMxOS4yMjUgMTYuMTI1IDIwIDE0LjIzMzMgMjAgMTJDMjAgOS43NjY2NCAxOS4yMjUgNy44NzQ5OCAxNy42NzUgNi4zMjQ5OEMxNi4xMjUgNC43NzQ5OCAxNC4yMzMzIDMuOTk5OTggMTIgMy45OTk5OEM5Ljc2NjY0IDMuOTk5OTggNy44NzQ5OCA0Ljc3NDk4IDYuMzI0OTggNi4zMjQ5OEM0Ljc3NDk4IDcuODc0OTggMy45OTk5OCA5Ljc2NjY0IDMuOTk5OTggMTJDMy45OTk5OCAxNC4yMzMzIDQuNzc0OTggMTYuMTI1IDYuMzI0OTggMTcuNjc1QzcuODc0OTggMTkuMjI1IDkuNzY2NjQgMjAgMTIgMjBaIiBmaWxsPSIjM0Y2OTAwIi8+Cjwvc3ZnPgo=" width="24" height="24" alt="">
+                </div>
+                <div class="alert-card-body">
+                  <div class="alert-card-title">Saved to Boards — Evidence Pack &middot; Cybersecurity Assurance Report</div>
+                  <div class="alert-card-sub">Available as supporting material in the Audit Committee board pack. Accessible to all members with view rights.</div>
+                </div>
+                <div class="alert-card-actions">
+                  <button class="btn btn-secondary btn-sm">Open in Boards</button>
+                </div>
+              </div>
+
+          </div>
+
+        </div><!-- /section-gap -->
+
+        </div><!-- end s-scroll-inner -->
+
+      <div class="chat-area">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Ask about evidence, review the pack, or re-run a source..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row">
+                <div class="chat-chip">Summarise the evidence pack</div>
+                <div class="chat-chip">Flag any gaps</div>
+                <div class="chat-chip">Re-run External Intel</div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn-secondary btn-md">Clear</button>
+                <button class="btn btn-primary btn-md" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div><!-- end s-left-scroll -->
+    </div><!-- end s-left-content -->
+  </div><!-- end investigation-body -->
+</div>
+
+</div><!-- end screens-wrapper -->
+
+
+<script>
+(function () {
+  'use strict';
+
+  var PAUSE_MS  = 2000;
+  var DURATION_MS = 8000;
+  var COMPLETE_GREEN = '#8EE400';
+
+  /* ── Metric definitions ── */
+  var findings    = { startPct: 39, startVal: 47,  total: 120, color: '#1DD9F9' };
+  var controls    = { startPct: 45, startVal: 180, total: 400, color: '#8B5CF6' };
+  var obligations = { startPct: 40, startVal: 12,  total: 30,  color: '#F472B6' };
+  var metrics = [
+    { m: findings,    fillEl: 'ev-fill-findings',    countEl: 'ev-count-findings' },
+    { m: controls,    fillEl: 'ev-fill-controls',    countEl: 'ev-count-controls' },
+    { m: obligations, fillEl: 'ev-fill-obligations',  countEl: 'ev-count-obligations' }
+  ];
+
+  /* ── Cache DOM refs ── */
+  var screen0       = document.getElementById('screen-0');
+  var donutEl       = document.getElementById('ev-donut');
+  var donutNumEl    = document.getElementById('ev-donut-num');
+  var taskRows      = document.querySelectorAll('#ev-currently-tasks .ev-task-row');
+  var logErmIcon    = document.getElementById('ev-log-erm-icon');
+  var alertWrap     = document.getElementById('ev-complete-alert-wrap');
+  var viewResultBtn = document.getElementById('ev-view-results-btn');
+  var heroWrap      = document.querySelector('.lt-s1-hero');
+  var workflowEvStep   = document.getElementById('ev-workflow-evidence');
+  var workflowEvCircle = document.getElementById('ev-workflow-evidence-circle');
+  var workflowEvIcon   = document.getElementById('ev-workflow-evidence-icon');
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  /* ── Apply one animation frame ── */
+  function applyFrame(t, done) {
+    /* Progress bars */
+    for (var i = 0; i < metrics.length; i++) {
+      var entry = metrics[i];
+      var m = entry.m;
+      var pct = lerp(m.startPct, 100, t);
+      var val = Math.round(lerp(m.startVal, m.total, t));
+      var fillEl  = document.getElementById(entry.fillEl);
+      var countEl = document.getElementById(entry.countEl);
+      fillEl.style.width = pct.toFixed(1) + '%';
+      fillEl.style.background = done ? COMPLETE_GREEN : m.color;
+      countEl.textContent = val + ' / ' + m.total;
+    }
+
+    /* Donut */
+    var donutDeg = lerp(120, 360, t);
+    var step = Math.min(Math.floor(t * 3) + 1, 3);
+    donutEl.style.setProperty('--donut-deg', donutDeg.toFixed(1));
+    if (done) {
+      donutEl.style.setProperty('--donut-fill', COMPLETE_GREEN);
+      donutEl.classList.add('ev-donut-complete');
+    }
+    donutNumEl.textContent = step + '/3';
+
+    /* Task rows */
+    var tasks;
+    if (t < 1 / 3) {
+      tasks = ['active', 'pending', 'pending'];
+    } else if (t < 2 / 3) {
+      tasks = ['done', 'active', 'pending'];
+    } else {
+      tasks = ['done', 'done', done ? 'done' : 'active'];
+    }
+
+    for (var j = 0; j < taskRows.length; j++) {
+      var row = taskRows[j];
+      var state = tasks[j];
+      var img = row.querySelector('.ev-task-img');
+      row.className = 'ev-task-row' + (state === 'active' ? ' active' : '') + (state === 'done' ? ' done' : '');
+      if (state === 'done') {
+        img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K';
+      } else if (state === 'active') {
+        img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiMxREQ5RjkiLz4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K';
+      } else {
+        img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K';
+      }
+    }
+
+    /* Log ERM icon */
+    if (done) {
+      logErmIcon.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K';
+    }
+  }
+
+  /* ── Completion sequence ── */
+  function onComplete() {
+    /* Hero title crossfade */
+    var heroHeader = document.querySelector('.lt-s1-hero-header');
+    heroHeader.classList.add('stage-2');
+
+    /* Hero glow: teal -> green */
+    screen0.classList.remove('hero-glow-teal');
+    screen0.classList.add('hero-glow-green');
+
+    /* Workflow Evidence step -> done */
+    workflowEvStep.classList.remove('active');
+    workflowEvStep.style.color = 'var(--t-primary)';
+    workflowEvStep.style.fontWeight = '600';
+    workflowEvCircle.classList.remove('active');
+    workflowEvIcon.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K';
+
+    /* Slide in alert */
+    /* Measure the inner content height, then animate */
+    alertWrap.style.height = 'auto';
+    var h = alertWrap.scrollHeight;
+    alertWrap.style.height = '0px';
+    /* Force reflow */
+    alertWrap.offsetHeight;
+    alertWrap.style.height = h + 'px';
+    alertWrap.classList.add('visible');
+
+    /* Scroll to top to reveal the alert */
+    var scrollContainer = document.querySelector('.s-left-scroll');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  /* ── Animation loop ── */
+  function runAnimation() {
+    var startTime = null;
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var elapsed = Math.min(timestamp - startTime, DURATION_MS);
+      var t = elapsed / DURATION_MS;
+      var done = elapsed >= DURATION_MS;
+
+      applyFrame(t, done);
+
+      if (!done) {
+        requestAnimationFrame(tick);
+      } else {
+        setTimeout(onComplete, 800);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  /* ── Start after pause ── */
+  setTimeout(runAnimation, PAUSE_MS);
+
+  /* ── "View results" button — switch to screen 1 ── */
+  viewResultBtn.addEventListener('click', function () {
+    showScreen(1);
+  });
+})();
+
+/* ── Screen switcher ── */
+function showScreen(index) {
+  document.querySelectorAll('.screen').forEach(function(el, i) {
+    el.classList.toggle('active', i === index);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── "Confirm Evidence pack" button — navigate to Synthesis ── */
+(function () {
+  var btn = document.getElementById('ev-confirm-pack-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    window.location.href = '03-Synthesis-to-Chat.html';
+  });
+})();
+</script>
+</body>
+</html>

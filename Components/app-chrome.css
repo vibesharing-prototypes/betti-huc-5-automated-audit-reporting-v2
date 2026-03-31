@@ -1,0 +1,137 @@
+/* ============================================================
+   APP CHROME — header bar, sidebar, shared UI chrome
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Shared app-level chrome used across all workflow screens.
+   Host page must define design tokens in :root (--border, --t-primary, etc.).
+
+   UI-specific variables (with defaults):
+     --ui-dark:          #1e293b   — icon/pill text, send btn
+     --ui-darkest:       #0f172a   — notif dot, hover bg
+     --ui-border-strong: #e2e8f0   — hover borders
+     --ui-surface-tint:  #f1f5f9   — activity count chip bg
+     --ui-text-dim:      #64748b   — activity count text
+
+   Position note: header is NOT sticky by default.
+   Pages that need sticky header should add locally:
+     .app-header { position: sticky; top: 0; }
+   Legacy prefix note: lt-* classes renamed to app-* (lt = "light theme", now irrelevant)
+
+   Z-index assignments (see host page z-index system):
+     50  — app header
+     11  — sidebar
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. APP HEADER
+   ──────────────────────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.app-logo {
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--t-primary);
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.app-logo:hover { opacity: 0.7; }
+
+.app-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+.app-logo-mark img { width: 24px; height: 24px; display: block; }
+
+.app-spacer { flex: 1; }
+
+.app-header-nav { display: flex; align-items: center; gap: 8px; }
+
+.app-activity-pill {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: #ffffff;
+  font-size: 13px; font-weight: 400;
+  color: var(--ui-dark, #1e293b);
+  cursor: pointer; white-space: nowrap;
+  transition: border-color 0.15s;
+}
+.app-activity-pill:hover { border-color: var(--ui-border-strong, #e2e8f0); }
+.app-activity-pill svg {
+  width: 15px; height: 15px; flex-shrink: 0;
+  color: var(--ui-dark, #1e293b);
+}
+
+.app-activity-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ui-surface-tint, #f1f5f9);
+  border-radius: 20px; padding: 1px 7px;
+  font-size: 12px; font-weight: 400;
+  color: var(--ui-text-dim, #64748b);
+}
+
+.app-icon-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #ffffff; cursor: pointer;
+  color: var(--ui-dark, #1e293b);
+  flex-shrink: 0; transition: border-color 0.15s;
+}
+.app-icon-btn:hover { border-color: var(--ui-border-strong, #e2e8f0); }
+.app-icon-btn svg { width: 16px; height: 16px; }
+
+.app-notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 9px; height: 9px;
+  background: var(--ui-darkest, #0f172a);
+  border-radius: 50%; border: 1.5px solid #ffffff;
+}
+
+.app-avatar {
+  width: 32px; height: 32px;
+  background: #bae6fd; color: #0369a1;
+  border-radius: 10px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. ICON SIDEBAR
+   ──────────────────────────────────────────────────────────────── */
+.app-sidebar {
+  width: 48px;
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 4px; flex-shrink: 0;
+  position: relative;
+  z-index: 11;
+}
+
+.app-sidebar-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--t-tertiary);
+  transition: all 0.15s;
+}
+.app-sidebar-icon:hover {
+  background: rgba(0,0,0,0.06);
+  color: var(--t-secondary);
+}
+.app-sidebar-icon.active {
+  background: rgba(211,34,42,0.08);
+  color: var(--brand, #D3222A);
+}
+.app-sidebar-icon svg { width: 18px; height: 18px; }
+
+.app-sidebar-spacer { flex: 1; }

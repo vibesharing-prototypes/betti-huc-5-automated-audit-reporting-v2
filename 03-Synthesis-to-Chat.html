@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthesis → Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Components/layout.css">
+<link rel="stylesheet" href="Components/app-chrome.css">
+<link rel="stylesheet" href="Components/hero-section.css">
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/alert-cards.css">
+<link rel="stylesheet" href="Components/card-hero.css">
+<link rel="stylesheet" href="Components/headers.css">
+<link rel="stylesheet" href="Components/chatbox.css">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --bg-base:       #f0f0f1;
+  --bg-surface:    #ffffff;
+  --bg-sidebar:    #e8e8ea;
+
+  /* Dark-alias names → light values (keeps var() refs working) */
+  --bg-primary:    #f0f0f1;
+  --bg-elevated:   #ffffff;
+  --bg-component:  #f4f4f5;
+
+  /* Text */
+  --t-primary:     #282E37;
+  --t-secondary:   #525252;
+  --t-tertiary:    #6F7377;
+
+  /* Text aliases */
+  --text-primary:    #282E37;
+  --text-secondary:  #525252;
+  --text-muted:      #6F7377;
+  --text-very-muted: #A0A2A5;
+
+  /* Borders */
+  --border:           rgba(0,0,0,0.09);
+  --border-primary:   rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+
+  /* Semantic palette — adapted for light bg */
+  --green:  #16a34a;
+  --blue:   #1d4ed8;
+  --amber:  #b45309;
+  --red:    #D3222A;
+  --purple: #7c3aed;
+  --orange: #ea580c;
+  --brand:  #D3222A;
+
+  /* Header */
+  --bg-header:       rgba(240,240,241,0.85);
+
+  /* UI chrome — replaces hardcoded slate values */
+  --ui-dark:          #1e293b;
+  --ui-darkest:       #0f172a;
+  --ui-border-strong: #e2e8f0;
+  --ui-surface-tint:  #f1f5f9;
+  --ui-text-dim:      #64748b;
+
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+  /* Edit-specific easing tokens */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+/* ============================================================
+   VIEW SWITCHING (instant show/hide)
+   ============================================================ */
+#app-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#view-synthesis {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+#view-edit {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+}
+
+
+/* ============================================================
+   VIEW-SYNTHESIS — SCREEN WRAPPER (overlay-style)
+   ============================================================ */
+#view-synthesis #screens-wrapper {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+#view-synthesis .screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+}
+#view-synthesis .screen.active { display: flex; }
+
+
+/* ============================================================
+   VIEW-SYNTHESIS — LAYOUT OVERRIDES
+   ============================================================ */
+/* s-left-content: flex column wrapper, no shared equivalent */
+.s-left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* Hero stepper — uses shared hero-section.css */
+
+
+/* ============================================================
+   VIEW-SYNTHESIS — CONTENT CARDS (page-specific)
+   ============================================================ */
+.ev-chains-card { background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.ev-chain-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.ev-chain-item:first-child { padding-top: 0; }
+.ev-chain-item:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-chain-item-title { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 4px; line-height: 1.4; }
+.ev-chain-item-body { font-size: 14px; color: var(--t-secondary); line-height: 1.5; }
+.ev-chain-item-with-chip { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ev-chain-item-with-chip .ev-chain-item-title { margin-bottom: 0; flex: 1; min-width: 0; }
+
+/* Handoff */
+.s-handoff-body { display: flex; flex-direction: column; gap: 12px; }
+.s-handoff-divider { border-top: 1px solid var(--border); margin: 0; }
+
+
+/* ============================================================
+   VIEW-EDIT — BODY LAYOUT
+   ============================================================ */
+#view-edit .body-layout {
+  display: flex; flex: 1; overflow: hidden;
+  height: calc(100% - 48px);
+  background: #F6F6F9;
+}
+
+
+/* ============================================================
+   VIEW-EDIT — CHAT PANEL (left side)
+   ============================================================ */
+#view-edit .chat-panel {
+  flex: 0 0 44%; display: flex; flex-direction: column;
+  overflow: hidden; background: #F6F6F9;
+}
+#view-edit .chat-scroll {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 0 24px; position: relative;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+#view-edit .chat-scroll-inner {
+  min-height: 100%; display: flex; flex-direction: column;
+}
+#view-edit .chat-scroll-inner > .chat-input-footer { margin-top: auto; }
+#view-edit .chat-scroll::-webkit-scrollbar { width: 8px; }
+#view-edit .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+#view-edit .chat-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+#view-edit .chat-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+
+/* Chat block scroll-in transition */
+#view-edit .chat-block {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.8s var(--ease-spring), transform 0.85s var(--ease-spring);
+}
+#view-edit .chat-block.visible { opacity: 1; transform: translateY(0); }
+
+/* Initial AI block */
+#initial-ai-block {
+  max-height: 0; overflow: hidden; margin: 0; padding: 0;
+  transition: max-height 1s var(--ease-in-out);
+}
+#initial-ai-block.visible { max-height: 3200px; }
+#initial-ai-block .ease-in-chunk {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.75s var(--ease-spring), transform 0.8s var(--ease-spring);
+}
+#initial-ai-block.visible .ease-in-chunk { opacity: 1; transform: translateY(0); }
+#initial-ai-block .ease-in-chunk:nth-child(1)  { transition-delay: 0.08s; }
+#initial-ai-block .ease-in-chunk:nth-child(2)  { transition-delay: 0.22s; }
+#initial-ai-block .ease-in-chunk:nth-child(3)  { transition-delay: 0.36s; }
+#initial-ai-block .ease-in-chunk:nth-child(4)  { transition-delay: 0.5s; }
+#initial-ai-block .ease-in-chunk:nth-child(5)  { transition-delay: 0.64s; }
+#initial-ai-block .ease-in-chunk:nth-child(6)  { transition-delay: 0.78s; }
+#initial-ai-block .ease-in-chunk:nth-child(7)  { transition-delay: 0.92s; }
+#initial-ai-block .ease-in-chunk:nth-child(8)  { transition-delay: 1.06s; }
+#initial-ai-block .ease-in-chunk:nth-child(9)  { transition-delay: 1.2s; }
+#initial-ai-block .ease-in-chunk:nth-child(10) { transition-delay: 1.34s; }
+#initial-ai-block .ease-in-chunk:nth-child(11) { transition-delay: 1.48s; }
+
+/* Chat starts blank until startChat */
+#view-edit .chat-scroll .msg-date {
+  opacity: 0; visibility: hidden; transition: opacity 0.35s ease;
+}
+#view-edit .chat-scroll.chat-started .msg-date { opacity: 1; visibility: visible; }
+
+/* Date divider */
+#view-edit .msg-date {
+  text-align: center; font-size: 12px; color: var(--t-tertiary);
+  padding: 20px 0 16px; position: relative;
+}
+#view-edit .msg-date::before, #view-edit .msg-date::after {
+  content: ''; position: absolute; top: calc(50% + 2px); height: 1px; background: var(--border);
+}
+#view-edit .msg-date::before { left: 0; width: calc(50% - 52px); }
+#view-edit .msg-date::after  { right: 0; width: calc(50% - 52px); }
+
+
+/* ============================================================
+   VIEW-EDIT — CHAT MESSAGES
+   ============================================================ */
+
+/* User message (right-aligned) */
+.msg-user-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-bottom: 20px; }
+.msg-user-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--t-secondary); }
+.msg-user-name { font-size: 13px; font-weight: 600; color: var(--t-secondary); }
+.msg-user-time { font-size: 11px; color: var(--t-secondary); }
+.msg-user-avatar {
+  width: 28px; height: 28px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #bae6fd; color: #0369a1; font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
+}
+.msg-user-bubble {
+  background: #ffffff; border: none; border-radius: 16px 4px 16px 16px;
+  padding: 12px 16px; font-size: 14px; color: var(--t-secondary); line-height: 1.55; max-width: 86%;
+}
+
+/* Thinking state */
+.msg-thinking-wrap {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  padding: 8px 0; background: transparent; border: none; min-height: 40px;
+}
+.msg-thinking-icon {
+  width: 24px; height: 24px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  animation: thinking-pulse 2s var(--ease-in-out) infinite;
+}
+.msg-thinking-icon img { width: 24px; height: 24px; display: block; opacity: 0.85; }
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+.msg-thinking-dots {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--t-tertiary); font-weight: 400; letter-spacing: 0.02em;
+}
+.msg-thinking-dots .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--t-tertiary); animation: thinking-wave 1.4s var(--ease-in-out) infinite;
+}
+.msg-thinking-dots .dot:nth-child(1) { animation-delay: 0s; }
+.msg-thinking-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+.msg-thinking-dots .dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes thinking-wave {
+  0%, 60%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+  30% { transform: translateY(-4px) scale(1.15); opacity: 1; }
+}
+
+/* Agent message header */
+.msg-agent-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.msg-agent-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.msg-agent-icon img { width: 24px; height: 24px; display: block; }
+.msg-agent-meta-col { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.msg-agent-name { font-size: 13px; font-weight: 600; color: var(--t-secondary); }
+.msg-agent-time { font-size: 11px; color: var(--t-secondary); }
+.msg-body-p { font-size: 14px; color: var(--t-secondary); line-height: 1.6; margin-bottom: 12px; }
+.msg-body-p:last-of-type { margin-bottom: 0; }
+.msg-body-p strong { color: var(--t-primary); font-weight: 600; }
+.msg-steps-label { font-size: 14px; color: var(--t-secondary); line-height: 1.6; margin-bottom: 14px; }
+
+/* Step cards */
+.steps-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.step-card { background: #ffffff; border-radius: 14px; padding: 16px 18px; }
+.step-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.step-title { font-size: 14px; font-weight: 600; color: var(--t-primary); line-height: 1.3; }
+.step-body { font-size: 13px; color: var(--t-secondary); line-height: 1.55; }
+.step-tags { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.step-tag-row { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--t-secondary); line-height: 1.4; }
+.step-examples { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.step-example { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--t-secondary); line-height: 1.5; }
+.step-ex-icon {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.step-ex-icon svg { width: 10px; height: 10px; }
+.step-ex-icon.negative { background: rgba(211,34,42,0.1); }
+.step-ex-icon.negative svg { color: #D3222A; }
+.step-ex-icon.positive { background: rgba(22,163,74,0.12); }
+.step-ex-icon.positive svg { color: #16a34a; }
+.step-ex-icon.additive { background: #f4f4f5; border: 1px solid var(--border-secondary); }
+.step-ex-icon.additive svg { color: var(--t-tertiary); }
+.msg-divider { border: none; border-top: 1px solid #DADADA; margin: 0 0 20px 0; }
+.msg-closing { font-size: 14px; color: var(--t-secondary); line-height: 1.6; margin-bottom: 12px; }
+.msg-question { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 14px; }
+.reaction-row { display: flex; align-items: center; gap: 4px; margin-bottom: 20px; }
+.reaction-btn {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; border-radius: 8px;
+  cursor: pointer; color: var(--t-tertiary); transition: all 0.15s;
+}
+.reaction-btn:hover { background: var(--bg-component); color: var(--t-secondary); }
+.reaction-btn svg { width: 16px; height: 16px; }
+.suggestions-panel { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; margin-bottom: 24px; }
+.suggestions-label {
+  display: flex; align-items: center; justify-content: flex-end; gap: 5px;
+  padding: 0 2px 4px; font-size: 11px; font-weight: 600; color: var(--t-tertiary); letter-spacing: 0.03em;
+}
+.suggestions-label svg { width: 13px; height: 13px; }
+.suggestion-item {
+  display: inline-flex; align-items: flex-start; gap: 8px;
+  padding: 8px 16px 8px 12px; background: #ffffff;
+  border-radius: 24px 4px 16px 24px;
+  font-size: 14px; font-weight: 400; color: #282e37; letter-spacing: 0.02em; line-height: 20px;
+  cursor: pointer; transition: background 0.15s;
+  width: fit-content; max-width: 100%; justify-content: flex-end;
+}
+.suggestion-item:hover { background: #f4f4f5; }
+.suggestion-arrow {
+  width: 20px; height: 20px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t-tertiary); font-size: 14px; line-height: 1;
+}
+
+
+/* ============================================================
+   VIEW-EDIT — REVIEW & AUTHORIZE
+   ============================================================ */
+.review-heading { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 14px; }
+.review-card {
+  background: #ffffff; border: none; border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 12px;
+}
+.review-card-title { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 12px; }
+.check-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0; font-size: 14px; color: var(--t-secondary); line-height: 1.4; gap: 12px;
+}
+.check-row:first-child { padding-top: 0; }
+.check-box {
+  width: 20px; height: 20px; background: #1e293b; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; cursor: pointer; transition: background 0.2s ease;
+}
+.check-box.unchecked { background: #fff; border: 1.5px solid #A0A2A5; }
+.check-box.unchecked svg { opacity: 0; }
+.check-box svg { width: 11px; height: 11px; transition: opacity 0.15s ease; }
+
+/* Toggle (Edit version) — scoped to #view-edit */
+#view-edit .toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0; font-size: 14px; color: var(--t-secondary); gap: 12px;
+}
+#view-edit .toggle-row:first-child { padding-top: 0; }
+#view-edit .toggle {
+  width: 36px; height: 20px; background: #1e293b; border-radius: 10px;
+  position: relative; flex-shrink: 0; cursor: pointer; transition: background 0.25s ease;
+}
+#view-edit .toggle::after {
+  content: ''; position: absolute; width: 16px; height: 16px;
+  background: #fff; border-radius: 50%; top: 2px; right: 2px;
+  transition: right 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#view-edit .toggle.off { background: #A0A2A5; }
+#view-edit .toggle.off::after { right: auto; left: 2px; }
+
+.trend-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0 0; font-size: 14px; color: var(--t-secondary); gap: 12px;
+}
+.seg-btn {
+  display: inline-flex; border: 1px solid var(--border-secondary);
+  border-radius: 8px; overflow: hidden; flex-shrink: 0;
+}
+.seg-opt {
+  padding: 5px 14px; font-size: 12px; font-weight: 400;
+  cursor: pointer; color: var(--t-secondary); background: transparent;
+  border: none; border-left: 1px solid var(--border-secondary);
+  font-family: var(--font); transition: all 0.15s; white-space: nowrap;
+}
+.seg-opt:first-child { border-left: none; }
+.seg-opt.active { background: #1e293b; color: #ffffff; }
+.action-row { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding: 4px 0 24px; }
+.action-label { font-size: 11px; color: var(--t-tertiary); font-weight: 400; letter-spacing: 0.03em; align-self: flex-end; }
+.action-btns { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Review block motion */
+#review-authorize-block { margin-top: 24px; }
+#review-authorize-block .ease-in-chunk {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.75s var(--ease-spring), transform 0.8s var(--ease-spring);
+}
+#review-authorize-block.visible .ease-in-chunk { opacity: 1; transform: translateY(0); }
+#review-authorize-block .ease-in-chunk:nth-child(1) { transition-delay: 0.08s; }
+#review-authorize-block .ease-in-chunk:nth-child(2) { transition-delay: 0.22s; }
+#review-authorize-block .ease-in-chunk:nth-child(3) { transition-delay: 0.36s; }
+#review-authorize-block .ease-in-chunk:nth-child(4) { transition-delay: 0.5s; }
+
+
+/* ============================================================
+   VIEW-EDIT — CHAT INPUT (bottom of chat panel)
+   ============================================================ */
+#view-edit .chat-input-footer {
+  margin-left: -24px; margin-right: -24px; width: calc(100% + 48px);
+  padding: 24px 20px; background: rgba(240,240,241,0.3);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+  position: sticky; bottom: 0; box-sizing: border-box; z-index: 10; isolation: isolate;
+}
+.chat-input-wrapper { position: relative; width: 100%; }
+.chat-input-glow {
+  position: absolute; inset: -4px; border-radius: 28px;
+  background: linear-gradient(90deg, rgba(211,34,42,0) 0%, rgba(211,34,42,0.3) 18%,
+    rgba(194,71,250,0.3) 50%, rgba(0,170,243,0.3) 82%, rgba(0,170,243,0) 100%);
+  filter: blur(10px); z-index: 0; pointer-events: none; opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#view-edit .chat-input-footer.glow-active .chat-input-glow {
+  opacity: 1; animation: glow-breathe 3s ease-in-out infinite;
+}
+.chat-input-box {
+  width: 100%; position: relative; z-index: 1;
+  background: #ffffff; border: 1px solid var(--border); border-top: none;
+  border-radius: 24px; padding: 14px 16px; outline: none;
+}
+.chat-input-box:focus-within { outline: none; box-shadow: none; }
+.chat-input-box::before {
+  content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+  opacity: 0.6; transition: opacity 0.4s ease;
+}
+.chat-input-wrapper.glow-active .chat-input-box::before { opacity: 1; }
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.02); }
+}
+.chat-input-inner {
+  font-size: 14px; color: var(--t-primary); padding: 2px 0 8px;
+  line-height: 1.5; min-height: 22px; outline: none;
+}
+.chat-input-inner:focus { outline: none; box-shadow: none; }
+.chat-input-inner.placeholder { color: var(--t-tertiary); }
+.chat-bar { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.chat-bar-btn {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border); border-radius: 50%;
+  cursor: pointer; color: var(--t-tertiary); flex-shrink: 0; transition: border-color 0.15s;
+}
+.chat-bar-btn:hover { border-color: #cbd5e1; }
+.chat-bar-btn svg { width: 14px; height: 14px; }
+.chat-flex { flex: 1; }
+.chat-send-btn {
+  width: 28px; height: 28px; background: #1e293b; border: none; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: #fff; flex-shrink: 0; opacity: 0.5; transition: background 0.15s, opacity 0.15s;
+}
+.chat-send-btn:hover { background: #0f172a; opacity: 0.7; }
+.chat-send-btn.active { opacity: 1; background: #282E37; }
+.chat-send-btn.active:hover { background: #1e2329; opacity: 1; }
+.chat-send-btn svg { width: 13px; height: 13px; }
+
+
+/* ============================================================
+   VIEW-EDIT — DOCUMENT PANEL (right side)
+   ============================================================ */
+#view-edit .doc-panel {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  background: #ffffff; border-top-left-radius: 24px;
+}
+.doc-scroll {
+  flex: 1; overflow-y: auto; padding: 24px 32px 20px;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.doc-scroll::-webkit-scrollbar { width: 4px; }
+.doc-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+.doc-pills-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.doc-pill-dot { width: 4px; height: 4px; border-radius: 50%; background: #282e37; flex-shrink: 0; }
+.doc-title {
+  font-size: 22px; font-weight: 600; color: var(--t-primary);
+  letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 8px;
+}
+.doc-meta { font-size: 13px; color: var(--t-secondary); margin-bottom: 24px; line-height: 1.5; }
+.doc-meta strong { font-weight: 600; }
+.doc-divider { border: none; border-top: 1px solid var(--border); margin-bottom: 24px; }
+.doc-section { margin-bottom: 24px; }
+.doc-section-title {
+  font-size: 16px; font-weight: 600; color: var(--t-primary); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px; line-height: 1.3;
+}
+.fact-chip {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 400;
+  color: #0e7490; background: #D7F6FF; border: 1px solid #1DD9F9;
+  border-radius: 20px; padding: 2px 9px; white-space: nowrap;
+  vertical-align: middle; margin-right: 6px;
+}
+.emerging-inline {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 400;
+  color: #D3222A; background: rgba(211,34,42,0.06); border: 1px solid rgba(211,34,42,0.2);
+  border-radius: 20px; padding: 2px 9px; vertical-align: middle; margin: 0 3px;
+}
+.doc-body { font-size: 14px; color: var(--t-secondary); line-height: 1.6; }
+.alert-card.alert-card-sm { margin-top: 12px; }
+.doc-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px 30px 24px; flex-shrink: 0;
+  background: rgba(255,255,255,0.3); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+
+
+/* ============================================================
+   VIEW-EDIT — DOC BODY UPDATE ANIMATION
+   ============================================================ */
+@keyframes doc-highlight-fade {
+  0%   { background-color: rgba(215,246,255,0.5); }
+  40%  { background-color: rgba(215,246,255,0.5); }
+  100% { background-color: transparent; }
+}
+.doc-body.updated { animation: doc-highlight-fade 10s ease-out forwards; border-radius: 6px; padding: 6px 8px; margin: -6px -8px; }
+
+/* Updated pill entrance */
+@keyframes pill-pop-in {
+  0%   { opacity: 0; transform: scale(0.7) translateY(2px); }
+  60%  { opacity: 1; transform: scale(1.05) translateY(-1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.pill-animate-in { animation: pill-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+</style>
+</head>
+<body>
+
+<div id="app-wrapper">
+
+<!-- ============================================================
+     VIEW 1: SYNTHESIS RESULTS
+     ============================================================ -->
+<div id="view-synthesis">
+
+<div id="screens-wrapper">
+
+<div class="screen active" id="screen-1">
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+      Diligent  •  Automated Audit Reporting
+    </div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="app-activity-count">5</span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="app-notif-dot"></span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="s-left-content">
+      <div class="page-scroll hero-glow-blue">
+        <div class="page-inner content-gap">
+
+        <!-- Hero -->
+        <div class="hero-section-workflow">
+          <div class="hero-header">
+            <div class="hero-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Assurance report request
+              </span>
+            </div>
+            <h1 class="hero-title"><strong>Risk synthesis</strong> - Expanding details.</h1>
+          </div>
+          <div class="hero-stepper">
+            <div class="hero-stepper-label">Workflow status</div>
+            <div class="hero-stepper-steps">
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+                Evidence
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step active">
+                <div class="hero-step-icon"><img src="Icons/Active.svg" width="20" height="20" alt=""></div>
+                Synthesis &amp; Edit
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Preview &amp; Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="section-gap">
+
+        <!-- Changelog: Correlating signals -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">1/4 - Correlating signals across domains</div>
+            <div class="section-subtitle">Mapping relationships between findings across all 8 sources. Cross-domain chains identified.</div>
+          </div>
+          <div class="ev-chains-card">
+            <div class="ev-chain-item">
+              <div class="ev-chain-item-title">Access Control chain</div>
+              <div class="ev-chain-item-body">Audit finding AC-2 (Projects) → ERM risk "Unauthorized Access" above appetite → 3 vendor assessments with weak access controls (3rd Risk) + 2 speak-up reports about shared passwords (Vault)</div>
+            </div>
+            <div class="ev-chain-item">
+              <div class="ev-chain-item-title">SEC Disclosure chain</div>
+              <div class="ev-chain-item-body">8-K materiality process gap (Compliance Maps) → no documented cyber risk management disclosure → peer enforcement action on identical gap (External Intel)</div>
+            </div>
+            <div class="ev-chain-item">
+              <div class="ev-chain-item-title">Vendor Concentration chain</div>
+              <div class="ev-chain-item-body">3 critical vendors share privileged access architecture (3rd Risk) → linked to same AC-2 finding → no compensating control documented (Frameworks)</div>
+            </div>
+          </div>
+        </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">2/4 — Filtering by materiality and relevance</div>
+              <div class="section-subtitle">Applying thresholds across 312 data points. Low-relevance items deprioritised but not excluded — available on request.</div>
+            </div>
+            <div class="card-default">
+              <div class="card-hero-row">
+                <div class="card-hero">
+                  <div class="card-hero-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    Priority findings
+                  </div>
+                  <div class="card-hero-value">18 <span class="card-hero-desc">>$500K or regulatory</span></div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 13l5 5 5-5"/><path d="M7 6l5 5 5-5"/></svg>
+                    Deprioritised
+                  </div>
+                  <div class="card-hero-value">43 <span class="card-hero-desc">below threshold</span></div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 8h4V4"/><path d="M16 4v4h4"/><path d="M20 16h-4v4"/><path d="M8 20H4v-4"/></svg>
+                    Context only
+                  </div>
+                  <div class="card-hero-value">251 <span class="card-hero-desc">retained, not surfaced</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="ev-section-evidence-pack" class="section">
+            <div class="section-header">
+              <div class="section-title">3/4 — Categorising against company risk taxonomy</div>
+              <div class="section-subtitle">Cross-category exposure flagged — Access Control weakness appears in Compliance, Operational, and Reputational simultaneously.</div>
+            </div>
+              <div class="card-default">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th class="col-records">Number of findings</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="col-source">Compliance</td>
+                      <td class="col-records">7</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Operational</td>
+                      <td class="col-records">5</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Reputational</td>
+                      <td class="col-records">4</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Financial</td>
+                      <td class="col-records">2</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Strategic</td>
+                      <td class="col-records">0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Step 4 of 4 — Comparing posture against SEC disclosure requirements</div>
+            </div>
+            <div class="ev-chains-card">
+              <div class="ev-chain-item ev-chain-item-with-chip">
+                <div class="ev-chain-item-title">8-K materiality determination process</div>
+                <span class="pill pill-sm pill-red">Gap</span>
+              </div>
+              <div class="ev-chain-item ev-chain-item-with-chip">
+                <div class="ev-chain-item-title">Risk management disclosure documentation</div>
+                <span class="pill pill-sm pill-yellow">Partial</span>
+              </div>
+              <div class="ev-chain-item ev-chain-item-with-chip">
+                <div class="ev-chain-item-title">Governance oversight structure</div>
+                <span class="pill pill-sm pill-green">Covered</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Handoff section -->
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Handoff</div>
+              <div class="section-subtitle">Synthesis - Making sense is completed</div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Top 5 priority findings</div>
+              <div class="s-handoff-body">
+                <ol style="margin:0;padding:0;display:flex;flex-direction:column;gap:10px;list-style:none;">
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-red">1</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">Access control weakness — cross-domain, cross-vendor, 4-source corroboration</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-red">2</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">SEC 8-K materiality process undocumented — direct peer enforcement parallel</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-red">3</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">3 critical vendors sharing access architecture — no compensating control</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-yellow">4</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">CM-6 configuration remediation overdue 47 days — no escalation recorded</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-yellow">5</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">Risk management disclosure partial — regulator scrutiny rising per external intel</span></li>
+                </ol>
+                <div class="s-handoff-divider"></div>
+                <div class="alert-card alert-card-md alert-card-yellow">
+                  <div class="alert-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.86523 20.4999L11.9998 3L22.1343 20.4999H1.86523ZM4.44978 18.9999H19.5498L11.9998 5.99993L4.44978 18.9999ZM11.9998 17.8076C12.2286 17.8076 12.4205 17.7302 12.5753 17.5754C12.7301 17.4206 12.8075 17.2288 12.8075 16.9999C12.8075 16.7711 12.7301 16.5793 12.5753 16.4245C12.4205 16.2697 12.2286 16.1923 11.9998 16.1923C11.7709 16.1923 11.5791 16.2697 11.4243 16.4245C11.2695 16.5793 11.1921 16.7711 11.1921 16.9999C11.1921 17.2288 11.2695 17.4206 11.4243 17.5754C11.5791 17.7302 11.7709 17.8076 11.9998 17.8076ZM11.2498 15.1923H12.7498V10.1923H11.2498V15.1923Z" fill="currentColor"/></svg></div>
+                  <div class="alert-card-body">
+                    <div class="alert-card-title">Recommended focus areas</div>
+                    <div class="alert-card-sub">Access Management Controls · SEC Disclosure Readiness · Critical Vendor Cyber Posture</div>
+                  </div>
+                </div>
+                <div class="alert-card alert-card-md alert-card-green">
+                  <div class="alert-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.5808 16.2538L17.3038 9.53075L16.25 8.47693L10.5808 14.1462L7.73075 11.2962L6.67693 12.35L10.5808 16.2538ZM12.0016 21.5C10.6877 21.5 9.45268 21.2506 8.29655 20.752C7.1404 20.2533 6.13472 19.5765 5.2795 18.7217C4.42427 17.8669 3.74721 16.8616 3.24833 15.706C2.74944 14.5504 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45268 3.248 8.29655C3.74667 7.1404 4.42342 6.13472 5.27825 5.2795C6.1331 4.42427 7.13834 3.74721 8.29398 3.24833C9.44959 2.74944 10.6844 2.5 11.9983 2.5C13.3122 2.5 14.5473 2.74933 15.7034 3.248C16.8596 3.74667 17.8652 4.42342 18.7205 5.27825C19.5757 6.1331 20.2527 7.13834 20.7516 8.29398C21.2505 9.44959 21.5 10.6844 21.5 11.9983C21.5 13.3122 21.2506 14.5473 20.752 15.7034C20.2533 16.8596 19.5765 17.8652 18.7217 18.7205C17.8669 19.5757 16.8616 20.2527 15.706 20.7516C14.5504 21.2505 13.3156 21.5 12.0016 21.5ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76664 19.225 7.87498 17.675 6.32498C16.125 4.77498 14.2333 3.99998 12 3.99998C9.76664 3.99998 7.87498 4.77498 6.32498 6.32498C4.77498 7.87498 3.99998 9.76664 3.99998 12C3.99998 14.2333 4.77498 16.125 6.32498 17.675C7.87498 19.225 9.76664 20 12 20Z" fill="currentColor"/></svg></div>
+                  <div class="alert-card-body">
+                    <div class="alert-card-title">Cybersecurity Risk — Situational Overview</div>
+                    <div class="alert-card-sub">AI Reporting · Draft · Just created</div>
+                  </div>
+                  <div class="alert-card-actions">
+                    <button class="btn btn-primary btn-md open-report-btn" type="button">View and edit draft</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /section-gap -->
+
+        </div><!-- end page-inner -->
+
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div><!-- end page-scroll -->
+    </div>
+  </div>
+</div>
+
+</div><!-- end screens-wrapper -->
+
+</div><!-- end #view-synthesis -->
+
+
+<!-- ============================================================
+     VIEW 2: CHAT + DOCUMENT EDITOR
+     ============================================================ -->
+<div id="view-edit">
+
+<div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+      Diligent  •  Automated Audit Reporting
+    </div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="app-notif-dot"></span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="body-layout">
+
+    <div class="chat-panel">
+      <div class="chat-scroll">
+        <div class="chat-scroll-inner">
+
+        <div class="msg-date">12 April 2026</div>
+
+        <!-- Step 1: Initial AI content (eases in block-by-block after 1s) -->
+        <div id="initial-ai-block">
+          <div class="ease-in-chunk">
+            <div class="msg-agent-header">
+              <div class="msg-agent-icon">
+                <img src="Icons/D_icon.png" alt="GRC Assistant">
+              </div>
+              <div class="msg-agent-meta-col">
+                <span class="msg-agent-name">GRC Assistant</span>
+                <span class="msg-agent-time">03:14 PM</span>
+              </div>
+            </div>
+          </div>
+          <div class="ease-in-chunk">
+            <p class="msg-body-p">Your draft <strong>Cybersecurity Risk — Situational Overview</strong> is ready.</p>
+          </div>
+          <div class="ease-in-chunk">
+            <p class="msg-body-p">Take a look and let me know if you'd like any changes to the charts or narratives. You can also switch to Editor mode to make manual edits.</p>
+          </div>
+          <div class="ease-in-chunk">
+            <p class="msg-steps-label">Steps I'll follow in this process:</p>
+          </div>
+          <div class="ease-in-chunk">
+          <div class="steps-list">
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="pill pill-num">1</span>
+                <span class="step-title">Drafting situational overview</span>
+              </div>
+              <div class="step-body">Generating 1-page board-level summary across four sections: current situation, why it matters, what has changed, and key uncertainties. Writing in plain English — no technical jargon.</div>
+            </div>
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="pill pill-num">2</span>
+                <span class="step-title">Tagging statements by evidence type</span>
+              </div>
+              <div class="step-body">Each statement tagged to its evidential basis:</div>
+              <div class="step-tags">
+                <div class="step-tag-row">
+                  <span class="pill pill-sm pill-blue">Fact</span>
+                  Directly evidenced in the Evidence Pack — board can rely on this
+                </div>
+                <div class="step-tag-row">
+                  <span class="pill pill-sm pill-yellow">Assumption</span>
+                  Reasonable inference — management confirmation needed
+                </div>
+                <div class="step-tag-row">
+                  <span class="pill pill-sm pill-red">Emerging</span>
+                  External signal — no current internal evidence yet
+                </div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="pill pill-num">3</span>
+                <span class="step-title">Adapting tone for board audience</span>
+              </div>
+              <div class="step-body">Technical language translated for board consumption:</div>
+              <div class="step-examples">
+                <div class="step-example">
+                  <div class="step-ex-icon negative">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"/></svg>
+                  </div>
+                  <span>"NIST CSF AC-2 control ineffective"</span>
+                </div>
+                <div class="step-example">
+                  <div class="step-ex-icon positive">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5l2.5 2.5 3.5-4"/></svg>
+                  </div>
+                  <span>"Unauthorised access could expose customer data, creating regulatory and reputational risk"</span>
+                </div>
+                <div class="step-example">
+                  <div class="step-ex-icon additive">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 2v6M2 5h6"/></svg>
+                  </div>
+                  <span>"Our control posture is stronger than 65% of financial services peers — but the 3 gaps that remain are in areas regulators are actively scrutinising"</span>
+                </div>
+            </div>
+          </div>
+          </div>
+          </div>
+          <div class="ease-in-chunk">
+          <hr class="msg-divider" aria-hidden="true">
+          <p class="msg-closing">Situational overview drafted. Review the report on the right — probe any section or ask for revisions before steering the deep dive.</p>
+          <p class="msg-question">Would you like me to change anything in the draft now?</p>
+          </div>
+          <div class="ease-in-chunk">
+          <div class="reaction-row">
+            <button class="reaction-btn" title="Helpful">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+            </button>
+            <button class="reaction-btn" title="Not helpful">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+            </button>
+            <button class="reaction-btn" title="Copy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+            <button class="reaction-btn" title="More">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+            </button>
+          </div>
+          </div>
+          <div class="ease-in-chunk">
+          <div class="suggestions-panel">
+            <div class="suggestions-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+              Suggestions
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-arrow">↳</span>
+              Strengthen the vendor risk section
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-arrow">↳</span>
+              Add more peer comparison context
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-arrow">↳</span>
+              What's the basis for the SEC gap?
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- Step 3: User message 1 (Alexandra Chen) -->
+        <div id="user-msg-1" class="chat-block" style="display: none;">
+          <div class="msg-user-wrap">
+            <div class="msg-user-meta">
+              <span class="msg-user-name">Alexandra Chen</span>
+              <span class="msg-user-time">03:15 PM</span>
+              <div class="msg-user-avatar" aria-hidden="true">AC</div>
+            </div>
+            <div class="msg-user-bubble">
+              Thomas is going to push hard on the vendor risk section — he's been concerned since the Apex breach. Can you strengthen that and be more specific about what the contractual exposure looks like?
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Thinking state 1 -->
+        <div id="thinking-1" class="chat-block" style="display: none;">
+          <div class="msg-thinking-wrap">
+            <div class="msg-thinking-icon">
+              <img src="Icons/D_icon.png" alt="GRC Assistant">
+            </div>
+            <div class="msg-thinking-dots">
+              Thinking <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: AI response 1 -->
+        <div id="ai-response-1" class="chat-block" style="display: none;">
+          <div class="msg-agent-header">
+            <div class="msg-agent-icon">
+              <img src="Icons/D_icon.png" alt="GRC Assistant">
+            </div>
+            <div class="msg-agent-meta-col">
+              <span class="msg-agent-name">GRC Assistant</span>
+              <span class="msg-agent-time">03:14 PM</span>
+            </div>
+          </div>
+          <p class="msg-body-p">Understood — updating section: Why It Matters with specific vendor contract details from 3rd Risk. Also flagging: vendor breach notification obligations under existing contracts haven't been assessed yet. I've marked that as a new uncertainty item.</p>
+        </div>
+
+        <!-- Step 6: User message 2 -->
+        <div id="user-msg-2" class="chat-block" style="display: none;">
+          <div class="msg-user-wrap">
+            <div class="msg-user-meta">
+              <span class="msg-user-name">Alexandra Chen</span>
+              <span class="msg-user-time">03:16 PM</span>
+              <div class="msg-user-avatar" aria-hidden="true">AC</div>
+            </div>
+            <div class="msg-user-bubble">
+              The CFO is sensitive about anything that suggests we might need to delay the SEC filing. Soften the language in section: What Has Changed on the disclosure process — frame it as a gap we're actively addressing.
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7: Thinking state 2 -->
+        <div id="thinking-2" class="chat-block" style="display: none;">
+          <div class="msg-thinking-wrap">
+            <div class="msg-thinking-icon">
+              <img src="Icons/D_icon.png" alt="GRC Assistant">
+            </div>
+            <div class="msg-thinking-dots">
+              Thinking <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7 (cont.): AI response 2 -->
+        <div id="ai-response-2" class="chat-block" style="display: none;">
+          <div class="msg-agent-header">
+            <div class="msg-agent-icon">
+              <img src="Icons/D_icon.png" alt="GRC Assistant">
+            </div>
+            <div class="msg-agent-meta-col">
+              <span class="msg-agent-name">GRC Assistant</span>
+              <span class="msg-agent-time">03:16 PM</span>
+            </div>
+          </div>
+          <p class="msg-body-p">Revised. Section: What Has Changed now reads: "The materiality determination process is being assessed for alignment with current SEC requirements — management is expected to confirm status within 72 hours." Tagged ASSUMPTION — board can see it's not confirmed absent.</p>
+        </div>
+
+        <!-- Review & authorize section -->
+        <div id="review-authorize-block" class="chat-block" style="display: none;">
+          <div class="ease-in-chunk">
+            <div class="review-heading">Please review the details and authorize</div>
+          </div>
+          <div class="ease-in-chunk">
+            <div class="review-card">
+              <div class="review-card-title">Focus areas to deep dive</div>
+              <div class="check-row">
+                Access management control chain
+                <div class="check-box">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l3 3 5-5"/></svg>
+                </div>
+              </div>
+              <div class="check-row">
+                Critical vendor cyber assessments
+                <div class="check-box">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l3 3 5-5"/></svg>
+                </div>
+              </div>
+              <div class="check-row">
+                SEC disclosure process maturity
+                <div class="check-box">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l3 3 5-5"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ease-in-chunk">
+            <div class="review-card">
+              <div class="review-card-title">Investigation boundaries</div>
+              <div class="toggle-row">
+                Include remediation effectiveness testing?
+                <div class="toggle"></div>
+              </div>
+              <div class="toggle-row">
+                Include individual names in report?
+                <div class="toggle"></div>
+              </div>
+              <div class="trend-row">
+                Historical trend depth
+                <div class="seg-btn">
+                  <button type="button" class="seg-opt">12 Months</button>
+                  <button type="button" class="seg-opt active">24 Months</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ease-in-chunk">
+            <div class="action-row">
+              <span class="action-label">Suggested actions</span>
+              <div class="action-btns">
+                <button type="button" class="btn btn-secondary btn-md">Back to investigation</button>
+                <button type="button" class="btn btn-secondary btn-md">Make more changes</button>
+                <button type="button" class="btn btn-primary btn-md">Confirm selection and authorize</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat input (inside scroll so content passes behind it for backdrop blur) -->
+        <div class="chat-input-footer">
+          <div class="chat-input-wrapper">
+            <div class="chat-input-glow" aria-hidden="true"></div>
+            <div class="chat-input-box">
+              <div id="chat-input-text" class="chat-input-inner placeholder" contenteditable="true">What should be the next step?</div>
+              <div class="chat-bar">
+                <div class="chat-bar-btn" title="Add">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                </div>
+                <div class="chat-flex"></div>
+                <div class="chat-send-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /chat-scroll-inner -->
+      </div><!-- /chat-scroll -->
+    </div><!-- /chat-panel -->
+
+    <div class="doc-panel">
+      <div class="doc-scroll">
+        <div class="doc-pills-row">
+          <span class="pill pill-sm pill-transparent">Draft</span>
+          <span class="doc-pill-dot" aria-hidden="true"></span>
+          <span class="pill pill-sm pill-transparent">Version 1</span>
+        </div>
+        <div class="doc-title">Cybersecurity Risk — Situational Overview</div>
+        <div class="doc-meta">
+          Scope: <strong>SEC Peer Incident Response</strong> &nbsp;•&nbsp; Created on: <strong>Feb 24, 2026</strong> &nbsp;•&nbsp; Audience: <strong>Audit Committee</strong>
+        </div>
+        <hr class="doc-divider">
+        <div class="doc-section">
+          <div class="doc-section-title">Current Situation</div>
+          <div class="doc-body"><span class="fact-chip">Fact</span> A peer financial services firm has received an SEC enforcement action for deficient cybersecurity controls under the new disclosure requirements. Our review finds structural similarities: unauthorised access risks exist across 8 controls, 3 critical vendors share the same access architecture vulnerability, and our cyber risk sits above appetite in the Enterprise Risk Register.</div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">Why It Matters <span id="update-pill-1" class="pill pill-sm pill-transparent" style="display:none; opacity:0; transition: opacity 0.5s ease;">Updated</span></div>
+          <div id="doc-body-1" class="doc-body"><span class="fact-chip">Fact</span> Unauthorised access could trigger SEC 8-K disclosure obligations within 4 business days. The 3 critical vendors collectively service 40% of customer transaction volume — a breach at any one could be material.</div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">What Has Changed <span id="update-pill-2" class="pill pill-sm pill-transparent" style="display:none; opacity:0; transition: opacity 0.5s ease;">Updated</span></div>
+          <div id="doc-body-2" class="doc-body"><span class="fact-chip">Fact</span> Since Q3 2025: CM-6 remediation is 47 days overdue, critical vendor high-risk count has risen from 1 to 3.</div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">Key Uncertainties</div>
+          <div class="doc-body" style="margin-bottom: 4px;">
+            Since the last Audit Committee review (Q3 2025), the CM-6 remediation plan has fallen 47 days overdue with no escalation recorded. The number of critical vendors with high cyber risk scores has increased from 1 to 3. ASSUMPTION — No material changes to the SEC disclosure process are assumed to have occurred, based on absence of updates in Compliance Maps — management confirmation required.
+          </div>
+          <div class="alert-card alert-card-sm alert-card-yellow">
+            <div class="alert-card-header">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+              <div class="alert-card-title">Assumption</div>
+            </div>
+            <div class="alert-card-sub">8-K materiality process gap inferred from absence of documentation — not confirmed absent. Management sign-off required before including in final report.</div>
+          </div>
+          <div class="alert-card alert-card-sm alert-card-red">
+            <div class="alert-card-header">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+              <div class="alert-card-title">Emerging</div>
+            </div>
+            <div class="alert-card-sub">Vendor breach notification obligations under existing contracts not yet assessed — this could accelerate disclosure timelines materially.</div>
+          </div>
+        </div>
+      </div>
+      <div class="doc-footer">
+        <button class="btn btn-secondary btn-md">Back to investigation</button>
+        <div style="display: flex; gap: 10px; margin-left: auto;">
+          <button class="btn btn-tertiary btn-md">Preview</button>
+          <button class="btn btn-primary btn-md">Confirm and authorize</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end #view-edit -->
+
+</div><!-- end #app-wrapper -->
+
+
+<script>
+(function() {
+  /* ============================================================
+     VIEW TRANSITION (instant show/hide)
+     ============================================================ */
+  function transitionToEdit() {
+    document.getElementById('view-synthesis').style.display = 'none';
+    var editView = document.getElementById('view-edit');
+    editView.style.display = 'flex';
+    setTimeout(function() {
+      startChat();
+    }, 550);
+  }
+
+  /* "View and edit draft" button in Synthesis view */
+  var openBtn = document.querySelector('#view-synthesis .open-report-btn');
+  if (openBtn) openBtn.addEventListener('click', transitionToEdit);
+
+  /* #chat hash shortcut */
+  if (window.location.hash === '#chat') {
+    transitionToEdit();
+  }
+
+
+  /* ============================================================
+     EDIT VIEW — CHAT ANIMATION
+     ============================================================ */
+  var PLACEHOLDER = 'What should be the next step?';
+  var PROMPT_1 = "Thomas is going to push hard on the vendor risk section \u2014 he\u2019s been concerned since the Apex breach. Can you strengthen that and be more specific about what the contractual exposure looks like?";
+  var PROMPT_2 = "The CFO is sensitive about anything that suggests we might need to delay the SEC filing. Soften the language in section: What Has Changed on the disclosure process \u2014 frame it as a gap we\u2019re actively addressing.";
+  var THINKING_DURATION_MS = 5000;
+  var SCROLL_PAD = 16;
+
+  var initialAi = document.getElementById('initial-ai-block');
+  var userMsg1 = document.getElementById('user-msg-1');
+  var thinking1 = document.getElementById('thinking-1');
+  var aiResponse1 = document.getElementById('ai-response-1');
+  var userMsg2 = document.getElementById('user-msg-2');
+  var thinking2 = document.getElementById('thinking-2');
+  var aiResponse2 = document.getElementById('ai-response-2');
+  var reviewAuthorizeBlock = document.getElementById('review-authorize-block');
+  var updatePill1 = document.getElementById('update-pill-1');
+  var updatePill2 = document.getElementById('update-pill-2');
+  var docBody1 = document.getElementById('doc-body-1');
+  var docBody2 = document.getElementById('doc-body-2');
+  var chatInputText = document.getElementById('chat-input-text');
+  var chatInputBox = document.querySelector('#view-edit .chat-input-box');
+  var chatInputWrapper = document.querySelector('#view-edit .chat-input-wrapper');
+  var chatInputFooter = document.querySelector('#view-edit .chat-input-footer');
+  var chatSendBtn = document.querySelector('#view-edit .chat-send-btn');
+  var chatScroll = document.querySelector('#view-edit .chat-scroll');
+  var msgDate = document.querySelector('#view-edit .msg-date');
+
+  function updateSendButtonState() {
+    if (!chatSendBtn || !chatInputText) return;
+    var text = (chatInputText.textContent || '').trim();
+    var hasContent = text.length > 0 && text !== PLACEHOLDER;
+    if (hasContent) chatSendBtn.classList.add('active');
+    else chatSendBtn.classList.remove('active');
+  }
+
+  // Glow only while the user is actively typing
+  if (chatInputText && chatInputFooter) {
+    var glowTimeoutId = null;
+    function showGlowWhileTyping() {
+      chatInputFooter.classList.add('glow-active');
+      if (glowTimeoutId) clearTimeout(glowTimeoutId);
+      glowTimeoutId = setTimeout(function() {
+        chatInputFooter.classList.remove('glow-active');
+        glowTimeoutId = null;
+      }, 1500);
+    }
+    chatInputText.addEventListener('keydown', showGlowWhileTyping);
+    chatInputText.addEventListener('input', function() {
+      showGlowWhileTyping();
+      updateSendButtonState();
+    });
+    chatInputText.addEventListener('blur', function() {
+      if (glowTimeoutId) clearTimeout(glowTimeoutId);
+      glowTimeoutId = null;
+      chatInputFooter.classList.remove('glow-active');
+    });
+  }
+
+  function showUpdatePill(pill) {
+    if (!pill) return;
+    pill.style.display = '';
+    pill.style.opacity = '';
+    pill.style.transition = 'none';
+    requestAnimationFrame(function() {
+      pill.classList.add('pill-animate-in');
+    });
+    var docScrollEl = document.querySelector('#view-edit .doc-scroll');
+    if (docScrollEl && pill.closest('.doc-section')) {
+      var section = pill.closest('.doc-section');
+      setTimeout(function() {
+        section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
+  }
+
+  function updateDocBody(el, html) {
+    if (!el) return;
+    el.style.transition = 'opacity 0.2s ease';
+    el.style.opacity = '0.3';
+    setTimeout(function() {
+      el.classList.remove('updated');
+      el.innerHTML = html;
+      el.offsetHeight;
+      el.style.transition = 'opacity 0.4s ease';
+      el.style.opacity = '1';
+      el.classList.add('updated');
+    }, 200);
+  }
+
+  function showBlock(el) {
+    if (!el) return;
+    el.style.display = '';
+    el.offsetHeight;
+    requestAnimationFrame(function() {
+      el.classList.add('visible');
+    });
+  }
+
+  function scrollToShowAtTop(el) {
+    if (!chatScroll || !el) return;
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        setTimeout(function() {
+          var elTop = el.getBoundingClientRect().top;
+          var scrollContainerTop = chatScroll.getBoundingClientRect().top;
+          var scrollTopBefore = chatScroll.scrollTop;
+          var targetTop = scrollTopBefore + (elTop - scrollContainerTop) - SCROLL_PAD;
+          if (targetTop < 0) targetTop = 0;
+          chatScroll.scrollTop = targetTop;
+        }, 250);
+      });
+    });
+  }
+
+  function scrollToBottom() {
+    if (chatScroll) {
+      requestAnimationFrame(function() {
+        chatScroll.scrollTo({ top: chatScroll.scrollHeight, behavior: 'smooth' });
+      });
+    }
+  }
+
+  function typeIntoInput(fullText, done) {
+    if (chatInputFooter) chatInputFooter.classList.add('glow-active');
+    chatInputText.classList.remove('placeholder');
+    chatInputText.textContent = '';
+    chatInputText.style.color = '';
+    var i = 0;
+    var step = Math.max(1, Math.floor(fullText.length / 35));
+    var interval = setInterval(function() {
+      i = Math.min(i + step, fullText.length);
+      chatInputText.textContent = fullText.slice(0, i);
+      updateSendButtonState();
+      if (i >= fullText.length) {
+        clearInterval(interval);
+        if (chatInputFooter) chatInputFooter.classList.remove('glow-active');
+        if (done) done();
+      }
+    }, 52);
+  }
+
+  function resetPlaceholder() {
+    chatInputText.textContent = PLACEHOLDER;
+    chatInputText.classList.add('placeholder');
+    updateSendButtonState();
+  }
+
+  function startChat() {
+    chatScroll.classList.add('chat-started');
+    initialAi.classList.add('visible');
+    scrollToBottom();
+  }
+
+  // Triggers: typing starts on first focus of chat input; send only on Send button or Enter
+  var chatStep = 0;
+  var typingInProgress = false;
+
+  function runSendFirstPrompt() {
+    resetPlaceholder();
+    showBlock(userMsg1);
+    scrollToBottom();
+    chatStep = 2;
+    setTimeout(function() {
+      showBlock(thinking1);
+      scrollToShowAtTop(thinking1);
+      setTimeout(function() {
+        thinking1.style.display = 'none';
+        showBlock(aiResponse1);
+        scrollToShowAtTop(aiResponse1);
+        setTimeout(function() {
+          showUpdatePill(updatePill1);
+          updateDocBody(docBody1,
+            '<span class="fact-chip">Fact</span> Unauthorised access could trigger SEC 8-K disclosure obligations within 4 business days. The 3 critical vendors collectively service 40\u0025 of customer transaction volume \u2014 a breach at any one could be material. <span class="emerging-inline">Emerging</span> Vendor breach notification obligations under existing contracts have not yet been assessed \u2014 this could accelerate disclosure timelines materially and is flagged for urgent review.'
+          );
+        }, 600);
+        setTimeout(function() {
+          scrollToBottom();
+        }, 400);
+      }, THINKING_DURATION_MS);
+    }, 950);
+  }
+
+  function runSendSecondPrompt() {
+    resetPlaceholder();
+    showBlock(userMsg2);
+    scrollToShowAtTop(userMsg2);
+    chatStep = 4;
+    setTimeout(function() {
+      showBlock(thinking2);
+      scrollToShowAtTop(thinking2);
+      setTimeout(function() {
+        thinking2.style.display = 'none';
+        showBlock(aiResponse2);
+        scrollToShowAtTop(aiResponse2);
+        setTimeout(function() {
+          showUpdatePill(updatePill2);
+          updateDocBody(docBody2,
+            '<span class="fact-chip">Fact</span> Since Q3 2025: CM-6 remediation is 47 days overdue, critical vendor high-risk count has risen from 1 to 3. The materiality determination process is being assessed for alignment with current SEC requirements \u2014 management is expected to confirm status within 72 hours.'
+          );
+        }, 600);
+        setTimeout(function() {
+          showBlock(reviewAuthorizeBlock);
+          scrollToBottom();
+        }, 800);
+      }, THINKING_DURATION_MS);
+    }, 600);
+  }
+
+  function trySend() {
+    if (typingInProgress) return;
+    var text = (chatInputText.textContent || '').trim();
+    if (text.length === 0 || text === PLACEHOLDER) return;
+    if (chatStep === 1) {
+      runSendFirstPrompt();
+    } else if (chatStep === 3) {
+      runSendSecondPrompt();
+    }
+  }
+
+  chatInputText.addEventListener('focus', function() {
+    if (chatStep === 0 && !typingInProgress) {
+      typingInProgress = true;
+      typeIntoInput(PROMPT_1, function() {
+        typingInProgress = false;
+        chatStep = 1;
+      });
+    } else if (chatStep === 2 && !typingInProgress) {
+      typingInProgress = true;
+      typeIntoInput(PROMPT_2, function() {
+        typingInProgress = false;
+        chatStep = 3;
+      });
+    }
+  });
+
+  if (chatSendBtn) {
+    chatSendBtn.addEventListener('click', function() {
+      trySend();
+    });
+  }
+  chatInputText.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      trySend();
+    }
+  });
+
+  // Interactive checkboxes (scoped to #view-edit)
+  document.querySelectorAll('#view-edit .check-box').forEach(function(box) {
+    box.addEventListener('click', function() {
+      box.classList.toggle('unchecked');
+    });
+  });
+
+  // Interactive toggles (scoped to #view-edit)
+  document.querySelectorAll('#view-edit .toggle').forEach(function(tog) {
+    tog.addEventListener('click', function() {
+      tog.classList.toggle('off');
+    });
+  });
+
+  // Segmented button interaction (scoped to #view-edit)
+  document.querySelectorAll('#view-edit .seg-btn').forEach(function(group) {
+    group.querySelectorAll('.seg-opt').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        group.querySelectorAll('.seg-opt').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
+    });
+  });
+})();
+</script>
+<script src="workflow-bridge.js"></script>
+
+</body>
+</html>

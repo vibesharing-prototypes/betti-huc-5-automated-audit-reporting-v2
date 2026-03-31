@@ -1,0 +1,124 @@
+/* ============================================================
+   LAYOUT SYSTEM
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Global page structure used across all workflow screens.
+   Provides the screen system, scroll containers, content
+   centering, and layout utilities.
+
+   Depends on:
+     :root tokens  — --bg-base, --border, --font
+     app-chrome.css — .lt-header, .lt-sidebar (optional)
+
+   Structure (no sidebar):
+     body
+     └── .screen.active
+         ├── .lt-header
+         └── .page-scroll
+             ├── [content]
+             └── .chat-area
+
+   Structure (with sidebar):
+     body
+     └── .screen.active
+         ├── .lt-header
+         └── .page-body
+             ├── .lt-sidebar
+             └── .page-scroll
+                 ├── [content]
+                 └── .chat-area
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. BASE RESET & BODY
+   ──────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font, 'Plus Jakarta Sans', system-ui, sans-serif);
+  font-size: 14px;
+  background: var(--bg-base, #f0f0f1);
+  color: var(--t-primary, #282E37);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. SCREEN SYSTEM
+   Multiple screens per page; only .active is visible.
+   Screens are direct children of <body>.
+   ──────────────────────────────────────────────────────────────── */
+
+.screen {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+}
+.screen.active {
+  display: flex;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. PAGE BODY — flex row for sidebar layouts
+   Wraps .lt-sidebar + .page-scroll when a sidebar is present.
+   Omit .page-body when there is no sidebar.
+   ──────────────────────────────────────────────────────────────── */
+
+.page-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   4. PAGE SCROLL — main scrollable content area
+   Centers content at --page-max-width (default 1024px).
+   Chat area sticks to the bottom via chatbox.css.
+   ──────────────────────────────────────────────────────────────── */
+
+.page-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 44px 20px 0;
+  scrollbar-width: none;
+}
+.page-scroll::-webkit-scrollbar { display: none; }
+
+/* Inner content wrapper — max-width centering */
+.page-inner {
+  width: 100%;
+  max-width: var(--page-max-width, 1024px);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   5. LAYOUT UTILITIES
+   Reusable flex patterns used across pages.
+   ──────────────────────────────────────────────────────────────── */
+
+/* Horizontal flex row — items centered, gap 8px */
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Wrapping flex row — for pills, tags, badges */
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

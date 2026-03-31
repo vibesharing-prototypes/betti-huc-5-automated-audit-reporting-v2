@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test — Veracity scoring (HUC6 theme)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:wght@300;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../Components/layout.css">
+<link rel="stylesheet" href="../Components/huc-components.css">
+<link rel="stylesheet" href="../Components/app-chrome.css">
+<link rel="stylesheet" href="../Components/hero-section.css">
+<link rel="stylesheet" href="../Components/alert-cards.css">
+<link rel="stylesheet" href="../Components/headers.css">
+<link rel="stylesheet" href="../Components/chatbox.css">
+<link rel="stylesheet" href="../Components/theme-huc6.css">
+<style>
+/* ============================================================
+   04-Veracity-scoring — PAGE-SPECIFIC STYLES
+   All shared styles come from Components/*.css
+   ============================================================ */
+
+/* Design tokens */
+:root {
+  --bg-base:         #f0f0f1;
+  --bg-surface:      #ffffff;
+  --bg-component:    #f4f4f5;
+  --t-primary:       #282E37;
+  --t-secondary:     #525252;
+  --t-tertiary:      #6F7377;
+  --text-muted:      #6F7377;
+  --border:          rgba(0,0,0,0.09);
+  --green:           #16a34a;
+  --blue:            #1d4ed8;
+  --amber:           #b45309;
+  --red:             #D3222A;
+  --brand:           #D3222A;
+  --ui-dark:         #1e293b;
+  --ui-darkest:      #0f172a;
+  --ui-border-strong:#e2e8f0;
+  --ui-surface-tint: #f1f5f9;
+  --ui-text-dim:     #64748b;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ── Table column widths ─────────────────────────────────────── */
+.col-participants  { width: 28%; }
+.col-role          { width: 14%; }
+.col-response      { width: 14%; }
+.col-timestamp     { width: 18%; }
+.col-remediated    { width: 14%; }
+.col-conclusion    { width: 30%; }
+.col-confidence    { width: 14%; }
+.col-freshness     { width: 14%; }
+.col-evidence      { width: 22%; }
+.col-action        { width: 18%; }
+
+/* end page-specific styles */
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 3 — Veracity Scoring
+     ============================================================ -->
+<div class="screen active" id="screen-3">
+  <div class="app-header">
+    <div class="app-logo"><div class="app-logo-mark"><img src="../Icons/D_icon.png" alt="Diligent"></div>GRC Command Center</div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <button class="btn btn-secondary btn-sm" style="border-radius:8px; font-size:13px; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8a7 7 0 0113.22-3.18"/><path d="M15 8a7 7 0 01-13.22 3.18"/><path d="M14.24 1v3.82h-3.82"/><path d="M1.76 15v-3.82h3.82"/></svg>
+        Restart scan
+      </button>
+      <div class="app-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="app-notif-dot" style="background:#ef4444;"></span></div>
+      <div class="app-user-profile" style="display:flex; align-items:center; gap:10px; padding-left:4px;">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Mitchell" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
+        <div style="display:flex; flex-direction:column; line-height:1.3;">
+          <span style="font-size:13px; font-weight:400; color:#1e293b;">Sarah Mitchell</span>
+          <span style="font-size:11px; color:#94a3b8;">General Counsel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-scroll hero-glow-blue">
+    <div class="page-inner content-gap">
+
+        <!-- Hero section -->
+        <div class="hero-section-workflow">
+          <div class="hero-header">
+            <div class="hero-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="../Icons/Audit.svg">
+                Audit report request
+              </span>
+            </div>
+            <h1 class="hero-title"><strong>Veracity scoring</strong> — analyzing and scoring evidence.</h1>
+          </div>
+          <!-- Workflow status -->
+          <div class="hero-stepper">
+            <div class="hero-stepper-label">Workflow status</div>
+            <div class="hero-stepper-steps">
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+                Investigation
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+                Evidence
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+                Synthesis
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+                Edit &amp; Authorize
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step active">
+                <div class="hero-step-icon active"><img src="../Icons/Active.svg" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="../Icons/Next.svg" width="20" height="20" alt=""></div>
+                Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Forensic analysis</div>
+          </div>
+          <!-- Card 1: Access Management Deep Dive -->
+          <div class="card-default">
+            <div class="card-header">
+              <div class="flex-row">
+                <div class="card-title">Access management deep dive</div>
+                <span class="pill pill-sm pill-green">Completed</span>
+              </div>
+              <div class="card-subtitle">Data from Projects Controls + Issues tabs</div>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="col-participants">Control</th>
+                  <th class="col-role">Last test</th>
+                  <th class="col-response text-center">Result</th>
+                  <th class="col-timestamp">Finding</th>
+                  <th class="col-remediated">Remediated</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-participants"><span>Segregation of Duties — IT</span></td>
+                  <td class="col-role">Nov 2025</td>
+                  <td class="col-response"><span class="pill pill-sm pill-red">Failed</span></td>
+                  <td class="col-timestamp">Open</td>
+                  <td class="col-remediated">No</td>
+                </tr>
+                <tr>
+                  <td class="col-participants"><span>Access Review — Privileged Users</span></td>
+                  <td class="col-role">Jan 2026</td>
+                  <td class="col-response"><span class="pill pill-sm pill-yellow">Partial</span></td>
+                  <td class="col-timestamp">Open</td>
+                  <td class="col-remediated">In progress</td>
+                </tr>
+                <tr>
+                  <td class="col-participants"><span>Termination Access Removal</span></td>
+                  <td class="col-role">Dec 2025</td>
+                  <td class="col-response"><span class="pill pill-sm pill-green">Passed</span></td>
+                  <td class="col-timestamp">Closed</td>
+                  <td class="col-remediated">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Card 2: Critical Vendor Cyber Assessment -->
+          <div class="card-default">
+            <div class="flex-row">
+              <div class="card-title">Critical vendor cyber assessment</div>
+              <span class="pill pill-sm pill-green">Completed</span>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="col-participants">Vendor</th>
+                  <th class="col-role">Criticality</th>
+                  <th class="col-response text-center">Cyber score</th>
+                  <th class="col-timestamp">Trend</th>
+                  <th class="col-remediated">Incidents</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-participants"><span>CloudOps Ltd</span></td>
+                  <td class="col-role">Critical</td>
+                  <td class="col-response"><span class="pill pill-sm pill-red">High risk</span></td>
+                  <td class="col-timestamp">↑ Worsening</td>
+                  <td class="col-remediated">1 open</td>
+                </tr>
+                <tr>
+                  <td class="col-participants"><span>DataPipe Inc</span></td>
+                  <td class="col-role">High</td>
+                  <td class="col-response"><span class="pill pill-sm pill-yellow">Medium risk</span></td>
+                  <td class="col-timestamp">→ Stable</td>
+                  <td class="col-remediated">None</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Card 3: Forensic Analyst — Evidence chain -->
+          <div class="card-default">
+            <div class="card-title">Forensic Analyst — Evidence chain</div>
+            <div class="flex-wrap">
+              <span class="pill pill-md pill-green"><strong style="color:#3F6900;">HIGH</strong> Confidence</span>
+              <span class="pill pill-md pill-icon pill-transparent"><img class="pill-ico" src="../Icons/Document.svg"> Source: Projects Issue IT-047</span>
+              <span class="pill pill-md pill-icon pill-transparent"><img class="pill-ico" src="../Icons/Link.svg"> Linked: Frameworks Control HR-1</span>
+              <span class="pill pill-md pill-icon pill-transparent"><img class="pill-ico" src="../Icons/Warning_muted.svg"> No contradictory evidence</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review & Authorize section -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Confidence scoring</div>
+          </div>
+          <div class="card-default">
+            <div class="flex-row">
+              <div class="card-title">All conclusions scored successfully</div>
+              <span class="pill pill-sm pill-green">Completed</span>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="col-conclusion">Conclusion</th>
+                  <th class="col-confidence">Confidence</th>
+                  <th class="col-freshness">Data freshness</th>
+                  <th class="col-evidence">Evidence</th>
+                  <th class="col-action">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-conclusion"><span>SoD control failure — unresolved after 14 months</span></td>
+                  <td class="col-confidence"><span class="pill pill-sm pill-green">High</span></td>
+                  <td class="col-freshness">Current</td>
+                  <td class="col-evidence">Direct, multi-source</td>
+                  <td class="col-action">Board can act</td>
+                </tr>
+                <tr>
+                  <td class="col-conclusion"><span>CloudOps vendor risk deteriorating</span></td>
+                  <td class="col-confidence"><span class="pill pill-sm pill-green">High</span></td>
+                  <td class="col-freshness">Current</td>
+                  <td class="col-evidence">Direct — monitoring scores</td>
+                  <td class="col-action">Board can act</td>
+                </tr>
+                <tr>
+                  <td class="col-conclusion"><span>SEC materiality process undocumented</span></td>
+                  <td class="col-confidence"><span class="pill pill-sm pill-yellow">Medium</span></td>
+                  <td class="col-freshness">Recent</td>
+                  <td class="col-evidence">Absence of evidence</td>
+                  <td class="col-action">Mgmt judgment needed</td>
+                </tr>
+                <tr>
+                  <td class="col-conclusion"><span>Remediation effectiveness — access controls</span></td>
+                  <td class="col-confidence"><span class="pill pill-sm pill-yellow">Medium</span></td>
+                  <td class="col-freshness">Recent</td>
+                  <td class="col-evidence">Circumstantial — retest pending</td>
+                  <td class="col-action">Further testing rec.</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="alert-card alert-card-md alert-card-yellow">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+              <div class="alert-card-body">
+                <div class="alert-card-title">2 Medium-confidence conclusions require management judgment</div>
+                <div class="alert-card-sub">before board distribution. Review recommended.</div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; padding-top:12px;">
+              <button class="btn btn-primary btn-md" onclick="if(window.workflowBridge){workflowBridge.navigateTo('05-Preview-Approve.html')}else{window.location.href='05-Preview-Approve.html'}">Confirm findings</button>
+            </div>
+          </div>
+        </div>
+        </div><!-- end section-gap -->
+
+        </div><!-- end page-inner -->
+
+      <!-- Chat bar (floating pill, ERG V3 style) -->
+      <div style="position:sticky; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="../Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div><!-- end page-scroll -->
+</div><!-- end screen-3 -->
+
+<script src="../workflow-bridge.js"></script>
+
+</body>
+</html>

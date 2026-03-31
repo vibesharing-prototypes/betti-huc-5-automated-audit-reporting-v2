@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test — Preview &amp; Approve Side-by-Side</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../Components/layout.css">
+<link rel="stylesheet" href="../Components/huc-components.css">
+<link rel="stylesheet" href="../Components/buttons.css">
+<link rel="stylesheet" href="../Components/headers.css">
+<link rel="stylesheet" href="../Components/hero-section.css">
+<link rel="stylesheet" href="../Components/theme-huc6.css">
+<style>
+:root {
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --t-primary: #282E37;
+  --t-secondary: #525252;
+  --t-tertiary: #A0A2A5;
+  --border: #E5E5E5;
+  --border-secondary: #d4d4d8;
+  --bg-component: #f4f4f5;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body { height: 100%; margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font); background: #f0f0f1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── App header ── */
+.app-header {
+  height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 12px;
+  background: #ffffff; border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 50;
+}
+.app-logo { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--t-primary); }
+.app-logo-mark { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+.app-logo-mark img { width: 100%; height: 100%; object-fit: contain; }
+.app-spacer { flex: 1; }
+.app-header-nav { display: flex; align-items: center; gap: 12px; }
+.app-icon-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+.app-icon-btn svg { width: 20px; height: 20px; color: var(--t-secondary); }
+.app-notif-dot { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: #D3222A; }
+.app-avatar {
+  width: 28px; height: 28px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: #bae6fd; color: #0369a1; font-size: 10px; font-weight: 600;
+}
+
+/* ── Two-panel layout ── */
+.body-layout {
+  display: flex; flex: 1; overflow: hidden;
+  height: calc(100% - 48px);
+  background: #F6F6F9;
+}
+
+/* ── Chat panel (left) ── */
+.chat-panel {
+  flex: 0 0 44%; display: flex; flex-direction: column;
+  overflow: hidden; background: #F6F6F9;
+}
+.chat-scroll {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 0 24px; position: relative;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+.chat-scroll-inner {
+  min-height: 100%; display: flex; flex-direction: column;
+}
+.chat-scroll-inner > .chat-input-footer { margin-top: auto; }
+.chat-scroll::-webkit-scrollbar { width: 8px; }
+.chat-scroll::-webkit-scrollbar-track { background: transparent; }
+.chat-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+
+/* ── Chat animation ── */
+#initial-ai-block {
+  max-height: 0; overflow: hidden; margin: 0; padding: 0;
+  transition: max-height 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#initial-ai-block.visible { max-height: 3200px; }
+#initial-ai-block .ease-in-chunk {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.75s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#initial-ai-block.visible .ease-in-chunk { opacity: 1; transform: translateY(0); }
+#initial-ai-block .ease-in-chunk:nth-child(1)  { transition-delay: 0.08s; }
+#initial-ai-block .ease-in-chunk:nth-child(2)  { transition-delay: 0.22s; }
+#initial-ai-block .ease-in-chunk:nth-child(3)  { transition-delay: 0.36s; }
+#initial-ai-block .ease-in-chunk:nth-child(4)  { transition-delay: 0.50s; }
+#initial-ai-block .ease-in-chunk:nth-child(5)  { transition-delay: 0.64s; }
+#initial-ai-block .ease-in-chunk:nth-child(6)  { transition-delay: 0.78s; }
+#initial-ai-block .ease-in-chunk:nth-child(7)  { transition-delay: 0.92s; }
+#initial-ai-block .ease-in-chunk:nth-child(8)  { transition-delay: 1.06s; }
+#initial-ai-block .ease-in-chunk:nth-child(9)  { transition-delay: 1.20s; }
+#initial-ai-block .ease-in-chunk:nth-child(10) { transition-delay: 1.34s; }
+#initial-ai-block .ease-in-chunk:nth-child(11) { transition-delay: 1.48s; }
+
+/* Chat starts blank until startChat */
+.chat-scroll .msg-date {
+  opacity: 0; visibility: hidden; transition: opacity 0.35s ease;
+}
+.chat-scroll.chat-started .msg-date { opacity: 1; visibility: visible; }
+
+/* Date divider */
+.msg-date {
+  text-align: center; font-size: 12px; color: var(--t-tertiary);
+  padding: 20px 0 16px; position: relative;
+}
+.msg-date::before, .msg-date::after {
+  content: ''; position: absolute; top: calc(50% + 2px); height: 1px; background: var(--border);
+}
+.msg-date::before { left: 0; width: calc(50% - 52px); }
+.msg-date::after  { right: 0; width: calc(50% - 52px); }
+
+/* Agent message */
+.msg-agent-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.msg-agent-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.msg-agent-icon img { width: 24px; height: 24px; display: block; }
+.msg-agent-meta-col { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.msg-agent-name { font-size: 13px; font-weight: 600; color: var(--t-secondary); }
+.msg-agent-time { font-size: 11px; color: var(--t-secondary); }
+.msg-body-p { font-size: 14px; color: var(--t-secondary); line-height: 1.6; margin-bottom: 12px; }
+.msg-body-p:last-of-type { margin-bottom: 0; }
+.msg-body-p strong { color: var(--t-primary); font-weight: 600; }
+
+/* User message */
+.msg-user-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-bottom: 20px; }
+.msg-user-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--t-secondary); }
+.msg-user-name { font-size: 13px; font-weight: 600; color: var(--t-secondary); }
+.msg-user-time { font-size: 11px; color: var(--t-secondary); }
+.msg-user-avatar {
+  width: 28px; height: 28px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #bae6fd; color: #0369a1; font-size: 10px; font-weight: 600;
+}
+.msg-user-bubble {
+  background: #ffffff; border: none; border-radius: 16px 4px 16px 16px;
+  padding: 12px 16px; font-size: 14px; color: var(--t-secondary); line-height: 1.55; max-width: 86%;
+}
+
+/* Reaction row */
+.reaction-row { display: flex; align-items: center; gap: 4px; margin-bottom: 20px; }
+.reaction-btn {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; border-radius: 8px;
+  cursor: pointer; color: var(--t-tertiary); transition: all 0.15s;
+}
+.reaction-btn:hover { background: var(--bg-component); color: var(--t-secondary); }
+.reaction-btn svg { width: 16px; height: 16px; }
+
+/* Suggestions */
+.suggestions-panel { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; margin-bottom: 24px; }
+.suggestions-label {
+  display: flex; align-items: center; justify-content: flex-end; gap: 5px;
+  padding: 0 2px 4px; font-size: 11px; font-weight: 600; color: var(--t-tertiary); letter-spacing: 0.03em;
+}
+.suggestions-label svg { width: 13px; height: 13px; }
+.suggestion-item {
+  display: inline-flex; align-items: flex-start; gap: 8px;
+  padding: 8px 16px 8px 12px; background: #ffffff;
+  border-radius: 24px 4px 16px 24px;
+  font-size: 14px; font-weight: 400; color: #282e37; line-height: 20px;
+  cursor: pointer; transition: background 0.15s;
+  width: fit-content; max-width: 100%;
+}
+.suggestion-item:hover { background: #f4f4f5; }
+.suggestion-arrow {
+  width: 20px; height: 20px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t-tertiary); font-size: 14px; line-height: 1;
+}
+
+/* Chat input */
+.chat-input-footer {
+  margin-left: -24px; margin-right: -24px; width: calc(100% + 48px);
+  padding: 24px 20px; background: rgba(240,240,241,0.3);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+  position: sticky; bottom: 0; box-sizing: border-box; z-index: 10;
+}
+.chat-input-wrapper { position: relative; width: 100%; }
+.chat-input-box {
+  width: 100%; position: relative; z-index: 1;
+  background: #ffffff; border: 1px solid var(--border);
+  border-radius: 24px; padding: 14px 16px; outline: none;
+}
+.chat-input-inner {
+  font-size: 14px; color: var(--t-primary); padding: 2px 0 8px;
+  line-height: 1.5; min-height: 22px; outline: none;
+}
+.chat-input-inner.placeholder { color: var(--t-tertiary); }
+.chat-bar { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.chat-bar-btn {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border); border-radius: 50%;
+  cursor: pointer; color: var(--t-tertiary); flex-shrink: 0;
+}
+.chat-bar-btn svg { width: 14px; height: 14px; }
+.chat-flex { flex: 1; }
+.chat-send-btn {
+  width: 28px; height: 28px; background: #1e293b; border: none; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: #fff; flex-shrink: 0; opacity: 0.5;
+}
+.chat-send-btn svg { width: 13px; height: 13px; }
+
+/* ── Document panel (right) ── */
+.doc-panel {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  background: #ffffff; border-top-left-radius: 24px;
+}
+
+/* Document scroll */
+.doc-scroll {
+  flex: 1; overflow-y: auto; padding: 24px 32px 32px;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.doc-scroll::-webkit-scrollbar { width: 4px; }
+.doc-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+
+/* Document pills row */
+.doc-pills-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.doc-pill-dot { width: 4px; height: 4px; border-radius: 50%; background: #282e37; flex-shrink: 0; }
+.doc-title {
+  font-size: 22px; font-weight: 600; color: var(--t-primary);
+  letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 8px;
+}
+.doc-meta { font-size: 13px; color: var(--t-secondary); margin-bottom: 24px; line-height: 1.5; }
+.doc-meta strong { font-weight: 600; }
+.doc-divider { border: none; border-top: 1px solid var(--border); margin-bottom: 24px; }
+.doc-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px 30px 24px; flex-shrink: 0;
+  background: rgba(255,255,255,0.3); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.doc-h2 { font-size: 16px; font-weight: 600; color: var(--t-primary); margin-bottom: 10px; line-height: 1.3; }
+.doc-p { font-size: 14px; color: var(--t-secondary); line-height: 1.75; margin-bottom: 16px; }
+.doc-ul {
+  display: flex; flex-direction: column; gap: 8px; padding: 0; margin: 0 0 16px;
+  list-style: none; font-size: 14px; color: var(--t-secondary); line-height: 1.6;
+}
+.doc-ul li { display: flex; gap: 8px; }
+.doc-ul li::before { content: '·'; font-weight: 700; flex-shrink: 0; }
+.doc-sel { background: rgba(215,246,255,0.5); padding: 2px 4px; border-radius: 3px; }
+
+/* Findings table */
+.doc-table-wrap { overflow-x: auto; margin-bottom: 16px; }
+.doc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.doc-table th {
+  text-align: left; padding: 10px 12px; font-weight: 600; color: var(--t-primary);
+  background: #fafafa; border-bottom: 1px solid var(--border);
+}
+.doc-table td {
+  padding: 10px 12px; color: var(--t-secondary); border-bottom: 1px solid #f0f0f0;
+  vertical-align: top;
+}
+.doc-table tr:hover td { background: #fafafa; }
+
+/* Sign-off */
+.doc-signoff { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.doc-signoff-field {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: #fafafa;
+}
+.doc-signoff-label { font-size: 11px; font-weight: 600; color: var(--t-tertiary); text-transform: uppercase; letter-spacing: 0.04em; }
+.doc-signoff-value { font-size: 14px; color: var(--t-primary); }
+.doc-signoff-value.pending { color: #D3222A; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+
+  <!-- App header (HUC6 style) -->
+  <div class="app-header">
+    <div class="app-logo"><div class="app-logo-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="Diligent"></div>Automated Audit Reporting</div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <button class="btn btn-secondary btn-sm" style="border-radius:8px; font-size:13px; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8a7 7 0 0113.22-3.18"/><path d="M15 8a7 7 0 01-13.22 3.18"/><path d="M14.24 1v3.82h-3.82"/><path d="M1.76 15v-3.82h3.82"/></svg>
+        Restart scan
+      </button>
+      <div class="app-icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="app-notif-dot" style="background:#ef4444;"></span></div>
+      <div style="display:flex; align-items:center; gap:10px; padding-left:4px;">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Alexandra Chen" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
+        <div style="display:flex; flex-direction:column; line-height:1.3;">
+          <span style="font-size:13px; font-weight:400; color:#1e293b;">Alexandra Chen</span>
+          <span style="font-size:11px; color:#94a3b8;">Chief Audit Executive</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two-panel layout -->
+  <div class="body-layout">
+
+    <!-- LEFT: Chat panel -->
+    <div class="chat-panel">
+      <div class="chat-scroll">
+        <div class="chat-scroll-inner">
+
+          <div class="msg-date">12 April 2026</div>
+
+          <div id="initial-ai-block">
+            <div class="ease-in-chunk">
+              <div class="msg-agent-header">
+                <div class="msg-agent-icon"><img src="../Icons/D_icon.png" alt="GRC Assistant"></div>
+                <div class="msg-agent-meta-col">
+                  <span class="msg-agent-name">GRC Assistant</span>
+                  <span class="msg-agent-time">04:22 PM</span>
+                </div>
+              </div>
+            </div>
+            <div class="ease-in-chunk">
+              <p class="msg-body-p">Your <strong>Cybersecurity Risk — Situational Overview</strong> report has passed all veracity checks and is ready for final review and approval.</p>
+            </div>
+            <div class="ease-in-chunk">
+              <p class="msg-body-p">Review the report on the right. You can ask me to make adjustments, or approve when ready.</p>
+            </div>
+            <div class="ease-in-chunk">
+              <div class="reaction-row">
+                <button class="reaction-btn" title="Helpful">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+                </button>
+                <button class="reaction-btn" title="Not helpful">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+                </button>
+                <button class="reaction-btn" title="Copy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                </button>
+                <button class="reaction-btn" title="More">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="ease-in-chunk">
+              <div class="suggestions-panel">
+                <div class="suggestions-label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                  Suggestions
+                </div>
+                <div class="suggestion-item">
+                  <span class="suggestion-arrow">↳</span>
+                  Soften the language on finding F-01
+                </div>
+                <div class="suggestion-item">
+                  <span class="suggestion-arrow">↳</span>
+                  Add the Apex breach as context for vendor risk
+                </div>
+                <div class="suggestion-item">
+                  <span class="suggestion-arrow">↳</span>
+                  What happens after I approve?
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat input -->
+          <div class="chat-input-footer">
+            <div class="chat-input-wrapper">
+              <div class="chat-input-box">
+                <div class="chat-input-inner placeholder" contenteditable="true">Ask about the report or request changes…</div>
+                <div class="chat-bar">
+                  <div class="chat-bar-btn" title="Add">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                  </div>
+                  <div class="chat-flex"></div>
+                  <div class="chat-send-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Document panel -->
+    <div class="doc-panel">
+
+      <!-- Document scroll -->
+      <div class="doc-scroll">
+
+          <div class="doc-pills-row">
+            <span class="pill pill-sm pill-transparent">Preview</span>
+            <span class="doc-pill-dot"></span>
+            <span class="pill pill-sm pill-transparent">Version 1</span>
+          </div>
+          <div class="doc-title">Cybersecurity Risk — Situational Overview</div>
+          <div class="doc-meta">Scope: <strong>SEC Peer Incident Response</strong> &nbsp;•&nbsp; Created on: <strong>Feb 24, 2026</strong> &nbsp;•&nbsp; Audience: <strong>Audit Committee</strong></div>
+          <hr class="doc-divider">
+
+          <div class="doc-h2">Executive Summary</div>
+          <p class="doc-p">GlobalTech Financial Services faces material cybersecurity control exposure across three domains that require immediate Audit Committee attention ahead of the March board meeting. This report covers <span class="doc-sel">access management control failures</span>, critical vendor cyber risk, and SEC disclosure readiness gaps — assessed against the backdrop of recent enforcement actions against peer institutions.</p>
+
+          <hr class="doc-divider">
+
+          <div class="doc-h2">Audit Scope</div>
+          <p class="doc-p">The audit covered the following AI systems and processes in scope for this review:</p>
+          <ul class="doc-ul">
+            <li>Automated risk scoring model (v2.4.1) deployed in the GRC platform</li>
+            <li>Document classification and extraction pipeline (NLP-based)</li>
+            <li>Compliance monitoring alert system and escalation workflows</li>
+            <li>Vendor risk assessment AI assistants — 3 active third-party integrations</li>
+          </ul>
+          <p class="doc-p">Systems excluded from scope: customer-facing product features, experimental models in staging, and AI components managed exclusively by third-party vendors under separate audit arrangements.</p>
+
+          <hr class="doc-divider">
+
+          <div class="doc-h2">Key Findings</div>
+          <div class="doc-table-wrap">
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Finding</th>
+                  <th>Risk</th>
+                  <th>Owner</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>F-01</td>
+                  <td>Risk scoring model lacks a documented explainability framework</td>
+                  <td><span class="pill pill-sm pill-red">High</span></td>
+                  <td>Data Science</td>
+                  <td>30 Apr</td>
+                </tr>
+                <tr>
+                  <td>F-02</td>
+                  <td>Training data retention policy not aligned with GDPR Article 17</td>
+                  <td><span class="pill pill-sm pill-red">High</span></td>
+                  <td>Data Governance</td>
+                  <td>15 May</td>
+                </tr>
+                <tr>
+                  <td>F-03</td>
+                  <td>Absence of human-in-the-loop controls for auto-escalation workflow</td>
+                  <td><span class="pill pill-sm pill-red">High</span></td>
+                  <td>GRC Platform</td>
+                  <td>15 Apr</td>
+                </tr>
+                <tr>
+                  <td>F-04</td>
+                  <td>Model drift monitoring thresholds undefined for classification pipeline</td>
+                  <td><span class="pill pill-sm pill-red">High</span></td>
+                  <td>ML Engineering</td>
+                  <td>30 Jun</td>
+                </tr>
+                <tr>
+                  <td>F-05</td>
+                  <td>Vendor AI integration audit logs retained for fewer than 90 days</td>
+                  <td><span class="pill pill-sm pill-yellow">Medium</span></td>
+                  <td>IT Security</td>
+                  <td>1 Jun</td>
+                </tr>
+                <tr>
+                  <td>F-06</td>
+                  <td>Bias testing not performed on updated model versions prior to deployment</td>
+                  <td><span class="pill pill-sm pill-yellow">Medium</span></td>
+                  <td>Data Science</td>
+                  <td>30 May</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <hr class="doc-divider">
+
+          <div class="doc-h2">Recommendations</div>
+          <p class="doc-p">Management is recommended to prioritise the following remediation actions in order of risk:</p>
+          <ul class="doc-ul">
+            <li>Establish a formal AI governance policy with defined roles, model risk tiers, and review cadence</li>
+            <li>Implement an explainability layer for all Tier 1 production models, with decision rationale logged per output</li>
+            <li>Update data retention schedules to comply with applicable privacy regulation across all active jurisdictions</li>
+            <li>Define and enforce bias and fairness testing as a mandatory gate in the model deployment pipeline</li>
+            <li>Configure human review checkpoints for all AI-initiated escalations rated Critical or High priority</li>
+          </ul>
+
+          <hr class="doc-divider">
+
+          <div class="doc-h2">Approval &amp; Sign-off</div>
+          <p class="doc-p">This report has been reviewed by the Head of Internal Audit and is pending authorisation from the Chief Audit Executive. Upon authorisation the report will be distributed to the Audit Committee and relevant control owners.</p>
+          <div class="doc-signoff">
+            <div class="doc-signoff-field">
+              <span class="doc-signoff-label">Head of Internal Audit</span>
+              <span class="doc-signoff-value">Alexandra Chen &nbsp;·&nbsp; 12 Apr 2026</span>
+            </div>
+            <div class="doc-signoff-field">
+              <span class="doc-signoff-label">Chief Audit Executive</span>
+              <span class="doc-signoff-value pending">Pending authorisation</span>
+            </div>
+          </div>
+
+      </div>
+      <div class="doc-footer">
+        <button class="btn btn-secondary btn-md">Delete</button>
+        <div style="display: flex; gap: 10px; margin-left: auto;">
+          <button class="btn btn-primary btn-md">Approve</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Start chat animation after a short delay
+  var chatScroll = document.querySelector('.chat-scroll');
+  var initialAi = document.getElementById('initial-ai-block');
+
+  setTimeout(function() {
+    chatScroll.classList.add('chat-started');
+    initialAi.classList.add('visible');
+  }, 550);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02-Evidence-v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Components/layout.css">
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/app-chrome.css">
+<link rel="stylesheet" href="Components/hero-section.css">
+<link rel="stylesheet" href="Components/alert-cards.css">
+<link rel="stylesheet" href="Components/card-hero.css">
+<link rel="stylesheet" href="Components/headers.css">
+<link rel="stylesheet" href="Components/chatbox.css">
+<style>
+/* ============================================================
+   02-Evidence-v2 — PAGE-SPECIFIC STYLES
+   All shared styles come from Components/*.css
+   ============================================================ */
+
+/* Design tokens */
+:root {
+  --bg-base:         #f0f0f1;
+  --bg-surface:      #ffffff;
+  --bg-component:    #f4f4f5;
+  --t-primary:       #282E37;
+  --t-secondary:     #525252;
+  --t-tertiary:      #6F7377;
+  --text-muted:      #6F7377;
+  --text-very-muted: #A0A2A5;
+  --border:          rgba(0,0,0,0.09);
+  --border-secondary:rgba(0,0,0,0.14);
+  --green:           #16a34a;
+  --blue:            #1d4ed8;
+  --amber:           #b45309;
+  --red:             #D3222A;
+  --purple:          #7c3aed;
+  --orange:          #ea580c;
+  --brand:           #D3222A;
+  --ui-dark:         #1e293b;
+  --ui-darkest:      #0f172a;
+  --ui-border-strong:#e2e8f0;
+  --ui-surface-tint: #f1f5f9;
+  --ui-text-dim:     #64748b;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ── Pulse animation ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse { animation: pulse 1.4s ease-in-out infinite; }
+
+/* ── Hero title crossfade (screen 0) ── */
+.hero-title-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+}
+.hero-title-a,
+.hero-title-b {
+  transition: opacity 3s ease;
+}
+.hero-title-a { opacity: 1; }
+.hero-title-b {
+  position: absolute; inset: 0; opacity: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.stage-2 .hero-title-a { opacity: 0; }
+.stage-2 .hero-title-b { opacity: 1; }
+
+/* ============================================================
+   PROGRESS BARS
+   ============================================================ */
+.ev-progress-row { display: flex; align-items: center; }
+.ev-progress-item { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.ev-progress-label { font-size: 13px; font-weight: 600; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-track { flex: 1; height: 3px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden; }
+.ev-progress-fill  { height: 100%; border-radius: 2px; transition: width 0.15s linear; }
+.ev-progress-count { font-size: 13px; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-dot   { color: var(--t-tertiary); font-size: 6px; flex-shrink: 0; margin: 0 20px; }
+
+/* ============================================================
+   DONUT + TASK LIST
+   ============================================================ */
+.ev-currently-body { display: flex; gap: 16px; align-items: flex-start; }
+.ev-donut-box {
+  background: transparent;
+  width: 100px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 0;
+}
+.ev-donut-wrap { position: relative; width: 76px; height: 76px; }
+.ev-donut {
+  width: 76px; height: 76px; border-radius: 50%;
+  --donut-deg: 120;
+  --donut-fill: #1DD9F9;
+  background: conic-gradient(from 0deg, var(--donut-fill) 0deg calc(var(--donut-deg) * 1deg), #e5e7eb calc(var(--donut-deg) * 1deg) 360deg);
+  transition: background 0.15s linear;
+}
+.ev-donut.ev-donut-complete { --donut-fill: #8EE400; }
+.ev-donut-inner {
+  position: absolute; inset: 10px; background: #ffffff; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+.ev-donut-num { font-size: 18px; font-weight: 600; color: var(--t-primary); line-height: 1; }
+.ev-donut-lbl { font-size: 10px; color: var(--t-tertiary); line-height: 1.2; }
+
+.ev-task-group { flex: 1; min-width: 0; }
+.ev-task-source { font-size: 16px; font-weight: 600; color: var(--t-primary); margin-bottom: 10px; line-height: 1.5; }
+.ev-task-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; color: var(--t-secondary); line-height: 1.43;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.ev-task-row:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-task-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.ev-task-row.active   { font-weight: 600; color: var(--t-primary); }
+.ev-task-row.done     { font-weight: 400; color: var(--t-secondary); }
+
+/* ============================================================
+   ACCORDION ROWS (Upcoming / Completed)
+   ============================================================ */
+.ev-acc-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.ev-acc-row:first-of-type { padding-top: 0; }
+.ev-acc-row:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-acc-row > div > div:first-child { font-weight: 600; }
+.ev-acc-chev { flex-shrink: 0; color: var(--t-tertiary); margin-top: 3px; margin-left: 8px; }
+
+/* ============================================================
+   CHANGE LOG
+   ============================================================ */
+.ev-log-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.ev-log-row:first-child { padding-top: 0; }
+.ev-log-row:last-child  { border-bottom: none; padding-bottom: 0; }
+.ev-log-icon { flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+.ev-log-body { font-size: 14px; color: var(--t-secondary); line-height: 1.43; }
+.ev-log-body strong { color: var(--t-primary); font-weight: 600; }
+.ev-log-sub { font-size: 12px; color: var(--t-tertiary); margin-top: 3px; }
+
+/* ============================================================
+   COMPLETE ALERT — slide-in
+   ============================================================ */
+#ev-complete-alert-wrap {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#ev-complete-alert-wrap.visible {
+  height: auto;
+}
+
+
+/* ============================================================
+   MICROINTERACTIONS
+   ============================================================ */
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.mt4  { margin-top: 4px; }
+.mt8  { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mb8  { margin-bottom: 8px; }
+.mb12 { margin-bottom: 12px; }
+.flex-row { display: flex; align-items: center; gap: 8px; }
+.text-muted  { color: var(--t-tertiary); }
+.text-green  { color: #16a34a; }
+.text-amber  { color: #b45309; }
+.text-blue   { color: #1d4ed8; }
+.text-red    { color: #D3222A; }
+.fw600 { font-weight: 600; }
+.fz11  { font-size: 11px; }
+.fz12  { font-size: 12px; }
+
+/* ============================================================
+   SCREEN 1 — Evidence collection complete (from 02-Evidence-3)
+   ============================================================ */
+
+/* Screen background gradient */
+/* #screen-1 glow: applied via .hero-glow-green on .page-scroll */
+
+/* Screen-1 hero — uses shared hero-section.css */
+
+/* Screen-1 progress bar row */
+#screen-1 .ev-progress-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border);
+}
+#screen-1 .ev-progress-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#screen-1 .ev-progress-item + .ev-progress-item {
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+  margin-left: 16px;
+}
+#screen-1 .ev-progress-label { white-space: nowrap; flex-shrink: 0; }
+#screen-1 .ev-progress-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 60px;
+}
+#screen-1 .ev-progress-fill {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 99px;
+}
+#screen-1 .ev-progress-value { font-size: 13px; font-weight: 400; color: var(--t-tertiary); white-space: nowrap; flex-shrink: 0; }
+#screen-1 .ev-progress-bullet {
+  width: 5px; height: 5px;
+  background: var(--border);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin: 0 8px;
+}
+
+/* Screen-1 status */
+#screen-1 .ev-progress-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px 28px;
+}
+#screen-1 .ev-status-check {
+  width: 20px; height: 20px;
+  background: #84cc16;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+#screen-1 .ev-status-check svg { width: 11px; height: 11px; color: #fff; }
+#screen-1 .ev-status-text-primary { font-size: 14px; font-weight: 600; color: var(--t-primary); }
+#screen-1 .ev-status-text-secondary { font-size: 13px; color: var(--t-secondary); line-height: 1.5; margin-top: 3px; }
+
+/* Screen-1 alerts */
+#screen-1 .ev-alert-yellow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFF2AA;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #6A5F00;
+}
+#screen-1 .ev-alert-yellow svg { width: 24px; height: 24px; flex-shrink: 0; color: #6A5F00; }
+#screen-1 .ev-alert-green {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #D2FF9C;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+#screen-1 .ev-alert-green-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+#screen-1 .ev-alert-green-icon svg { width: 24px; height: 24px; color: #3F6900; }
+#screen-1 .ev-alert-green-body { flex: 1; }
+#screen-1 .ev-alert-green-title { font-size: 14px; font-weight: 600; color: #3F6900; }
+#screen-1 .ev-alert-green-sub { font-size: 13px; color: #3F6900; margin-top: 2px; }
+#screen-1 .ev-open-btn {
+  background: #ffffff; color: var(--ui-dark);
+  border: 1px solid var(--ui-border-strong); border-radius: 10px;
+  padding: 8px 16px; font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--font);
+  white-space: nowrap; flex-shrink: 0;
+  transition: all 0.15s;
+}
+#screen-1 .ev-open-btn:hover { background: #f8fafc; border-color: var(--ui-border-strong); }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 0 — Evidence Gathering (animated)
+     ============================================================ -->
+<div class="screen active" id="screen-0">
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+      Diligent  &middot;  Automated Audit Reporting
+    </div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="app-activity-count">5</span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="app-notif-dot"></span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-scroll hero-glow-blue">
+    <div class="page-inner content-gap">
+
+        <!-- Hero -->
+        <div class="hero-section-workflow">
+          <div class="hero-header">
+            <div class="hero-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Assurance report request
+              </span>
+            </div>
+            <div class="hero-title-wrap">
+              <h1 class="hero-title hero-title-a">Scanning sources — <strong>data collection has started.</strong></h1>
+              <div class="hero-title-b">
+                <h1 class="hero-title">Scanning sources — <strong>data collection is complete.</strong></h1>
+              </div>
+            </div>
+          </div>
+          <div class="hero-stepper">
+            <div class="hero-stepper-label">Workflow Status</div>
+            <div class="hero-stepper-steps">
+              <div class="hero-step done">
+                <div class="hero-step-icon"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step active" id="ev-workflow-evidence">
+                <div class="hero-step-icon active" id="ev-workflow-evidence-circle"><img src="Icons/Active.svg" width="20" height="20" alt="" id="ev-workflow-evidence-icon"></div>
+                Evidence
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Synthesis &amp; Edit
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Preview &amp; Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap">
+
+        <!-- Complete Alert (hidden, slides in at end) -->
+        <div id="ev-complete-alert-wrap">
+          <div class="section">
+            <div class="alert-card alert-card-md alert-card-green">
+              <div class="alert-card-icon">
+                <img src="Icons/Success.svg" width="24" height="24" alt="">
+              </div>
+              <div class="alert-card-body">
+                <div class="alert-card-title">Scanning sources is now complete</div>
+                <div class="alert-card-sub">View results to read the summary about the collected evidences, risks and gaps.</div>
+              </div>
+              <div class="alert-card-actions">
+                <button class="btn btn-primary btn-md" id="ev-view-results-btn">View results</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- General Progress -->
+        <div class="section">
+          <div class="section-title">General progress</div>
+          <div class="card-default">
+            <div class="ev-progress-row">
+              <div class="ev-progress-item">
+                <span class="ev-progress-label label-sm">Findings</span>
+                <div class="ev-progress-track"><div class="ev-progress-fill" id="ev-fill-findings" style="width:39%;background:#1DD9F9;"></div></div>
+                <span class="ev-progress-count" id="ev-count-findings">47 / 120</span>
+              </div>
+              <span class="ev-progress-dot">&bull;</span>
+              <div class="ev-progress-item">
+                <span class="ev-progress-label label-sm">Controls</span>
+                <div class="ev-progress-track"><div class="ev-progress-fill" id="ev-fill-controls" style="width:45%;background:#8B5CF6;"></div></div>
+                <span class="ev-progress-count" id="ev-count-controls">180 / 400</span>
+              </div>
+              <span class="ev-progress-dot">&bull;</span>
+              <div class="ev-progress-item">
+                <span class="ev-progress-label label-sm">Obligations</span>
+                <div class="ev-progress-track"><div class="ev-progress-fill" id="ev-fill-obligations" style="width:40%;background:#F472B6;"></div></div>
+                <span class="ev-progress-count" id="ev-count-obligations">12 / 30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scanning Queue -->
+        <div class="section">
+          <div class="section-title">Scanning queue</div>
+          <div class="card-grid-1-3">
+
+            <!-- Currently -->
+            <div class="card-sm">
+              <div class="card-title">Currently</div>
+              <div class="ev-currently-body">
+                <div class="ev-donut-box">
+                  <div class="ev-donut-wrap">
+                    <div class="ev-donut" id="ev-donut" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="3"></div>
+                    <div class="ev-donut-inner">
+                      <span class="ev-donut-num" id="ev-donut-num">1/3</span>
+                      <span class="ev-donut-lbl">Tasks</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="ev-task-group" id="ev-currently-tasks">
+                  <div class="ev-task-source">ERM</div>
+                  <div class="ev-task-row active" data-task="0">
+                    <div class="ev-task-icon"><img src="Icons/Active.svg" width="20" height="20" alt="" class="ev-task-img"></div>
+                    Risk register scanning
+                  </div>
+                  <div class="ev-task-row" data-task="1">
+                    <div class="ev-task-icon"><img src="Icons/Pending-task.svg" width="20" height="20" alt="" class="ev-task-img"></div>
+                    Appetite threshold
+                  </div>
+                  <div class="ev-task-row" data-task="2">
+                    <div class="ev-task-icon"><img src="Icons/Pending-task.svg" width="20" height="20" alt="" class="ev-task-img"></div>
+                    Velocity data
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upcoming -->
+            <div class="card-sm">
+              <div class="card-title">Upcoming</div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>AI Risk Essentials</div>
+                  <div>15 AI alerts + peer benchmarks</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>Compliance Maps, 3rd Risk, External Intel</div>
+                  <div>5 sources waiting</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+
+            <!-- Completed -->
+            <div class="card-sm">
+              <div class="card-title">Completed</div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>Projects</div>
+                  <div>3 tasks completed</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="ev-acc-row">
+                <div>
+                  <div>Frameworks</div>
+                  <div>2 tasks completed</div>
+                </div>
+                <svg class="ev-acc-chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Change Log -->
+        <div class="section">
+          <div class="section-title">Change log</div>
+          <div class="card-default">
+            <div class="ev-log-row" id="ev-log-erm">
+              <div class="ev-log-icon"><img src="Icons/Active.svg" width="20" height="20" alt="" id="ev-log-erm-icon"></div>
+              <div>
+                <div class="ev-log-body"><strong>ERM scanning</strong> — retrieving risk register, appetite thresholds and velocity data</div>
+              </div>
+            </div>
+            <div class="ev-log-row">
+              <div class="ev-log-icon done"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+              <div>
+                <div class="ev-log-body"><strong>Frameworks complete</strong> — 180 controls scanned, 8 flagged ineffective.</div>
+              </div>
+            </div>
+            <div class="ev-log-row">
+              <div class="ev-log-icon done"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+              <div>
+                <div class="ev-log-body"><strong>Projects complete</strong> — 47 findings retrieved (12 high/critical). Remediation data included.</div>
+              </div>
+            </div>
+            <div class="ev-log-row">
+              <div class="ev-log-icon done"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+              <div>
+                <div class="ev-log-body"><strong>Evidence gathering started</strong> — scanning 8 sources in parallel</div>
+                <div class="ev-log-sub">Results surface as each source completes. You can continue working — I'll notify you when the Evidence Pack is ready for review.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div><!-- end section-gap -->
+
+        </div><!-- end page-inner -->
+
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div><!-- end page-scroll -->
+</div>
+
+<!-- ============================================================
+     SCREEN 1 — Evidence collection complete
+     ============================================================ -->
+<div class="screen" id="screen-1">
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+      Diligent  &middot;  Automated Audit Reporting
+    </div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="app-activity-count">5</span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="app-notif-dot"></span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-scroll hero-glow-green">
+    <div class="page-inner content-gap">
+
+        <!-- Hero (02-Evidence-05) -->
+        <div class="hero-section-workflow">
+          <div class="hero-header">
+            <div class="hero-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="Icons/Audit.svg">
+                Assurance report request
+              </span>
+            </div>
+            <h1 class="hero-title"><strong>Applicable evidence identified.</strong> Review and confirm.</h1>
+          </div>
+          <div class="hero-stepper">
+            <div class="hero-stepper-label">Workflow status</div>
+            <div class="hero-stepper-steps">
+              <div class="hero-step done">
+                <div class="hero-step-icon done"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step done current">
+                <div class="hero-step-icon done"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+                Evidence
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Synthesis &amp; Edit
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="hero-step">
+                <div class="hero-step-icon"><img src="Icons/Next.svg" width="20" height="20" alt=""></div>
+                Preview &amp; Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content (02-Evidence-05) -->
+        <div class="section-gap">
+
+          <div class="section" id="ev-section-results">
+            <div class="section-title">Results</div>
+            <div class="alert-card alert-card-md alert-card-green">
+              <div class="alert-card-icon">
+                <img src="Icons/Success.svg" width="24" height="24" alt="">
+              </div>
+              <div class="alert-card-body">
+                <div class="alert-card-title">Evidence Pack assembled — 8 of 8 sources complete.</div>
+                <div class="alert-card-sub">All sources returned data. The pack has been saved to Boards as a supporting document. Review the summary below and confirm before synthesis begins.</div>
+              </div>
+            </div>
+            <div class="card-default ev-card-general-progress">
+              <div class="card-title">General progress</div>
+              <div class="card-hero-row" style="padding:16px 20px;">
+                <div class="ev-progress-row" style="width:100%;">
+                  <div class="ev-progress-item">
+                    <span class="ev-progress-label label-sm">Findings</span>
+                    <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+                    <span class="ev-progress-count">120 / 120</span>
+                  </div>
+                  <span class="ev-progress-dot">&#9679;</span>
+                  <div class="ev-progress-item">
+                    <span class="ev-progress-label label-sm">Controls</span>
+                    <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+                    <span class="ev-progress-count">400 / 400</span>
+                  </div>
+                  <span class="ev-progress-dot">&#9679;</span>
+                  <div class="ev-progress-item">
+                    <span class="ev-progress-label label-sm">Obligations</span>
+                    <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+                    <span class="ev-progress-count">30 / 30</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-title" style="margin-top:16px;">Pack summary</div>
+              <div class="card-hero-row">
+                <div class="card-hero">
+                  <div class="card-hero-label label-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    Data points
+                  </div>
+                  <div class="card-hero-value">312 <span class="card-hero-desc">total</span></div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label label-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                    Sources completed
+                  </div>
+                  <div class="card-hero-value">8 <span class="card-hero-desc">of</span> 8</div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label label-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+                    Data freshness
+                  </div>
+                  <div class="card-hero-value">7 <span class="card-hero-desc">current</span> 1 <span class="card-hero-desc">recent</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" id="ev-section-evidence-pack">
+            <div class="section-header">
+              <div class="section-title">Evidence pack collection</div>
+              <p class="section-subtitle">312 data points across 8 sources</p>
+            </div>
+
+              <div class="card-default">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th class="col-result text-center">Result</th>
+                      <th class="col-source">Source</th>
+                      <th class="col-records">Records</th>
+                      <th class="col-fresh text-center">Freshness</th>
+                      <th class="col-download text-center">Download pack</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Projects — Findings &amp; Controls</td>
+                      <td class="col-records">47 findings &middot; 180 controls</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Frameworks — Risk Control Matrix</td>
+                      <td class="col-records">180 controls &middot; 8 ineffective</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">ERM — Risk Register &amp; Appetite</td>
+                      <td class="col-records">22 risks &middot; 3 above appetite</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">AI Risk Essentials — Alerts</td>
+                      <td class="col-records">15 AI alerts &middot; peer benchmarks</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Compliance Maps — SEC Obligations</td>
+                      <td class="col-records">12 obligations &middot; 3 gaps</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">3rd Risk — Vendor Assessments</td>
+                      <td class="col-records">8 vendors &middot; 3 high-risk</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-yellow"><img src="Icons/Recent.svg" class="pill-ico">Recent</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">Vault — Speak-up Themes</td>
+                      <td class="col-records">4 themes &middot; anonymised</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result text-center"><img src="Icons/Done.svg" class="row-check" alt="" style="margin:0 auto"></td>
+                      <td class="col-source">External Intel — Peer Enforcement</td>
+                      <td class="col-records">6 enforcement actions</td>
+                      <td class="col-fresh text-center"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+                      <td class="col-download text-center"><button class="btn btn-tertiary btn-sm">Download</button></td>
+                    </tr>
+                    <tr>
+                      <td class="col-result" style="border-top:1px solid rgba(0,0,0,0.2);"></td>
+                      <td colspan="3" style="border-top:1px solid rgba(0,0,0,0.2); font-weight:600; color:var(--t-secondary);">Packs total: 8</td>
+                      <td class="col-download text-center" style="border-top:1px solid rgba(0,0,0,0.2);"><button class="btn btn-secondary btn-sm">Download all</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="table-footer">
+                  <button class="btn btn-secondary btn-md" style="border:none">Re-run a source</button>
+                  <button class="btn btn-primary btn-md" id="ev-confirm-pack-btn">Confirm Evidence pack</button>
+                </div>
+              </div>
+
+              <div class="ev-alert-yellow">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.86523 20.4999L11.9998 3L22.1343 20.4999H1.86523ZM4.44978 18.9999H19.5498L11.9998 5.99993L4.44978 18.9999ZM11.9998 17.8076C12.2286 17.8076 12.4205 17.7302 12.5753 17.5754C12.7301 17.4206 12.8075 17.2288 12.8075 16.9999C12.8075 16.7711 12.7301 16.5793 12.5753 16.4245C12.4205 16.2697 12.2286 16.1923 11.9998 16.1923C11.7709 16.1923 11.5791 16.2697 11.4243 16.4245C11.2695 16.5793 11.1921 16.7711 11.1921 16.9999C11.1921 17.2288 11.2695 17.4206 11.4243 17.5754C11.5791 17.7302 11.7709 17.8076 11.9998 17.8076ZM11.2498 15.1923H12.7498V10.1923H11.2498V15.1923Z" fill="currentColor"/></svg>
+                HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.
+              </div>
+
+
+          </div>
+
+        </div><!-- /section-gap -->
+
+        </div><!-- end page-inner -->
+
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div><!-- end page-scroll -->
+</div><!-- end screen-1 -->
+
+
+<script>
+(function () {
+  'use strict';
+
+  var PAUSE_MS  = 2000;
+  var DURATION_MS = 8000;
+  var COMPLETE_GREEN = '#8EE400';
+
+  /* ── Metric definitions ── */
+  var findings    = { startPct: 39, startVal: 47,  total: 120, color: '#1DD9F9' };
+  var controls    = { startPct: 45, startVal: 180, total: 400, color: '#8B5CF6' };
+  var obligations = { startPct: 40, startVal: 12,  total: 30,  color: '#F472B6' };
+  var metrics = [
+    { m: findings,    fillEl: 'ev-fill-findings',    countEl: 'ev-count-findings' },
+    { m: controls,    fillEl: 'ev-fill-controls',    countEl: 'ev-count-controls' },
+    { m: obligations, fillEl: 'ev-fill-obligations',  countEl: 'ev-count-obligations' }
+  ];
+
+  /* ── Cache DOM refs ── */
+  var screen0       = document.getElementById('screen-0');
+  var donutEl       = document.getElementById('ev-donut');
+  var donutNumEl    = document.getElementById('ev-donut-num');
+  var taskRows      = document.querySelectorAll('#ev-currently-tasks .ev-task-row');
+  var logErmIcon    = document.getElementById('ev-log-erm-icon');
+  var alertWrap     = document.getElementById('ev-complete-alert-wrap');
+  var viewResultBtn = document.getElementById('ev-view-results-btn');
+  var heroWrap      = document.querySelector('.hero-section-workflow');
+  var workflowEvStep   = document.getElementById('ev-workflow-evidence');
+  var workflowEvCircle = document.getElementById('ev-workflow-evidence-circle');
+  var workflowEvIcon   = document.getElementById('ev-workflow-evidence-icon');
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  /* ── Apply one animation frame ── */
+  function applyFrame(t, done) {
+    /* Progress bars */
+    for (var i = 0; i < metrics.length; i++) {
+      var entry = metrics[i];
+      var m = entry.m;
+      var pct = lerp(m.startPct, 100, t);
+      var val = Math.round(lerp(m.startVal, m.total, t));
+      var fillEl  = document.getElementById(entry.fillEl);
+      var countEl = document.getElementById(entry.countEl);
+      fillEl.style.width = pct.toFixed(1) + '%';
+      fillEl.style.background = done ? COMPLETE_GREEN : m.color;
+      countEl.textContent = val + ' / ' + m.total;
+    }
+
+    /* Donut */
+    var donutDeg = lerp(120, 360, t);
+    var step = Math.min(Math.floor(t * 3) + 1, 3);
+    donutEl.style.setProperty('--donut-deg', donutDeg.toFixed(1));
+    if (done) {
+      donutEl.style.setProperty('--donut-fill', COMPLETE_GREEN);
+      donutEl.classList.add('ev-donut-complete');
+    }
+    donutNumEl.textContent = step + '/3';
+
+    /* Task rows */
+    var tasks;
+    if (t < 1 / 3) {
+      tasks = ['active', 'pending', 'pending'];
+    } else if (t < 2 / 3) {
+      tasks = ['done', 'active', 'pending'];
+    } else {
+      tasks = ['done', 'done', done ? 'done' : 'active'];
+    }
+
+    for (var j = 0; j < taskRows.length; j++) {
+      var row = taskRows[j];
+      var state = tasks[j];
+      var img = row.querySelector('.ev-task-img');
+      row.className = 'ev-task-row' + (state === 'active' ? ' active' : '') + (state === 'done' ? ' done' : '');
+      if (state === 'done') {
+        img.src = 'Icons/Done.svg';
+      } else if (state === 'active') {
+        img.src = 'Icons/Active.svg';
+      } else {
+        img.src = 'Icons/Pending-task.svg';
+      }
+    }
+
+    /* Log ERM icon */
+    if (done) {
+      logErmIcon.src = 'Icons/Done.svg';
+    }
+  }
+
+  /* ── Completion sequence ── */
+  function onComplete() {
+    /* Hero title crossfade */
+    var heroHeader = document.querySelector('.hero-header');
+    heroHeader.classList.add('stage-2');
+
+    /* Hero glow: teal -> green */
+    var scrollEl = screen0.querySelector('.page-scroll');
+    scrollEl.classList.remove('hero-glow-blue');
+    scrollEl.classList.add('hero-glow-green');
+
+    /* Workflow Evidence step -> done */
+    workflowEvStep.classList.remove('active');
+    workflowEvStep.style.color = 'var(--t-primary)';
+    workflowEvStep.style.fontWeight = '600';
+    workflowEvCircle.classList.remove('active');
+    workflowEvIcon.src = 'Icons/Done.svg';
+
+    /* Slide in alert */
+    /* Measure the inner content height, then animate */
+    alertWrap.style.height = 'auto';
+    var h = alertWrap.scrollHeight;
+    alertWrap.style.height = '0px';
+    /* Force reflow */
+    alertWrap.offsetHeight;
+    alertWrap.style.height = h + 'px';
+    alertWrap.classList.add('visible');
+
+    /* Scroll to top to reveal the alert */
+    var scrollContainer = document.querySelector('.page-scroll');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  /* ── Animation loop ── */
+  function runAnimation() {
+    var startTime = null;
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var elapsed = Math.min(timestamp - startTime, DURATION_MS);
+      var t = elapsed / DURATION_MS;
+      var done = elapsed >= DURATION_MS;
+
+      applyFrame(t, done);
+
+      if (!done) {
+        requestAnimationFrame(tick);
+      } else {
+        setTimeout(onComplete, 800);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  /* ── Start after pause ── */
+  setTimeout(runAnimation, PAUSE_MS);
+
+  /* ── "View results" button — switch to screen 1 ── */
+  viewResultBtn.addEventListener('click', function () {
+    showScreen(1);
+  });
+})();
+
+/* ── Screen switcher ── */
+function showScreen(index) {
+  document.querySelectorAll('.screen').forEach(function(el, i) {
+    el.classList.toggle('active', i === index);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── "Confirm Evidence pack" button — navigate to Synthesis ── */
+(function () {
+  var btn = document.getElementById('ev-confirm-pack-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    window.location.href = '03-Synthesis-to-Chat.html';
+  });
+})();
+</script>
+<script src="workflow-bridge.js"></script>
+</body>
+</html>

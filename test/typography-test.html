@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typography — Test Sheet</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Component CSS (contains the typography section) -->
+  <link rel="stylesheet" href="../Components/HUC-components.css" />
+
+  <style>
+    /* ── Test-page-only layout ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #F5F5F5;
+      color: #282E37;
+    }
+
+    .test-page-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6F7377;
+      margin: 0 0 32px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #A0A2A5;
+      margin: 48px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #E0E0E0;
+    }
+    .section-label:first-of-type { margin-top: 0; }
+
+    .row {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      padding: 10px 0;
+    }
+
+    .label {
+      flex: 0 0 140px;
+      font-size: 11px;
+      font-weight: 400;
+      color: #A0A2A5;
+      text-align: right;
+    }
+
+    .sample { flex: 1; }
+
+    /* Color swatches */
+    .color-grid {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 10px 0;
+    }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .swatch-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid #E0E0E0;
+    }
+    .swatch-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6F7377;
+    }
+    .swatch-hex {
+      font-size: 11px;
+      color: #A0A2A5;
+    }
+
+    /* Inverse demo strip */
+    .inverse-strip {
+      background: #282E37;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="test-page-title">Global Typography — Test Sheet</p>
+
+  <!-- ── HEADINGS ──────────────────────────────────────────── -->
+  <p class="section-label">Headings</p>
+
+  <div class="row">
+    <span class="label">.h1 — 40 / 400</span>
+    <span class="sample h1">The quick brown fox</span>
+  </div>
+  <div class="row">
+    <span class="label">.h1-bold — 40 / 600</span>
+    <span class="sample h1-bold">The quick brown fox</span>
+  </div>
+
+  <div class="row">
+    <span class="label">.h2 — 28 / 400</span>
+    <span class="sample h2">The quick brown fox</span>
+  </div>
+  <div class="row">
+    <span class="label">.h2-bold — 28 / 600</span>
+    <span class="sample h2-bold">The quick brown fox</span>
+  </div>
+
+  <div class="row">
+    <span class="label">.h3 — 18 / 400</span>
+    <span class="sample h3">The quick brown fox</span>
+  </div>
+  <div class="row">
+    <span class="label">.h3-bold — 18 / 600</span>
+    <span class="sample h3-bold">The quick brown fox</span>
+  </div>
+
+  <div class="row">
+    <span class="label">.h4 — 16 / 400</span>
+    <span class="sample h4">The quick brown fox</span>
+  </div>
+  <div class="row">
+    <span class="label">.h4-bold — 16 / 600</span>
+    <span class="sample h4-bold">The quick brown fox</span>
+  </div>
+
+  <!-- ── BODY ──────────────────────────────────────────────── -->
+  <p class="section-label">Body</p>
+
+  <div class="row">
+    <span class="label">.body-default — 14</span>
+    <span class="sample body-default">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</span>
+  </div>
+  <div class="row">
+    <span class="label">.body-md — 12</span>
+    <span class="sample body-md">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</span>
+  </div>
+  <div class="row">
+    <span class="label">.body-sm — 11</span>
+    <span class="sample body-sm">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</span>
+  </div>
+
+  <!-- ── UTILITY ───────────────────────────────────────────── -->
+  <p class="section-label">Utility</p>
+
+  <div class="row">
+    <span class="label">.font-btn-md — 16 / 600</span>
+    <span class="sample font-btn-md">Submit request</span>
+  </div>
+  <div class="row">
+    <span class="label">.font-btn-sm — 14 / 600</span>
+    <span class="sample font-btn-sm">Submit request</span>
+  </div>
+  <div class="row">
+    <span class="label">.eyebrow — 11 / 600</span>
+    <span class="sample eyebrow">Workflow steps</span>
+  </div>
+
+  <!-- ── FONT COLORS ──────────────────────────────────────── -->
+  <p class="section-label">Font Colors</p>
+
+  <div class="color-grid">
+    <div class="swatch">
+      <div class="swatch-box" style="background:#282E37;"></div>
+      <span class="swatch-name">default</span>
+      <span class="swatch-hex">#282E37</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch-box" style="background:#6F7377;"></div>
+      <span class="swatch-name">muted</span>
+      <span class="swatch-hex">#6F7377</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch-box" style="background:#A0A2A5;"></div>
+      <span class="swatch-name">disabled</span>
+      <span class="swatch-hex">#A0A2A5</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch-box" style="background:#ffffff;"></div>
+      <span class="swatch-name">inverse</span>
+      <span class="swatch-hex">#FFFFFF</span>
+    </div>
+  </div>
+
+  <!-- Show font color classes in context -->
+  <div class="row">
+    <span class="label">.fc-default</span>
+    <span class="sample body-default fc-default">Default body text</span>
+  </div>
+  <div class="row">
+    <span class="label">.fc-muted</span>
+    <span class="sample body-default fc-muted">Muted — section subtitle, card subtitle</span>
+  </div>
+  <div class="row">
+    <span class="label">.fc-disabled</span>
+    <span class="sample body-default fc-disabled">Disabled state text</span>
+  </div>
+  <div class="row">
+    <span class="label">.fc-inverse</span>
+    <div class="sample">
+      <div class="inverse-strip">
+        <span class="body-default fc-inverse">Inverse text on dark background</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

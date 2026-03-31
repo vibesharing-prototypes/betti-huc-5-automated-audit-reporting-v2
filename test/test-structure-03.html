@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test: content-gap placement — 03-Synthesis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base: #f0f0f1;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-component: #f4f4f5;
+  --t-primary: #282E37;
+  --t-secondary: #525252;
+  --t-tertiary: #6F7377;
+  --text-primary: #282E37;
+  --text-secondary: #525252;
+  --text-muted: #6F7377;
+  --border: rgba(0,0,0,0.09);
+  --border-primary: rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+  --green: #16a34a;
+  --red: #D3222A;
+  --amber: #b45309;
+  --purple: #7c3aed;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+}
+
+/* Layout — identical to 03-Synthesis */
+.investigation-body { display: flex; flex: 1; overflow: hidden; background: transparent; }
+.left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.left-scroll { flex: 1; overflow: hidden auto; padding: 44px 20px 0; display: flex; flex-direction: column; align-items: center; scrollbar-width: none; }
+.left-scroll::-webkit-scrollbar { display: none; }
+.left-scroll-inner { width: 100%; max-width: 1024px; }
+
+/* Spacing */
+.content-gap { display: flex; flex-direction: column; gap: 32px; }
+.section-gap { display: flex; flex-direction: column; gap: 24px; }
+.section { display: flex; flex-direction: column; gap: 12px; }
+
+/* Cards */
+.card-default { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+
+/* Section headers */
+.section-header { display: flex; flex-direction: column; gap: 6px; }
+.section-title { font-size: 18px; font-weight: 600; color: var(--t-primary); }
+.section-subtitle { font-size: 14px; color: var(--t-secondary); line-height: 1.5; }
+
+/* Test controls */
+.test-controls {
+  position: fixed; top: 8px; right: 8px; z-index: 100;
+  background: #282E37; color: #fff; padding: 12px 16px; border-radius: 12px;
+  font-size: 13px; display: flex; flex-direction: column; gap: 8px;
+}
+.test-controls button {
+  background: #D3222A; color: #fff; border: none; border-radius: 8px;
+  padding: 6px 12px; cursor: pointer; font-family: var(--font); font-size: 13px;
+}
+.test-controls .label { font-weight: 600; margin-bottom: 2px; }
+
+/* Debug outline */
+.debug .left-scroll-inner { outline: 2px dashed #D3222A; outline-offset: -2px; }
+.debug .left-scroll { outline: 2px dashed #1d4ed8; outline-offset: -2px; }
+.debug .chat-area-box { outline: 2px dashed #16a34a; outline-offset: -2px; }
+</style>
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/headers.css">
+<link rel="stylesheet" href="Components/chatbox.css">
+<link rel="stylesheet" href="Components/buttons.css">
+</head>
+<body class="debug">
+
+<div class="test-controls">
+  <div class="label">content-gap placement test</div>
+  <div>
+    <span style="display:inline-block;width:12px;height:12px;background:#1d4ed8;border-radius:2px;"></span> .left-scroll
+    <span style="display:inline-block;width:12px;height:12px;background:#D3222A;border-radius:2px;margin-left:8px;"></span> .left-scroll-inner
+    <span style="display:inline-block;width:12px;height:12px;background:#16a34a;border-radius:2px;margin-left:8px;"></span> .chat-area
+  </div>
+  <button onclick="toggle()">Toggle: content-gap on .left-scroll-inner (02-Ev pattern)</button>
+  <div id="state-label" style="font-size:12px; color:#aaa;">Current: content-gap on .left-scroll-inner</div>
+</div>
+
+<!-- VERSION A: content-gap on .left-scroll-inner (02-Evidence pattern — current) -->
+<div id="version-a" class="investigation-body">
+  <div class="left-content">
+    <div class="left-scroll">
+      <div class="left-scroll-inner content-gap">
+
+        <!-- Fake hero -->
+        <div style="text-align:center; padding: 24px 0;">
+          <h1 style="font-size:28px; font-weight:300; color:var(--t-primary);"><strong>Risk synthesis</strong> - Expanding details to make sense.</h1>
+        </div>
+
+        <div class="section-gap">
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">1/4 - Correlating signals across domains</div>
+              <div class="section-subtitle">Mapping relationships between findings across all 8 sources.</div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Access Control chain</div>
+              <div style="font-size:13px;color:var(--t-secondary);line-height:1.6;">Audit finding AC-2 (Projects) → ERM risk "Unauthorized Access" above appetite → 3 vendor assessments with weak access controls (3rd Risk)</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">2/4 — Filtering by materiality and relevance</div>
+              <div class="section-subtitle">Applying thresholds across 312 data points.</div>
+            </div>
+            <div class="card-default">
+              <div style="display:flex;gap:40px;">
+                <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--t-tertiary);">Priority findings</div><div style="font-size:32px;font-weight:600;">18</div></div>
+                <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--t-tertiary);">Deprioritised</div><div style="font-size:32px;font-weight:600;">43</div></div>
+                <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--t-tertiary);">Context only</div><div style="font-size:32px;font-weight:600;">251</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">3/4 — Categorising against company risk taxonomy</div>
+              <div class="section-subtitle">Cross-category exposure flagged.</div>
+            </div>
+            <div class="card-default">
+              <div style="font-size:13px;color:var(--t-secondary);line-height:1.6;">Compliance: 7 · Operational: 5 · Reputational: 4 · Financial: 2 · Strategic: 0</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">4/4 — SEC disclosure requirements</div>
+            </div>
+            <div class="card-default">
+              <div style="font-size:13px;color:var(--t-secondary);line-height:1.6;">8-K materiality determination process — Gap<br>Risk management disclosure — Partial<br>Governance oversight structure — Covered</div>
+            </div>
+          </div>
+        </div><!-- /section-gap -->
+
+      </div><!-- /left-scroll-inner -->
+
+      <div class="chat-area chat-area-box">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Ask about evidence, review the pack, or re-run a source..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row">
+                <div class="chat-chip">Summarise the evidence pack</div>
+                <div class="chat-chip">Flag any gaps</div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn-secondary btn-md">Clear</button>
+                <button class="btn btn-primary btn-md" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end left-scroll -->
+  </div>
+</div>
+
+<!-- VERSION B: content-gap on .left-scroll (BAD — old 03-Synthesis before fix) -->
+<div id="version-b" class="investigation-body" style="display:none;">
+  <div class="left-content">
+    <div class="left-scroll content-gap">
+      <div class="left-scroll-inner">
+
+        <!-- Same content -->
+        <div style="text-align:center; padding: 24px 0;">
+          <h1 style="font-size:28px; font-weight:300; color:var(--t-primary);"><strong>Risk synthesis</strong> - Expanding details to make sense.</h1>
+        </div>
+
+        <div class="section-gap">
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">1/4 - Correlating signals across domains</div>
+              <div class="section-subtitle">Mapping relationships between findings across all 8 sources.</div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Access Control chain</div>
+              <div style="font-size:13px;color:var(--t-secondary);line-height:1.6;">Audit finding AC-2 (Projects) → ERM risk "Unauthorized Access" above appetite → 3 vendor assessments with weak access controls (3rd Risk)</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">2/4 — Filtering by materiality and relevance</div>
+              <div class="section-subtitle">Applying thresholds across 312 data points.</div>
+            </div>
+            <div class="card-default">
+              <div style="display:flex;gap:40px;">
+                <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--t-tertiary);">Priority findings</div><div style="font-size:32px;font-weight:600;">18</div></div>
+                <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--t-tertiary);">Deprioritised</div><div style="font-size:32px;font-weight:600;">43</div></div>
+                <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--t-tertiary);">Context only</div><div style="font-size:32px;font-weight:600;">251</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">3/4 — Categorising against company risk taxonomy</div>
+              <div class="section-subtitle">Cross-category exposure flagged.</div>
+            </div>
+            <div class="card-default">
+              <div style="font-size:13px;color:var(--t-secondary);line-height:1.6;">Compliance: 7 · Operational: 5 · Reputational: 4 · Financial: 2 · Strategic: 0</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">4/4 — SEC disclosure requirements</div>
+            </div>
+            <div class="card-default">
+              <div style="font-size:13px;color:var(--t-secondary);line-height:1.6;">8-K materiality determination process — Gap<br>Risk management disclosure — Partial<br>Governance oversight structure — Covered</div>
+            </div>
+          </div>
+        </div><!-- /section-gap -->
+
+      </div><!-- /left-scroll-inner -->
+
+      <div class="chat-area chat-area-box">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Ask about evidence, review the pack, or re-run a source..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row">
+                <div class="chat-chip">Summarise the evidence pack</div>
+                <div class="chat-chip">Flag any gaps</div>
+              </div>
+              <div class="chat-actions">
+                <button class="btn btn-secondary btn-md">Clear</button>
+                <button class="btn btn-primary btn-md" disabled>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end left-scroll -->
+  </div>
+</div>
+
+<script>
+let showingA = true;
+function toggle() {
+  showingA = !showingA;
+  document.getElementById('version-a').style.display = showingA ? '' : 'none';
+  document.getElementById('version-b').style.display = showingA ? 'none' : '';
+  document.getElementById('state-label').textContent = showingA
+    ? 'Current: content-gap on .left-scroll-inner (02-Ev pattern ✓)'
+    : 'Current: content-gap on .left-scroll (old broken pattern ✗)';
+}
+</script>
+</body>
+</html>

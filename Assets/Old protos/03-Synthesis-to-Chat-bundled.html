@@ -1,0 +1,3322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthesis → Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* === Inlined from Components/huc-components.css === */
+/* ============================================================
+   HUC COMPONENTS — CORE PRIMITIVES
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Core design system primitives — buttons, cards, pills, tables,
+   layout spacing, typography (section/card headers).
+
+   Composite components (separate files):
+     chatbox.css       — standard chatbox
+     chat-w-glow.css   — chatbox with glow effect (Sunrise-glow)
+     hero-section.css  — hero section (workflow + notification variants)
+     alert-cards.css   — alert card component
+     card-hero.css     — stat/metric hero cards
+
+   CSS variables used (define in host page or :root):
+     --bg-surface   — card / surface background  (fallback: #ffffff)
+     --border       — border color               (fallback: #E0E0E0)
+     --t-primary    — primary text color          (fallback: #282E37)
+     --t-secondary  — secondary text color        (fallback: #525252)
+     --t-tertiary   — tertiary text color
+     --font         — font family
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. BUTTONS
+   Classes:
+     .btn                   — base (always required)
+     .btn-primary           — dark fill, white text
+     .btn-secondary         — transparent, bordered
+     .btn-tertiary          — transparent, no border
+     .btn-md                — medium size
+     .btn-sm                — small size
+
+   Usage:
+     <button class="btn btn-primary btn-md">Label</button>
+     <button class="btn btn-secondary btn-sm">Label</button>
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Base ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+/* ── Primary ────────────────────────────────────────────── */
+.btn.btn-primary {
+  background: #282E37;
+  color: #ffffff;
+}
+.btn.btn-primary:hover {
+  background: #464E53;
+}
+
+/* ── Secondary ──────────────────────────────────────────── */
+.btn.btn-secondary {
+  background: transparent;
+  color: #282E37;
+  border: 1px solid #A0A2A5;
+}
+.btn.btn-secondary:hover {
+  background: #F3F3F3;
+}
+
+/* ── Tertiary ──────────────────────────────────────────── */
+.btn.btn-tertiary {
+  background: transparent;
+  color: #282E37;
+  border: 1px solid transparent;
+}
+.btn.btn-tertiary:hover {
+  background: #F3F3F3;
+}
+
+/* ── Medium ─────────────────────────────────────────────── */
+.btn.btn-md {
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+/* ── Small ──────────────────────────────────────────────── */
+.btn.btn-sm {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* ── Icon visibility ───────────────────────────────────── */
+.btn.btn-icon-hidden img {
+  display: none;
+}
+
+/* ── Icon padding adjustments ─────────────────────────── */
+/* Medium: reduce by 4px per icon side */
+.btn.btn-md:has(img:first-child)  { padding-left: 14px; }
+.btn.btn-md:has(img:last-child)   { padding-right: 14px; }
+
+/* Small: reduce by 2px per icon side */
+.btn.btn-sm:has(img:first-child)  { padding-left: 10px; }
+.btn.btn-sm:has(img:last-child)   { padding-right: 10px; }
+
+/* ── Disabled ───────────────────────────────────────────── */
+.btn:disabled {
+  cursor: not-allowed;
+}
+.btn.btn-primary:disabled {
+  background: rgba(40, 46, 55, 0.30);
+}
+.btn.btn-secondary:disabled {
+  opacity: 0.5;
+}
+.btn.btn-tertiary:disabled {
+  opacity: 0.5;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   1b. LAYOUT — Vertical spacing hierarchy
+
+   Spacing model (top → bottom):
+     .content-gap    32px   Hero → section-gap wrapper
+     .section-gap    24px   Section → Section
+     .section        12px   Section header → card(s)        (headers.css)
+     .section-header  6px   Section title → subtitle         (headers.css)
+     .card-header     6px   Card title → subtitle
+     .card-default   12px   Card internal gap (header → content, card → card)
+     .card-section-gap 16px Stacked sections inside a card (e.g. Results in 02-Evidence-3)
+
+   Usage:
+     <div class="scroll-wrapper content-gap">
+       <div class="hero">…</div>
+       <div class="section-gap">
+         <div class="section">
+           <div class="section-header">
+             <div class="section-title">…</div>
+             <div class="section-subtitle">…</div>
+           </div>
+           <div class="card-default card-section-gap">
+             <div>…section 1…</div>
+             <div>…section 2…</div>
+           </div>
+         </div>
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+.content-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.section-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.card-section-gap {
+  gap: 16px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. CARDS
+   Classes:
+     .card-default               — 16px radius, 16px padding
+     .card-sm                    — 16px radius, 14px padding
+
+   When to use each size:
+     .card-default  — single card spanning the content area (full-width)
+     .card-sm       — cards stacking horizontally (side-by-side grids)
+
+   Inner child classes (optional):
+     .card-title                 — bold heading inside card
+     .card-body                  — body text inside card
+
+   Structure:
+     <div class="card-default">
+       <div class="card-title">Heading</div>
+       <div class="card-body">Body text</div>
+     </div>
+
+   Notes:
+     - Both sizes use border: 1px solid var(--border)
+     - Background defaults to var(--bg-surface, #ffffff)
+     - Overflow: hidden is NOT set by default (add inline if needed)
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Shared ─────────────────────────────────────────────── */
+.card-default,
+.card-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border, #E0E0E0);
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Default (full-width) ────────────────────────────── */
+.card-default {
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* ── Small (horizontal stacking) ─────────────────────── */
+.card-sm {
+  border-radius: 16px;
+  padding: 14px;
+  gap: 8px;
+}
+
+/* ── Card body typography vars ──
+   Classes live in Components/card-typography.css (not yet included).
+   Vars kept here so .table th/td can reference them.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --card-body:    16px;
+  --card-body-md: 14px;
+  --card-body-sm: 12px;
+  --card-body-xs: 11px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2b. SECTION & CARD HEADERS — typography
+   Naming:
+     Section:  .section-title  / .section-subtitle  → .section-header
+     Card:     .card-title     / .card-subtitle     → .card-header
+
+   Universal rule: any header → 12px gap → content
+
+   Spacing summary:
+     Section title → subtitle:      8px
+     Section header → card:         12px
+     Between sections:              32px
+     Card title → subtitle:         4px
+     Card header → content:         12px
+     Between card sections:         16px
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Section ─────────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+/* ── Card header ─────────────────────────────────────────── */
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+/* ── Label ──────────────────────────────────────────────── */
+.label-sm {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t-secondary, #525252);
+}
+
+/* ── Card sections (multiple sections in one card) ───────── */
+.card-sections {
+  gap: 16px;
+}
+
+.card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Card grid — 3-column layout for side-by-side card-sm ── */
+.card-grid-1-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. PILLS
+   Classes:
+     .pill                — base (always required)
+     .pill-md             — medium size
+     .pill-sm             — small size
+     .pill-icon           — reduces left padding for icon
+     .pill-num            — fixed 24x24 number badge
+
+   Colors:
+     .pill-yellow, .pill-green, .pill-blue,
+     .pill-purple, .pill-red, .pill-transparent
+
+   Structure:
+     <span class="pill pill-md pill-green pill-icon">
+       <img class="pill-ico" src="icon.svg">Label
+     </span>
+   ──────────────────────────────────────────────────────────────── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 400;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* ── Size: medium ── */
+.pill-md {
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #282E37;
+}
+.pill-md.pill-icon { padding-left: 12px; }
+.pill-md .pill-ico { width: 20px; height: 20px; }
+
+/* ── Size: small ── */
+.pill-sm {
+  padding: 3px 10px;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+}
+.pill-sm.pill-icon { padding-left: 8px; }
+.pill-sm .pill-ico { width: 16px; height: 16px; }
+
+/* ── Color: yellow ── */
+.pill-yellow { background: #FFF2AA; border-color: #FEE400; }
+.pill-yellow .pill-ico { color: #6A5F00; }
+.pill-sm.pill-yellow { color: #6A5F00; }
+
+/* ── Color: green ── */
+.pill-green { background: #D2FF9C; border-color: #8EE400; }
+.pill-green .pill-ico { color: #3F6900; }
+.pill-sm.pill-green { color: #3F6900; }
+
+/* ── Color: blue ── */
+.pill-blue { background: #D7F6FF; border-color: #1DD9F9; }
+.pill-blue .pill-ico { color: #006879; }
+.pill-sm.pill-blue { color: #006879; }
+
+/* ── Color: purple ── */
+.pill-purple { background: #F7D8FF; border-color: #DB8BFF; }
+.pill-purple .pill-ico { color: #7300A1; }
+.pill-sm.pill-purple { color: #7300A1; }
+
+/* ── Color: red ── */
+.pill-red { background: #FFEDEB; border-color: #FF8981; }
+.pill-red .pill-ico { color: #921A1D; }
+.pill-sm.pill-red { color: #921A1D; }
+
+/* ── Color: transparent ── */
+.pill-transparent { background: none; border-color: #A0A2A5; }
+.pill-transparent .pill-ico { color: #6F7377; }
+.pill-sm.pill-transparent { color: #282E37; }
+
+/* ── Size: number (fixed 24x24) ── */
+.pill-num {
+  width: 24px; height: 24px;
+  padding: 0;
+  justify-content: center;
+  background: none; border-color: #DADADA;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: #282E37;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   4. TABLES
+   Table sits on a card (.card-default or equivalent).
+   No dedicated wrapper — the card provides bg, border, radius.
+
+   Classes:
+     .table                — base
+     .participant-cell     — flex row with avatar + name
+     .participant-avatar   — 36x36 rounded avatar
+     .avatar-1 … .avatar-8 — avatar color slots
+     .row-check            — 20x20 status icon
+     .text-center          — center-align utility
+     .table-footer         — button row below table
+     .table-footer-note    — small note below footer
+
+   Structure:
+     <div class="card-default">
+       <table class="table">
+         <thead><tr><th>…</th></tr></thead>
+         <tbody><tr><td>…</td></tr></tbody>
+       </table>
+       <div class="table-footer">
+         <button class="btn btn-primary btn-sm">Action</button>
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+/* Table base */
+.table { width: 100%; border-collapse: collapse; }
+
+/* Header row */
+.table thead tr { border-bottom: 1px solid var(--border); }
+.table th {
+  padding: 8px 12px;
+  font-size: var(--card-body-sm, 12px);
+  font-weight: 600;
+  color: var(--t-secondary);
+  text-align: left;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* Body rows */
+.table tbody tr { border-bottom: 1px solid var(--border); }
+.table tbody tr:last-child { border-bottom: none; }
+.table td {
+  padding: 8px 12px;
+  font-size: var(--card-body-md, 14px);
+  color: var(--t-secondary);
+  vertical-align: middle;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* ── First-column weight rule ───────────────────────────────
+   If td:first-child has text → that cell is bold (600).
+   If td:first-child has only icon/avatar/indicator (no text)
+   → td:nth-child(2) is bold (600).
+   ─────────────────────────────────────────────────────────── */
+.table td:first-child { font-weight: 600; }
+.table td:first-child:has(img, svg, .row-check):not(:has(.participant-cell)) { font-weight: 400; }
+.table td:first-child:has(img, svg, .row-check):not(:has(.participant-cell)) ~ td:nth-child(2) { font-weight: 600; }
+
+/* ── Participants column — avatar display ───────────────── */
+.table .participant-cell { display: flex; align-items: center; gap: 16px; }
+.table .participant-cell > span:not(.participant-avatar) { font-weight: 600; }
+.table .participant-avatar {
+  width: 36px; height: 36px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 11px; font-weight: 600;
+  font-family: var(--font); letter-spacing: 0.02em;
+}
+.table .participant-avatar.avatar-1 { background: #bae6fd; color: #0369a1; }
+.table .participant-avatar.avatar-2 { background: #a7f3d0; color: #047857; }
+.table .participant-avatar.avatar-3 { background: #e9d5ff; color: #6b21a8; }
+.table .participant-avatar.avatar-4 { background: #fed7aa; color: #c2410c; }
+.table .participant-avatar.avatar-5 { background: #fecdd3; color: #be123c; }
+.table .participant-avatar.avatar-6 { background: #c7d2fe; color: #3730a3; }
+.table .participant-avatar.avatar-7 { background: #ddd6fe; color: #5b21b6; }
+.table .participant-avatar.avatar-8 { background: #99f6e4; color: #0f766e; }
+
+/* ── Visual-only cell alignment ─────────────────────────── */
+.table td:has(.pill) { text-align: center; }
+.table .text-center { text-align: center; }
+
+/* ── Status indicators ──────────────────────────────────── */
+.table .row-check { width: 20px; height: 20px; display: block; margin: 0 auto; }
+
+/* ── Table footer ───────────────────────────────────────── */
+.table-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+}
+.table-footer-note {
+  font-size: 10px; color: var(--t-tertiary); margin-top: -4px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   5. CHATBOX
+   Standard chatbox with frosted-glass sticky footer.
+
+   Classes:
+     .chat-area          — outer wrapper (sticky, frosted glass)
+     .chat-inner         — content column (max-width 1064px)
+     .chat-input-row     — white card with gradient accent line
+     .chat-bottom        — chips left, actions right
+     .chat-chips-row     — suggestion chip container
+     .chat-chip          — individual chip
+     .chat-actions       — button group (Clear / Send)
+
+   Structure:
+     <div class="chat-area">
+       <div class="chat-inner">
+         <div class="chat-input-row">
+           <textarea placeholder="..."></textarea>
+           <div class="chat-bottom">
+             <div class="chat-chips-row">
+               <div class="chat-chip">Chip label</div>
+             </div>
+             <div class="chat-actions">
+               <button class="btn btn-secondary btn-md">Clear</button>
+               <button class="btn btn-primary btn-md" disabled>Send</button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+   Requires host page to define:
+     --bg-base, --border, --t-primary, --t-secondary, --t-tertiary, --font
+   Requires: buttons (section 1) for Clear / Send buttons
+   ──────────────────────────────────────────────────────────────── */
+
+/* Outer wrapper — sticky at scroll-container bottom, frosted glass.
+   Negative margins break out of parent's horizontal padding for edge-to-edge.
+   Host scroll container should use overflow-x: hidden (or clip) to prevent
+   horizontal scroll caused by the breakout. */
+.chat-area {
+  padding: 24px 0;
+  background: rgba(240, 240, 241, 0.30);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
+  box-sizing: border-box;
+  z-index: 10; /* chat area — above scrollable content */
+  isolation: isolate;
+}
+
+/* Content column — 1024px content + 40px safe-area padding = 1064px.
+   This makes the chat-input-row align exactly with the 1024px content above. */
+.chat-inner {
+  width: 100%;
+  max-width: 1064px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* White card with gradient accent line at top */
+.chat-input-row {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+.chat-input-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+}
+
+/* Textarea */
+.chat-input-row textarea {
+  width: 100%;
+  height: 56px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  color: var(--t-primary);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+.chat-input-row textarea::placeholder { color: var(--t-tertiary); }
+
+/* Bottom row: chips left, actions right */
+.chat-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Suggestion chips */
+.chat-chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chat-chip {
+  font-size: 14px;
+  color: var(--t-secondary);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { border-color: #cbd5e1; color: var(--t-primary); }
+
+/* Button group — buttons styled by section 1 */
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+
+</style>
+<style>
+/* === Inlined from Components/alert-cards.css === */
+/* ============================================================
+   ALERT CARDS COMPONENT
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Extracted from HUC-components.css (composite component).
+
+   Classes:
+     .alert-card                 — base (always required)
+     .alert-card-md              — medium size
+     .alert-card-sm              — small size
+     .alert-card-blue            — blue color
+     .alert-card-yellow          — yellow color
+     .alert-card-red             — red color
+     .alert-card-green           — green color
+     .alert-card-transparent     — neutral / transparent
+
+   Structure (medium — uses btn-md):
+     <div class="alert-card alert-card-md alert-card-blue">
+       <div class="alert-card-icon"><!-- SVG --></div>
+       <div class="alert-card-body">
+         <div class="alert-card-title">Title</div>
+         <div class="alert-card-sub">Subtitle text</div>
+       </div>
+       <div class="alert-card-actions">
+         <button class="btn btn-secondary btn-md">Btn 1</button>
+         <button class="btn btn-primary btn-md">Btn 2</button>
+       </div>
+     </div>
+
+   Structure (small — icon + title inline):
+     <div class="alert-card alert-card-sm alert-card-blue">
+       <div class="alert-card-content">
+         <div class="alert-card-header">
+           <div class="alert-card-icon"><!-- SVG --></div>
+           <div class="alert-card-title">Title</div>
+         </div>
+         <div class="alert-card-sub">Subtitle text</div>
+       </div>
+       <div class="alert-card-actions">
+         <button class="btn btn-secondary btn-sm">Btn 1</button>
+         <button class="btn btn-primary btn-sm">Btn 2</button>
+       </div>
+     </div>
+
+   Visibility:
+     .alert-card-actions-hidden  — hides the actions area
+
+   Requires: buttons (HUC-components.css) for action buttons.
+
+   ⛔ AI: Alert cards need base + size + color.
+      Medium uses .alert-card-body for text; small uses
+      .alert-card-content > .alert-card-header wrapper.
+      NEVER mix the two structures.
+      Buttons inside alert cards follow the same size:
+      alert-card-md → btn-md, alert-card-sm → btn-sm.
+      Do not create new alert color variants.
+   ============================================================ */
+
+/* ── Base ───────────────────────────────────────────────── */
+.alert-card {
+  display: flex;
+  align-items: flex-start;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-sizing: border-box;
+}
+
+/* ── Icon ───────────────────────────────────────────────── */
+.alert-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.alert-card-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Body ───────────────────────────────────────────────── */
+.alert-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-card-title {
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.alert-card-sub {
+  line-height: 1.5;
+}
+
+/* ── Actions ────────────────────────────────────────────── */
+.alert-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.alert-card-actions-hidden {
+  display: none;
+}
+
+/* ── Content wrapper (used in small + actions) ──────────── */
+.alert-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Size: medium ──────────────────────────────────────── */
+.alert-card.alert-card-md {
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+}
+.alert-card-md .alert-card-icon {
+  width: 24px;
+  height: 24px;
+}
+.alert-card-md .alert-card-title {
+  font-size: 14px;
+}
+.alert-card-md .alert-card-sub {
+  font-size: 14px;
+  margin-top: 2px;
+}
+.alert-card-md:has(.alert-card-actions) {
+  align-items: center;
+}
+
+/* ── Size: small ───────────────────────────────────────── */
+.alert-card.alert-card-sm {
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.alert-card-sm .alert-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.alert-card-sm .alert-card-icon {
+  width: 18px;
+  height: 18px;
+}
+.alert-card-sm .alert-card-title {
+  font-size: 13px;
+}
+.alert-card-sm .alert-card-sub {
+  font-size: 13px;
+}
+.alert-card-sm:has(.alert-card-actions) {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* ── Color: green ──────────────────────────────────────── */
+.alert-card-green {
+  background: #D2FF9C;
+}
+.alert-card-green .alert-card-icon  { color: #3F6900; }
+.alert-card-green .alert-card-title { color: #3F6900; }
+.alert-card-green .alert-card-sub   { color: #3F6900; }
+
+/* ── Color: blue ───────────────────────────────────────── */
+.alert-card-blue {
+  background: #D7F6FF;
+}
+.alert-card-blue .alert-card-icon  { color: #006879; }
+.alert-card-blue .alert-card-title { color: #006879; }
+.alert-card-blue .alert-card-sub   { color: #006879; }
+
+/* ── Color: yellow ─────────────────────────────────────── */
+.alert-card-yellow {
+  background: #FFF2AA;
+}
+.alert-card-yellow .alert-card-icon  { color: #6A5F00; }
+.alert-card-yellow .alert-card-title { color: #6A5F00; }
+.alert-card-yellow .alert-card-sub   { color: #6A5F00; }
+
+/* ── Color: red ────────────────────────────────────────── */
+.alert-card-red {
+  background: #FFEDEB;
+}
+.alert-card-red .alert-card-icon  { color: #921A1D; }
+.alert-card-red .alert-card-title { color: #921A1D; }
+.alert-card-red .alert-card-sub   { color: #921A1D; }
+
+/* ── Color: transparent ────────────────────────────────── */
+.alert-card-transparent {
+  background: #ffffff;
+  border: 1px solid #DADADA;
+}
+.alert-card-transparent .alert-card-icon  { color: #6F7377; }
+.alert-card-transparent .alert-card-title { color: #282E37; }
+.alert-card-transparent .alert-card-sub   { color: #6F7377; }
+</style>
+<style>
+/* === Inlined from Components/card-hero.css === */
+/* ============================================================
+   CARD-HERO COMPONENT
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Extracted from HUC-components.css (composite component).
+   Stat/metric cards with large hero numbers and small descriptors.
+
+   Classes:
+     .card-hero-row          — flex row, grey bg (#F9F9FC), 16px radius
+     .card-hero              — individual stat column (flex: 1, 20px padding)
+     .card-hero-label        — header text + icon (13px, 600)
+     .card-hero-value        — large number (36px, 600)
+     .card-hero-desc         — descriptor text (12px, 400)
+
+   Structure:
+     <div class="card-hero-row">
+       <div class="card-hero">
+         <div class="card-hero-label">
+           <svg>…</svg> Label
+         </div>
+         <div class="card-hero-value">42 <span class="card-hero-desc">description</span></div>
+       </div>
+     </div>
+
+   CSS variables used:
+     --t-primary    — primary text color
+     --t-secondary  — secondary text color
+     --t-tertiary   — tertiary text color
+
+   ⛔ AI: Do not override hero font sizes or padding.
+      .card-hero-row background is #F9F9FC — do not change.
+      .card-hero-value is 36px 600 weight — do not scale.
+   ============================================================ */
+
+.card-hero-row {
+  display: flex;
+  align-items: stretch;
+  background: #F9F9FC;
+  border-radius: 16px;
+}
+.card-hero {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card-hero-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t-secondary);
+}
+.card-hero-label svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  stroke-width: 2.2;
+  color: var(--t-secondary);
+}
+.card-hero-value {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--t-primary);
+  letter-spacing: -0.02em;
+}
+.card-hero-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--t-tertiary);
+  letter-spacing: 0;
+  line-height: 1;
+}
+</style>
+<style>
+/* === Inlined from Components/headers.css === */
+/* ============================================================
+   HEADERS — Section & Card header typography
+
+   Layout hierarchy:
+     Section  = Section header  + 1+ Cards
+     Card     = Card header     + Card content + Card footer
+
+   Naming:
+     Section:  .section-title  / .section-subtitle  → .section-header
+     Card:     .card-title     / .card-subtitle     → .card-header
+
+   Universal rule: any header → 12px gap → content
+
+   CSS variables used (define in host page or :root):
+     --font  — font family (fallback: 'Plus Jakarta Sans', sans-serif)
+
+   Requires: cards from huc-components.css
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. SECTION
+   Container for section header + cards.
+
+   Classes:
+     .section              — vertical flex container
+     .section-header       — title + optional subtitle
+     .section-title        — 20px / 600
+     .section-subtitle     — 16px / 400
+
+   Spacing:
+     Between section title & subtitle:    6px
+     Between section header & cards:      12px  (gap on .section)
+     Between two .section elements:       24px  (use .section-gap on parent wrapper)
+
+   Structure:
+     <div class="section">
+       <div class="section-header">
+         <h2 class="section-title">Evidence pack collection</h2>
+         <p class="section-subtitle">Optional description</p>
+       </div>
+       <div class="card-default">…</div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. CARD HEADER
+   Title + optional subtitle at the top of a card.
+
+   Classes:
+     .card-header          — title + optional subtitle
+     .card-title           — 16px / 600
+     .card-subtitle        — 14px / 400
+
+   Spacing:
+     Between card title & subtitle:       4px
+     Between card header & card content:  12px  (gap on card-section / card)
+
+   Structure:
+     <div class="card-default">
+       <div class="card-header">
+         <h3 class="card-title">General progress</h3>
+         <p class="card-subtitle">Optional description</p>
+       </div>
+       <!-- card content -->
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. CARD SECTION DIVIDER
+   When a card has multiple sections, separate them with
+   .card-section. Vertical gap between card sections: 16px.
+
+   Structure:
+     <div class="card-default card-sections">
+       <div class="card-section">
+         <div class="card-header">…</div>
+         <!-- content -->
+       </div>
+       <div class="card-section">
+         <div class="card-header">…</div>
+         <!-- content -->
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.card-sections {
+  gap: 16px;
+}
+
+.card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+</style>
+<style>
+/* === Inlined from Components/chatbox.css === */
+/* ============================================================
+   CHATBOX COMPONENT
+   Usage:
+     HTML structure:
+       <div class="chat-area">
+         <div class="chat-inner">
+           <div class="chat-input-row">
+             <textarea placeholder="..."></textarea>
+             <div class="chat-bottom">
+               <div class="chat-chips-row">
+                 <div class="chat-chip">Chip label</div>
+               </div>
+               <div class="chat-actions">
+                 <button class="btn btn-secondary btn-md">Clear</button>
+                 <button class="btn btn-primary btn-md" disabled>Send</button>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+
+     Requires host page to define:
+       --bg-base, --border, --t-primary, --t-secondary, --t-tertiary, --font
+     Requires: Components/buttons.css for Clear / Send buttons
+   ============================================================ */
+
+/* Outer wrapper — sticky at scroll-container bottom, frosted glass.
+   Negative margins break out of parent's horizontal padding for edge-to-edge.
+   Host scroll container should use overflow-x: hidden (or clip) to prevent
+   horizontal scroll caused by the breakout. */
+.chat-area {
+  padding: 24px 0;
+  background: rgba(240, 240, 241, 0.30);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
+  box-sizing: border-box;
+  z-index: 10; /* chat area — above scrollable content */
+  isolation: isolate;
+}
+
+/* Content column — 1024px content + 40px safe-area padding = 1064px.
+   This makes the chat-input-row align exactly with the 1024px content above. */
+.chat-inner {
+  width: 100%;
+  max-width: 1064px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* White card with gradient accent line at top */
+.chat-input-row {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+.chat-input-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+}
+
+/* Textarea */
+.chat-input-row textarea {
+  width: 100%;
+  height: 56px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  color: var(--t-primary);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+.chat-input-row textarea::placeholder { color: var(--t-tertiary); }
+
+/* Bottom row: chips left, actions right */
+.chat-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Suggestion chips */
+.chat-chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chat-chip {
+  font-size: 14px;
+  color: var(--t-secondary);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { border-color: #cbd5e1; color: var(--t-primary); }
+
+/* Button group — buttons styled by buttons.css */
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+</style>
+<style>
+
+/* ============================================================
+   DESIGN TOKENS — avo.re bw light translation
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --bg-base:       #f0f0f1;
+  --bg-surface:    #ffffff;
+  --bg-sidebar:    #e8e8ea;
+
+  /* Dark-alias names → light values (keeps var() refs working) */
+  --bg-primary:    #f0f0f1;
+  --bg-elevated:   #ffffff;
+  --bg-component:  #f4f4f5;
+
+  /* Text */
+  --t-primary:     #282E37;
+  --t-secondary:   #525252;
+  --t-tertiary:    #6F7377;
+
+  /* Text aliases */
+  --text-primary:    #282E37;
+  --text-secondary:  #525252;
+  --text-muted:      #6F7377;
+  --text-very-muted: #A0A2A5;
+
+  /* Borders */
+  --border:           rgba(0,0,0,0.09);
+  --border-primary:   rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+
+  /* Semantic palette — adapted for light bg */
+  --green:  #16a34a;
+  --blue:   #1d4ed8;
+  --amber:  #b45309;
+  --red:    #D3222A;
+  --purple: #7c3aed;
+  --orange: #ea580c;
+  --brand:  #D3222A;
+
+  /* Header */
+  --bg-header:       rgba(240,240,241,0.85);
+
+  /* UI chrome — replaces hardcoded slate values */
+  --ui-dark:          #1e293b;
+  --ui-darkest:       #0f172a;
+  --ui-border-strong: #e2e8f0;
+  --ui-surface-tint:  #f1f5f9;
+  --ui-text-dim:      #64748b;
+
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+  /* Edit-specific easing tokens */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   CROSSFADE TRANSITION (view switching)
+   ============================================================ */
+#app-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.view {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+#view-synthesis {
+  z-index: 1; /* active view — on top */
+  opacity: 1;
+  transform: translateX(0);
+}
+#view-edit {
+  z-index: 0; /* inactive view — behind */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(24px);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0s linear 0.5s;
+}
+#app-wrapper.transition-to-chat #view-synthesis {
+  opacity: 0;
+  transform: translateX(-24px);
+  visibility: hidden;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0s linear 0.5s;
+}
+#app-wrapper.transition-to-chat #view-edit {
+  z-index: 1; /* promoted to top during transition */
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.15s,
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.15s,
+              visibility 0s linear 0s;
+}
+
+/* ============================================================
+   SHARED — APP HEADER (lt-header)
+   ============================================================ */
+.lt-header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.lt-logo {
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--t-primary);
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.lt-logo:hover { opacity: 0.7; }
+.lt-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+.lt-logo-mark img { width: 24px; height: 24px; display: block; }
+.lt-spacer { flex: 1; }
+.lt-header-nav { display: flex; align-items: center; gap: 8px; }
+.lt-activity-pill {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: #ffffff;
+  font-size: 13px; font-weight: 400; color: var(--ui-dark);
+  cursor: pointer; white-space: nowrap; transition: border-color 0.15s;
+}
+.lt-activity-pill:hover { border-color: var(--ui-border-strong); }
+.lt-activity-pill svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--ui-dark); }
+.lt-activity-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ui-surface-tint); border-radius: 20px; padding: 1px 7px;
+  font-size: 12px; font-weight: 400; color: var(--ui-text-dim);
+}
+.lt-icon-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #ffffff; cursor: pointer; color: var(--ui-dark);
+  flex-shrink: 0; transition: border-color 0.15s;
+}
+.lt-icon-btn:hover { border-color: var(--ui-border-strong); }
+.lt-icon-btn svg { width: 16px; height: 16px; }
+.lt-notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 9px; height: 9px;
+  background: var(--ui-darkest); border-radius: 50%; border: 1.5px solid #ffffff;
+}
+.lt-avatar {
+  width: 32px;
+  height: 32px;
+  background: #bae6fd;
+  color: #0369a1;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   SHARED — PULSE / LOADING ANIMATIONS
+   ============================================================ */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse { animation: pulse 1.4s ease-in-out infinite; }
+.loading-dots::after {
+  content: '●●●';
+  animation: pulse 1.2s ease-in-out infinite;
+  letter-spacing: 3px;
+}
+
+/* ============================================================
+   SHARED — UTILITY
+   ============================================================ */
+.mt4  { margin-top: 4px; }
+.mt8  { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mb8  { margin-bottom: 8px; }
+.mb12 { margin-bottom: 12px; }
+.flex-row { display: flex; align-items: center; gap: 8px; }
+.text-muted  { color: var(--t-tertiary); }
+.text-green  { color: #16a34a; }
+.text-amber  { color: #b45309; }
+.text-blue   { color: #1d4ed8; }
+.text-red    { color: #D3222A; }
+.fw600 { font-weight: 600; }
+.fz11  { font-size: 11px; }
+.fz12  { font-size: 12px; }
+
+
+/* ============================================================
+   VIEW-SYNTHESIS — SPECIFIC CSS
+   ============================================================ */
+
+/* SCREENS WRAPPER */
+#view-synthesis #screens-wrapper {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+#view-synthesis .screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+}
+#view-synthesis .screen.active { display: flex; }
+
+/* INVESTIGATION LAYOUT */
+#view-synthesis .s-investigation-body { display: flex; flex: 1; overflow: hidden; background: transparent; }
+
+/* Left icon sidebar */
+#view-synthesis .lt-sidebar {
+  width: 48px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+  flex-shrink: 0;
+}
+#view-synthesis .lt-sidebar-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--t-tertiary); transition: all 0.15s;
+}
+#view-synthesis .lt-sidebar-icon:hover { background: rgba(0,0,0,0.06); color: var(--t-secondary); }
+#view-synthesis .lt-sidebar-icon.active { background: rgba(211,34,42,0.08); color: var(--brand); }
+#view-synthesis .lt-sidebar-icon svg { width: 18px; height: 18px; }
+
+/* LEFT CONTENT AREA */
+.s-left-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.s-left-scroll { flex: 1; overflow: hidden auto; padding: 44px 20px 0; display: flex; flex-direction: column; align-items: center; scrollbar-width: none; }
+.s-left-scroll::-webkit-scrollbar { display: none; }
+.s-scroll-inner { width: 100%; max-width: 1024px; }
+
+/* agent-block = now uses .card-default from cards.css */
+.agent-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
+  color: var(--t-tertiary); text-transform: uppercase;
+}
+.agent-label.orange    { color: #ea580c; }
+.agent-label.synth     { color: #7c3aed; }
+.agent-label.grc       { color: #1d4ed8; }
+.agent-label.forensic  { color: #ea580c; }
+.agent-label.confidence { color: #16a34a; }
+.agent-title { font-size: 16px; font-weight: 400; color: var(--t-primary); line-height: 1.4; }
+.agent-subtitle { font-size: 12px; color: var(--t-tertiary); }
+.agent-body { font-size: 13px; color: var(--t-secondary); line-height: 1.6; }
+.agent-msg {
+  background: #ffffff; border: 1px solid var(--border); border-radius: 16px;
+  padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;
+}
+.agent-text { font-size: 13px; color: var(--t-secondary); line-height: 1.6; }
+.agent-text p { margin: 0 0 8px; }
+.agent-text p:last-child { margin-bottom: 0; }
+
+/* TOGGLE (Synthesis version) */
+#view-synthesis .toggle-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+#view-synthesis .toggle-row:last-child { border-bottom: none; }
+.toggle-label { flex: 1; font-size: 13px; color: var(--t-secondary); }
+.toggle-rec { font-size: 10px; color: #16a34a; font-weight: 600; }
+#view-synthesis .toggle {
+  width: 36px; height: 20px; background: #16a34a; border-radius: 10px;
+  position: relative; flex-shrink: 0; cursor: pointer;
+}
+#view-synthesis .toggle.off { background: #e4e4e7; border: 1px solid var(--border); }
+#view-synthesis .toggle::after {
+  content: ''; position: absolute; width: 16px; height: 16px;
+  background: #fff; border-radius: 50%; top: 2px; right: 2px;
+  transition: left 0.2s cubic-bezier(0.34,1.56,0.64,1), right 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+#view-synthesis .toggle.off::after { right: auto; left: 2px; background: #a1a1aa; }
+
+
+/* SCOPE TABLE */
+.scope-table { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+.scope-row { display: flex; border-bottom: 1px solid var(--border); font-size: 13px; }
+.scope-row:last-child { border-bottom: none; }
+.scope-key {
+  width: 160px; flex-shrink: 0; padding: 10px 14px;
+  color: var(--t-tertiary); font-size: 11px; font-weight: 600;
+  background: #f8f8f9; border-right: 1px solid var(--border);
+}
+.scope-val { flex: 1; padding: 10px 14px; color: var(--t-secondary); display: flex; align-items: center; gap: 8px; }
+
+/* SCOPE PILLS — now in Components/pills.css */
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+
+/* WARN BOX */
+.warn-box {
+  background: rgba(251,191,36,0.06); border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 10px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;
+}
+.warn-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; color: #92400e; }
+.warn-content { flex: 1; }
+.warn-title { font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 4px; }
+.warn-body  { font-size: 12px; color: var(--t-tertiary); line-height: 1.5; }
+.warn-btn {
+  margin-top: 10px; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: #92400e;
+  background: rgba(251,191,36,0.08); border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 6px; padding: 6px 12px; cursor: pointer;
+}
+
+/* INFO BOX */
+.info-box {
+  background: rgba(29,78,216,0.04); border: 1px solid rgba(29,78,216,0.15);
+  border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;
+}
+.info-content { flex: 1; font-size: 12px; color: var(--t-secondary); line-height: 1.5; }
+.info-content strong { color: #1d4ed8; }
+.info-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: #1d4ed8;
+  background: rgba(29,78,216,0.06); border: 1px solid rgba(29,78,216,0.18);
+  border-radius: 6px; padding: 6px 12px; cursor: pointer; margin-top: 8px;
+}
+
+/* PROGRESS BAR */
+.progress-item { margin-bottom: 12px; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.progress-label { font-size: 12px; color: var(--t-secondary); }
+.progress-val   { font-size: 12px; color: var(--t-tertiary); }
+.progress-track { height: 6px; background: #e4e4e7; border-radius: 3px; overflow: hidden; }
+.progress-fill  { height: 100%; background: #1DD9F9; border-radius: 3px; transition: width 0.4s ease; }
+
+/* SOURCE QUEUE ITEM */
+.source-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.source-item:last-child { border-bottom: none; }
+.source-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.source-info { flex: 1; min-width: 0; }
+.source-name   { font-size: 12px; font-weight: 600; color: var(--t-secondary); }
+.source-detail { font-size: 11px; color: var(--t-tertiary); }
+.check-green { color: #16a34a; font-size: 14px; }
+.amber-text  { color: #b45309; }
+
+/* RIGHT PANEL */
+.right-panel {
+  width: 320px; flex-shrink: 0; background: #ffffff;
+  border-left: 1px solid var(--border); display: flex; flex-direction: column;
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.right-panel::-webkit-scrollbar { width: 4px; }
+.right-panel::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+.panel-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.panel-section:last-child { border-bottom: none; }
+
+/* STAGE HEADER */
+.stage-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
+.stage-title { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 6px; }
+.stage-badge-row { display: flex; align-items: center; gap: 8px; }
+
+/* STAGE NAVIGATOR DOTS */
+.stage-nav {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  padding: 16px 20px; border-bottom: 1px solid var(--border); position: relative;
+}
+.stage-dot-group { display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; z-index: 1; }
+.stage-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 2px solid var(--border-secondary); background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; color: var(--t-tertiary); transition: all 0.2s;
+}
+.stage-dot.done         { background: #1DD9F9; border-color: #1DD9F9; color: #fff; }
+.stage-dot.active       { background: #1DD9F9; border-color: #1DD9F9; color: #fff; animation: pulse 1.4s ease-in-out infinite; transform: scale(1.12); }
+.stage-dot.active-amber { background: #b45309; border-color: #b45309; color: #fff; animation: pulse 1.4s ease-in-out infinite; }
+.stage-dot.pending      { background: #ffffff; border-color: var(--border); color: var(--t-tertiary); }
+.stage-dot-label { font-size: 9px; color: var(--t-tertiary); text-align: center; white-space: nowrap; }
+.stage-dot-label.active       { color: #0891b2; font-weight: 600; }
+.stage-dot-label.done         { color: #0891b2; }
+.stage-dot-label.active-amber { color: #b45309; font-weight: 600; }
+.stage-line {
+  flex: 1; height: 2px; background: var(--border);
+  margin-bottom: 16px; min-width: 8px; max-width: 24px;
+}
+.stage-line.done { background: #1DD9F9; }
+
+/* GATE BOX */
+.gate-box {
+  background: rgba(251,191,36,0.06); border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 10px; padding: 12px 14px; font-size: 12px; color: #92400e;
+  line-height: 1.5; margin-bottom: 12px;
+}
+.gate-box .gate-icon { font-size: 14px; margin-right: 6px; }
+
+/* PANEL BUTTONS */
+.btn-primary-full {
+  width: 100%; padding: 11px 16px; background: var(--ui-dark); color: #fff;
+  border: none; border-radius: 12px; font-size: 14px; font-weight: 400;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.15s, transform 0.1s; margin-bottom: 8px; font-family: var(--font);
+}
+.btn-primary-full:hover  { background: var(--ui-darkest); }
+.btn-primary-full:active { transform: scale(0.98); }
+.btn-secondary-link {
+  width: 100%; padding: 8px 16px; background: #ffffff; color: var(--t-secondary);
+  border: 1px solid var(--ui-border-strong); border-radius: 12px;
+  font-size: 13px; font-weight: 400; cursor: pointer; text-align: center;
+  transition: all 0.15s; font-family: var(--font);
+}
+.btn-secondary-link:hover { background: #f4f4f5; border-color: #d4d4d8; }
+
+/* WHAT HAPPENS NEXT */
+.next-list { display: flex; flex-direction: column; gap: 10px; }
+.next-item { display: flex; gap: 10px; font-size: 12px; color: var(--t-tertiary); line-height: 1.5; }
+.next-num {
+  width: 18px; height: 18px; border-radius: 50%; background: #f4f4f5;
+  border: 1px solid var(--border); font-size: 9px; font-weight: 600;
+  color: var(--t-tertiary); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+/* STAT ROWS */
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-key           { color: var(--t-tertiary); }
+.stat-value         { color: var(--t-secondary); font-weight: 600; }
+.stat-value.green   { color: #16a34a; }
+.stat-label         { color: var(--t-tertiary); font-size: 12px; }
+
+/* INV LAYOUT — alternate vocabulary (aliases) */
+.inv-layout { display: flex; flex: 1; overflow: hidden; }
+.inv-main   { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; background: var(--bg-base); }
+.inv-content {
+  flex: 1; overflow-y: auto; padding: 24px 32px;
+  display: flex; flex-direction: column; gap: 16px;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.inv-content::-webkit-scrollbar { width: 6px; }
+.inv-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+.inv-input-bar { border-top: 1px solid var(--border); padding: 12px 32px 16px; background: #ffffff; flex-shrink: 0; }
+.inv-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.inv-chip {
+  font-size: 11px; color: var(--t-tertiary);
+  background: #f4f4f5; border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 11px;
+  cursor: pointer; transition: all 0.15s;
+}
+.inv-chip:hover { border-color: var(--ui-border-strong); color: var(--t-primary); }
+.inv-input-row {
+  display: flex; align-items: center; gap: 8px;
+  background: #f4f4f5; border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px 14px;
+}
+.inv-input-row:focus-within { border-color: rgba(0,0,0,0.2); }
+.inv-send {
+  width: 28px; height: 28px; background: var(--ui-dark); border: none; border-radius: 8px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 600; color: #fff;
+  flex-shrink: 0; font-family: var(--font); line-height: 1; transition: background 0.15s;
+}
+.inv-send:hover { background: var(--ui-darkest); }
+.inv-panel {
+  width: 320px; flex-shrink: 0; background: #ffffff;
+  border-left: 1px solid var(--border); display: flex; flex-direction: column;
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.inv-panel::-webkit-scrollbar { width: 4px; }
+.inv-panel::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+
+/* Stage nav variant */
+.stage-nav:has(.stage-nav-header) {
+  flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 0;
+}
+.stage-nav-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
+}
+.stage-nav-title  { font-size: 14px; font-weight: 600; color: var(--t-primary); }
+.stage-nav-status { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; border: 1px solid; }
+.stage-dots { display: flex; align-items: center; padding: 14px 20px 4px; }
+.stage-dots .stage-dot  { flex-shrink: 0; }
+.stage-dots .stage-line { flex: 1; min-width: 6px; max-width: none; margin-bottom: 0; }
+.stage-labels { display: flex; justify-content: space-between; padding: 4px 20px 14px; border-bottom: 1px solid var(--border); }
+.stage-label { font-size: 9px; color: var(--t-tertiary); text-align: center; white-space: nowrap; }
+.stage-label.active { color: #0891b2; font-weight: 600; }
+.stage-label.done   { color: #0891b2; }
+
+/* APP LOGO / AVATAR aliases */
+.app-logo {
+  width: 24px; height: 24px; background: #f4f4f5; border: 1px solid var(--border);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: var(--t-primary); flex-shrink: 0; text-decoration: none;
+}
+.app-breadcrumb { font-size: 13px; font-weight: 400; color: var(--t-tertiary); margin-left: 10px; }
+.app-avatar {
+  width: 32px; height: 32px; background: var(--ui-border-strong); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: #475569; cursor: pointer;
+}
+.avatar-ac { background: var(--ui-border-strong); color: #475569; }
+
+/* MICROINTERACTIONS */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#view-synthesis .screen.active .card-default,
+#view-synthesis .screen.active .agent-msg { animation: slideUp 0.28s ease both; }
+#view-synthesis .screen.active .s-left-scroll > .card-default:nth-child(2),
+#view-synthesis .screen.active .inv-content > .agent-msg:nth-child(2) { animation-delay: 0.07s; }
+#view-synthesis .screen.active .s-left-scroll > .card-default:nth-child(3),
+#view-synthesis .screen.active .inv-content > .agent-msg:nth-child(3) { animation-delay: 0.14s; }
+#view-synthesis .screen.active .s-left-scroll > .card-default:nth-child(4),
+#view-synthesis .screen.active .inv-content > .agent-msg:nth-child(4) { animation-delay: 0.21s; }
+
+/* HERO SECTION */
+#view-synthesis #screen-0, #view-synthesis #screen-1 {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(0,195,215,0.28) 0%, transparent 65%), var(--bg-base);
+}
+.lt-s1-hero {
+  text-align: center; display: flex; flex-direction: column; align-items: center;
+  gap: 32px; border-radius: 0; padding: 0 0 20px;
+}
+#view-synthesis #screen-0 .lt-s1-hero { gap: 4px; }
+.lt-s1-hero-header { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.lt-s1-page-title {
+  font-size: 40px; font-weight: 300; letter-spacing: -0.02em;
+  color: var(--t-primary); line-height: 1.2;
+}
+.lt-s1-page-title strong { font-weight: 600; }
+.s2-workflow { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 20px; }
+.s2-workflow-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(0,0,0,0.4); }
+.s2-workflow-steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.s2-workflow-step { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t-secondary); }
+.s2-workflow-step.active { color: var(--t-primary); font-weight: 600; }
+.s2-step-circle { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s2-workflow-arrow { color: var(--t-tertiary); display: flex; align-items: center; }
+
+/* SCREEN-0 DASHBOARD */
+.ev-tags { display: flex; gap: 10px; justify-content: center; }
+.ev-chain-item-with-chip { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ev-chain-item-with-chip .ev-chain-item-title { margin-bottom: 0; flex: 1; min-width: 0; }
+.ev-progress-row { display: flex; align-items: center; }
+.ev-progress-item { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.ev-progress-label { font-size: 13px; font-weight: 600; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-track { flex: 1; height: 3px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden; }
+.ev-progress-fill  { height: 100%; border-radius: 2px; }
+.ev-progress-count { font-size: 13px; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-dot   { color: var(--t-tertiary); font-size: 6px; flex-shrink: 0; margin: 0 20px; }
+.ev-currently-body { display: flex; gap: 16px; align-items: flex-start; }
+.ev-donut-box { background: transparent; width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 8px 0; }
+.ev-donut-wrap { position: relative; width: 76px; height: 76px; }
+.ev-donut {
+  width: 76px; height: 76px; border-radius: 50%;
+  --donut-deg: 120; --donut-fill: #1DD9F9;
+  background: conic-gradient(from 0deg, var(--donut-fill) 0deg calc(var(--donut-deg) * 1deg), #e5e7eb calc(var(--donut-deg) * 1deg) 360deg);
+}
+.ev-donut.ev-donut-complete { --donut-fill: #8EE400; }
+.ev-donut-inner {
+  position: absolute; inset: 10px; background: #ffffff; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+.ev-donut-num { font-size: 18px; font-weight: 600; color: var(--t-primary); line-height: 1; }
+.ev-donut-lbl { font-size: 10px; color: var(--t-tertiary); line-height: 1.2; }
+.ev-task-group { flex: 1; min-width: 0; }
+.ev-task-source { font-size: 16px; font-weight: 600; color: var(--t-primary); margin-bottom: 10px; line-height: 1.5; }
+.ev-task-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; color: var(--t-secondary); line-height: 1.43;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.ev-task-row:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-task-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.ev-task-row.active   { font-weight: 600; color: var(--t-primary); }
+.ev-task-row.done     { font-weight: 400; color: var(--t-secondary); }
+.ev-acc-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.ev-acc-row:first-of-type { padding-top: 0; }
+.ev-acc-row:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-acc-chev  { flex-shrink: 0; color: var(--t-tertiary); margin-top: 3px; margin-left: 8px; }
+.lt-s1-send-btn {
+  background: var(--ui-dark); color: #ffffff; border: none; border-radius: 10px;
+  padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: var(--font); transition: background 0.15s;
+}
+.lt-s1-send-btn:hover { background: var(--ui-darkest); }
+.s-handoff-body { display: flex; flex-direction: column; gap: 12px; }
+.s-handoff-divider { border-top: 1px solid var(--border); margin: 0; }
+.s-handoff-recommended { font-size: 14px; color: var(--t-secondary); line-height: 1.5; }
+#view-synthesis #screen-1 .s-handoff-evidence-pack .ev-progress-status-container {
+  padding: 16px; border-radius: 20px; background-color: #F9F9FC;
+}
+#view-synthesis #screen-1 .s-handoff-evidence-pack .ev-progress-status { padding: 0; margin: 0; }
+#view-synthesis #screen-1 .s-handoff-evidence-pack .ev-status-check {
+  background: #8EE400; width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+#view-synthesis #screen-1 .s-handoff-evidence-pack .ev-status-check svg { width: 10px; height: 10px; }
+.ev-chains-card { background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.ev-chain-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.ev-chain-item:first-child { padding-top: 0; }
+.ev-chain-item:last-child { border-bottom: none; padding-bottom: 0; }
+.ev-chain-item-title { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 4px; line-height: 1.4; }
+.ev-chain-item-body { font-size: 14px; color: var(--t-secondary); line-height: 1.5; }
+.ev-log-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.ev-log-row:first-child { padding-top: 0; }
+.ev-log-row:last-child  { border-bottom: none; padding-bottom: 0; }
+.ev-log-icon { flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+.ev-log-body { font-size: 14px; color: var(--t-secondary); line-height: 1.43; }
+.ev-log-body strong { color: var(--t-primary); font-weight: 600; }
+.ev-log-sub { font-size: 12px; color: var(--t-tertiary); margin-top: 3px; }
+
+/* SCREEN 1 — Evidence collection complete */
+#view-synthesis #screen-1 .ev-hero {
+  background: transparent; padding: 0 24px 24px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; flex-shrink: 0;
+}
+#view-synthesis #screen-1 .ev-hero-header { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+#view-synthesis #screen-1 .ev-hero-title {
+  font-size: 40px; font-weight: 300; line-height: 1.2;
+  letter-spacing: -0.02em; color: var(--t-primary); text-align: center;
+}
+#view-synthesis #screen-1 .ev-hero-title strong { font-weight: 600; }
+#view-synthesis #screen-1 .ev-workflow {
+  width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 20px;
+}
+#view-synthesis #screen-1 .ev-workflow-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(0,0,0,0.4);
+}
+#view-synthesis #screen-1 .ev-workflow-steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+#view-synthesis #screen-1 .ev-step {
+  display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t-secondary); white-space: nowrap;
+}
+#view-synthesis #screen-1 .ev-step.done  { color: var(--t-tertiary); }
+#view-synthesis #screen-1 .ev-step.active { color: var(--t-primary); font-weight: 600; }
+#view-synthesis #screen-1 .ev-step-circle { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+#view-synthesis #screen-1 .ev-step-arrow { color: var(--t-tertiary); display: flex; align-items: center; }
+#view-synthesis #screen-1 .ev-progress-bar-row {
+  display: flex; align-items: center; gap: 0; padding: 24px 28px; border-bottom: 1px solid var(--border);
+}
+#view-synthesis #screen-1 .ev-progress-item { flex: 1; display: flex; align-items: center; gap: 10px; }
+#view-synthesis #screen-1 .ev-progress-item + .ev-progress-item { padding-left: 16px; border-left: 1px solid var(--border); margin-left: 16px; }
+#view-synthesis #screen-1 .ev-progress-label { font-size: 15px; font-weight: 400; color: var(--t-primary); white-space: nowrap; flex-shrink: 0; }
+#view-synthesis #screen-1 .ev-progress-track { flex: 1; height: 4px; background: rgba(0,0,0,0.08); border-radius: 99px; overflow: hidden; min-width: 60px; }
+#view-synthesis #screen-1 .ev-progress-fill { height: 100%; background: #22c55e; border-radius: 99px; }
+#view-synthesis #screen-1 .ev-progress-value { font-size: 13px; font-weight: 400; color: var(--t-tertiary); white-space: nowrap; flex-shrink: 0; }
+#view-synthesis #screen-1 .ev-progress-bullet { width: 5px; height: 5px; background: var(--border); border-radius: 50%; flex-shrink: 0; margin: 0 8px; }
+#view-synthesis #screen-1 .ev-progress-status { display: flex; align-items: flex-start; gap: 12px; padding: 24px 28px; }
+#view-synthesis #screen-1 .ev-status-check {
+  width: 20px; height: 20px; background: #84cc16; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+#view-synthesis #screen-1 .ev-status-check svg { width: 11px; height: 11px; color: #fff; }
+#view-synthesis #screen-1 .ev-status-text-primary { font-size: 14px; font-weight: 600; color: var(--t-primary); }
+#view-synthesis #screen-1 .ev-status-text-secondary { font-size: 13px; color: var(--t-secondary); line-height: 1.5; margin-top: 3px; }
+
+
+/* ============================================================
+   VIEW-EDIT — SPECIFIC CSS
+   ============================================================ */
+
+/* BODY LAYOUT */
+#view-edit .body-layout {
+  display: flex; flex: 1; overflow: hidden;
+  height: calc(100% - 48px);
+  background: #F6F6F9;
+}
+
+/* LEFT PANEL — CHAT */
+#view-edit .chat-panel {
+  flex: 0 0 44%; display: flex; flex-direction: column;
+  overflow: hidden; background: #F6F6F9;
+}
+#view-edit .chat-scroll {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 0 24px; position: relative;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+#view-edit .chat-scroll-inner {
+  min-height: 100%; display: flex; flex-direction: column;
+}
+#view-edit .chat-scroll-inner > .chat-input-footer { margin-top: auto; }
+#view-edit .chat-scroll::-webkit-scrollbar { width: 8px; }
+#view-edit .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+#view-edit .chat-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+#view-edit .chat-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+
+/* Chat block scroll-in transition */
+#view-edit .chat-block {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.8s var(--ease-spring), transform 0.85s var(--ease-spring);
+}
+#view-edit .chat-block.visible { opacity: 1; transform: translateY(0); }
+
+/* Initial AI block */
+#initial-ai-block {
+  max-height: 0; overflow: hidden; margin: 0; padding: 0;
+  transition: max-height 1s var(--ease-in-out);
+}
+#initial-ai-block.visible { max-height: 3200px; }
+#initial-ai-block .ease-in-chunk {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.75s var(--ease-spring), transform 0.8s var(--ease-spring);
+}
+#initial-ai-block.visible .ease-in-chunk { opacity: 1; transform: translateY(0); }
+#initial-ai-block .ease-in-chunk:nth-child(1)  { transition-delay: 0.08s; }
+#initial-ai-block .ease-in-chunk:nth-child(2)  { transition-delay: 0.22s; }
+#initial-ai-block .ease-in-chunk:nth-child(3)  { transition-delay: 0.36s; }
+#initial-ai-block .ease-in-chunk:nth-child(4)  { transition-delay: 0.5s; }
+#initial-ai-block .ease-in-chunk:nth-child(5)  { transition-delay: 0.64s; }
+#initial-ai-block .ease-in-chunk:nth-child(6)  { transition-delay: 0.78s; }
+#initial-ai-block .ease-in-chunk:nth-child(7)  { transition-delay: 0.92s; }
+#initial-ai-block .ease-in-chunk:nth-child(8)  { transition-delay: 1.06s; }
+#initial-ai-block .ease-in-chunk:nth-child(9)  { transition-delay: 1.2s; }
+#initial-ai-block .ease-in-chunk:nth-child(10) { transition-delay: 1.34s; }
+#initial-ai-block .ease-in-chunk:nth-child(11) { transition-delay: 1.48s; }
+
+/* Chat starts blank until startChat */
+#view-edit .chat-scroll .msg-date {
+  opacity: 0; visibility: hidden; transition: opacity 0.35s ease;
+}
+#view-edit .chat-scroll.chat-started .msg-date { opacity: 1; visibility: visible; }
+
+/* Date divider */
+#view-edit .msg-date {
+  text-align: center; font-size: 12px; color: var(--t-tertiary);
+  padding: 20px 0 16px; position: relative;
+}
+#view-edit .msg-date::before, #view-edit .msg-date::after {
+  content: ''; position: absolute; top: calc(50% + 2px); height: 1px; background: var(--border);
+}
+#view-edit .msg-date::before { left: 0; width: calc(50% - 52px); }
+#view-edit .msg-date::after  { right: 0; width: calc(50% - 52px); }
+
+/* User message (right-aligned) */
+.msg-user-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-bottom: 20px; }
+.msg-user-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--t-secondary); }
+.msg-user-name { font-size: 13px; font-weight: 600; color: var(--t-secondary); }
+.msg-user-time { font-size: 11px; color: var(--t-secondary); }
+.msg-user-avatar {
+  width: 28px; height: 28px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #bae6fd; color: #0369a1; font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
+}
+.msg-user-initials { font-size: 11px; font-weight: 600; color: #475569; letter-spacing: -0.02em; }
+.msg-user-bubble {
+  background: #ffffff; border: none; border-radius: 16px 4px 16px 16px;
+  padding: 12px 16px; font-size: 14px; color: var(--t-secondary); line-height: 1.55; max-width: 86%;
+}
+
+/* Thinking state */
+.msg-thinking-wrap {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  padding: 8px 0; background: transparent; border: none; min-height: 40px;
+}
+.msg-thinking-icon {
+  width: 24px; height: 24px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  animation: thinking-pulse 2s var(--ease-in-out) infinite;
+}
+.msg-thinking-icon img { width: 24px; height: 24px; display: block; opacity: 0.85; }
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+.msg-thinking-dots {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--t-tertiary); font-weight: 400; letter-spacing: 0.02em;
+}
+.msg-thinking-dots .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--t-tertiary); animation: thinking-wave 1.4s var(--ease-in-out) infinite;
+}
+.msg-thinking-dots .dot:nth-child(1) { animation-delay: 0s; }
+.msg-thinking-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+.msg-thinking-dots .dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes thinking-wave {
+  0%, 60%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+  30% { transform: translateY(-4px) scale(1.15); opacity: 1; }
+}
+
+/* Agent message header */
+.msg-agent-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.msg-agent-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.msg-agent-icon img { width: 24px; height: 24px; display: block; }
+.msg-agent-meta-col { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.msg-agent-name { font-size: 13px; font-weight: 600; color: var(--t-secondary); }
+.msg-agent-time { font-size: 11px; color: var(--t-secondary); }
+.msg-body-p { font-size: 14px; color: var(--t-secondary); line-height: 1.6; margin-bottom: 12px; }
+.msg-body-p:last-of-type { margin-bottom: 0; }
+.msg-body-p strong { color: var(--t-primary); font-weight: 600; }
+.msg-steps-label { font-size: 14px; color: var(--t-secondary); line-height: 1.6; margin-bottom: 14px; }
+
+/* Step cards */
+.steps-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.step-card { background: #ffffff; border-radius: 14px; padding: 16px 18px; }
+.step-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.step-title { font-size: 14px; font-weight: 600; color: var(--t-primary); line-height: 1.3; }
+.step-body { font-size: 13px; color: var(--t-secondary); line-height: 1.55; }
+.step-tags { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.step-tag-row { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--t-secondary); line-height: 1.4; }
+.step-examples { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.step-example { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--t-secondary); line-height: 1.5; }
+.step-ex-icon {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.step-ex-icon svg { width: 10px; height: 10px; }
+.step-ex-icon.negative { background: rgba(211,34,42,0.1); }
+.step-ex-icon.negative svg { color: #D3222A; }
+.step-ex-icon.positive { background: rgba(22,163,74,0.12); }
+.step-ex-icon.positive svg { color: #16a34a; }
+.step-ex-icon.additive { background: #f4f4f5; border: 1px solid var(--border-secondary); }
+.step-ex-icon.additive svg { color: var(--t-tertiary); }
+.msg-divider { border: none; border-top: 1px solid #DADADA; margin: 0 0 20px 0; }
+.msg-closing { font-size: 14px; color: var(--t-secondary); line-height: 1.6; margin-bottom: 12px; }
+.msg-question { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 14px; }
+.reaction-row { display: flex; align-items: center; gap: 4px; margin-bottom: 20px; }
+.reaction-btn {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; border-radius: 8px;
+  cursor: pointer; color: var(--t-tertiary); transition: all 0.15s;
+}
+.reaction-btn:hover { background: var(--bg-component); color: var(--t-secondary); }
+.reaction-btn svg { width: 16px; height: 16px; }
+.suggestions-panel { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; margin-bottom: 24px; }
+.suggestions-label {
+  display: flex; align-items: center; justify-content: flex-end; gap: 5px;
+  padding: 0 2px 4px; font-size: 11px; font-weight: 600; color: var(--t-tertiary); letter-spacing: 0.03em;
+}
+.suggestions-label svg { width: 13px; height: 13px; }
+.suggestion-item {
+  display: inline-flex; align-items: flex-start; gap: 8px;
+  padding: 8px 16px 8px 12px; background: #ffffff;
+  border-radius: 24px 4px 16px 24px;
+  font-size: 14px; font-weight: 400; color: #282e37; letter-spacing: 0.02em; line-height: 20px;
+  cursor: pointer; transition: background 0.15s;
+  width: fit-content; max-width: 100%; justify-content: flex-end;
+}
+.suggestion-item:hover { background: #f4f4f5; }
+.suggestion-arrow {
+  width: 20px; height: 20px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t-tertiary); font-size: 14px; line-height: 1;
+}
+
+/* Review & authorize section */
+.review-heading { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 14px; }
+.review-card {
+  background: #ffffff; border: none; border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 12px;
+}
+.review-card-title { font-size: 14px; font-weight: 600; color: var(--t-primary); margin-bottom: 12px; }
+.check-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0; font-size: 14px; color: var(--t-secondary); line-height: 1.4; gap: 12px;
+}
+.check-row:first-child { padding-top: 0; }
+.check-box {
+  width: 20px; height: 20px; background: #1e293b; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; cursor: pointer; transition: background 0.2s ease;
+}
+.check-box.unchecked { background: #fff; border: 1.5px solid #A0A2A5; }
+.check-box.unchecked svg { opacity: 0; }
+.check-box svg { width: 11px; height: 11px; transition: opacity 0.15s ease; }
+
+/* TOGGLE (Edit version) — scoped to #view-edit */
+#view-edit .toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0; font-size: 14px; color: var(--t-secondary); gap: 12px;
+}
+#view-edit .toggle-row:first-child { padding-top: 0; }
+#view-edit .toggle {
+  width: 36px; height: 20px; background: #1e293b; border-radius: 10px;
+  position: relative; flex-shrink: 0; cursor: pointer; transition: background 0.25s ease;
+}
+#view-edit .toggle::after {
+  content: ''; position: absolute; width: 16px; height: 16px;
+  background: #fff; border-radius: 50%; top: 2px; right: 2px;
+  transition: right 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#view-edit .toggle.off { background: #A0A2A5; }
+#view-edit .toggle.off::after { right: auto; left: 2px; }
+
+.trend-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0 0; font-size: 14px; color: var(--t-secondary); gap: 12px;
+}
+.seg-btn {
+  display: inline-flex; border: 1px solid var(--border-secondary);
+  border-radius: 8px; overflow: hidden; flex-shrink: 0;
+}
+.seg-opt {
+  padding: 5px 14px; font-size: 12px; font-weight: 400;
+  cursor: pointer; color: var(--t-secondary); background: transparent;
+  border: none; border-left: 1px solid var(--border-secondary);
+  font-family: var(--font); transition: all 0.15s; white-space: nowrap;
+}
+.seg-opt:first-child { border-left: none; }
+.seg-opt.active { background: #1e293b; color: #ffffff; }
+.action-row { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding: 4px 0 24px; }
+.action-label { font-size: 11px; color: var(--t-tertiary); font-weight: 400; letter-spacing: 0.03em; align-self: flex-end; }
+.action-btns { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Review block motion */
+#review-authorize-block { margin-top: 24px; }
+#review-authorize-block .ease-in-chunk {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.75s var(--ease-spring), transform 0.8s var(--ease-spring);
+}
+#review-authorize-block.visible .ease-in-chunk { opacity: 1; transform: translateY(0); }
+#review-authorize-block .ease-in-chunk:nth-child(1) { transition-delay: 0.08s; }
+#review-authorize-block .ease-in-chunk:nth-child(2) { transition-delay: 0.22s; }
+#review-authorize-block .ease-in-chunk:nth-child(3) { transition-delay: 0.36s; }
+#review-authorize-block .ease-in-chunk:nth-child(4) { transition-delay: 0.5s; }
+
+/* Doc body update animation */
+@keyframes doc-highlight-fade {
+  0%   { background-color: rgba(215,246,255,0.5); }
+  40%  { background-color: rgba(215,246,255,0.5); }
+  100% { background-color: transparent; }
+}
+.doc-body.updated { animation: doc-highlight-fade 10s ease-out forwards; border-radius: 6px; padding: 6px 8px; margin: -6px -8px; }
+
+/* Updated pill entrance */
+@keyframes pill-pop-in {
+  0%   { opacity: 0; transform: scale(0.7) translateY(2px); }
+  60%  { opacity: 1; transform: scale(1.05) translateY(-1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.pill-animate-in { animation: pill-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Chat footer */
+#view-edit .chat-input-footer {
+  margin-left: -24px; margin-right: -24px; width: calc(100% + 48px);
+  padding: 24px 20px; background: rgba(240,240,241,0.3);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+  position: sticky; bottom: 0; box-sizing: border-box; z-index: 10; isolation: isolate;
+}
+.chat-input-wrapper { position: relative; width: 100%; }
+.chat-input-glow {
+  position: absolute; inset: -4px; border-radius: 28px;
+  background: linear-gradient(90deg, rgba(211,34,42,0) 0%, rgba(211,34,42,0.3) 18%,
+    rgba(194,71,250,0.3) 50%, rgba(0,170,243,0.3) 82%, rgba(0,170,243,0) 100%);
+  filter: blur(10px); z-index: 0; pointer-events: none; opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#view-edit .chat-input-footer.glow-active .chat-input-glow {
+  opacity: 1; animation: glow-breathe 3s ease-in-out infinite;
+}
+.chat-input-box {
+  width: 100%; position: relative; z-index: 1;
+  background: #ffffff; border: 1px solid var(--border); border-top: none;
+  border-radius: 24px; padding: 14px 16px; outline: none;
+}
+.chat-input-box:focus-within { outline: none; box-shadow: none; }
+.chat-input-box::before {
+  content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+  opacity: 0.6; transition: opacity 0.4s ease;
+}
+.chat-input-wrapper.glow-active .chat-input-box::before { opacity: 1; }
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.02); }
+}
+.chat-input-inner {
+  font-size: 14px; color: var(--t-primary); padding: 2px 0 8px;
+  line-height: 1.5; min-height: 22px; outline: none;
+}
+.chat-input-inner:focus { outline: none; box-shadow: none; }
+.chat-input-inner.placeholder { color: var(--t-tertiary); }
+.chat-bar { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.chat-bar-btn {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border); border-radius: 50%;
+  cursor: pointer; color: var(--t-tertiary); flex-shrink: 0; transition: border-color 0.15s;
+}
+.chat-bar-btn:hover { border-color: #cbd5e1; }
+.chat-bar-btn svg { width: 14px; height: 14px; }
+.chat-flex { flex: 1; }
+.chat-send-btn {
+  width: 28px; height: 28px; background: #1e293b; border: none; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: #fff; flex-shrink: 0; opacity: 0.5; transition: background 0.15s, opacity 0.15s;
+}
+.chat-send-btn:hover { background: #0f172a; opacity: 0.7; }
+.chat-send-btn.active { opacity: 1; background: #282E37; }
+.chat-send-btn.active:hover { background: #1e2329; opacity: 1; }
+.chat-send-btn svg { width: 13px; height: 13px; }
+
+/* RIGHT PANEL — document viewer */
+#view-edit .doc-panel {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  background: #ffffff; border-top-left-radius: 24px;
+}
+.doc-scroll {
+  flex: 1; overflow-y: auto; padding: 24px 32px 20px;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.doc-scroll::-webkit-scrollbar { width: 4px; }
+.doc-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+.doc-pills-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.doc-pill-dot { width: 4px; height: 4px; border-radius: 50%; background: #282e37; flex-shrink: 0; }
+.doc-title {
+  font-size: 22px; font-weight: 600; color: var(--t-primary);
+  letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 8px;
+}
+.doc-meta { font-size: 13px; color: var(--t-secondary); margin-bottom: 24px; line-height: 1.5; }
+.doc-meta strong { font-weight: 600; }
+.doc-divider { border: none; border-top: 1px solid var(--border); margin-bottom: 24px; }
+.doc-section { margin-bottom: 24px; }
+.doc-section-title {
+  font-size: 16px; font-weight: 600; color: var(--t-primary); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px; line-height: 1.3;
+}
+.fact-chip {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 400;
+  color: #0e7490; background: #D7F6FF; border: 1px solid #1DD9F9;
+  border-radius: 20px; padding: 2px 9px; white-space: nowrap;
+  vertical-align: middle; margin-right: 6px;
+}
+.emerging-inline {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 400;
+  color: #D3222A; background: rgba(211,34,42,0.06); border: 1px solid rgba(211,34,42,0.2);
+  border-radius: 20px; padding: 2px 9px; vertical-align: middle; margin: 0 3px;
+}
+.doc-body { font-size: 14px; color: var(--t-secondary); line-height: 1.6; }
+.alert-card.alert-card-sm { margin-top: 12px; }
+.doc-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px 30px 24px; flex-shrink: 0;
+  background: rgba(255,255,255,0.3); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.btn-outline {
+  background: #ffffff; color: #1e293b; border: 1px solid #e2e8f0;
+  border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 400;
+  cursor: pointer; font-family: var(--font); white-space: nowrap; transition: all 0.15s;
+}
+.btn-outline:hover { background: #f4f4f5; border-color: #d4d4d8; }
+.btn-tertiary {
+  background: #ffffff; color: #1e293b; border: none; border-radius: 10px;
+  padding: 9px 16px; font-size: 13px; font-weight: 400;
+  cursor: pointer; font-family: var(--font); white-space: nowrap; transition: background 0.15s;
+}
+.btn-tertiary:hover { background: #f4f4f5; }
+.btn-dark {
+  background: #1e293b; color: #ffffff; border: none; border-radius: 10px;
+  padding: 9px 16px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font); white-space: nowrap; transition: background 0.15s;
+}
+.btn-dark:hover { background: #0f172a; }
+
+</style>
+</head>
+<body>
+
+<div id="app-wrapper">
+
+<!-- ============================================================
+     VIEW 1: SYNTHESIS RESULTS
+     ============================================================ -->
+<div id="view-synthesis" class="view">
+
+<div id="screens-wrapper">
+
+<div class="screen active" id="screen-1">
+  <div class="lt-header">
+    <div class="lt-logo">
+      <div class="lt-logo-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="Diligent"></div>
+      Diligent  •  Automated Audit Reporting
+    </div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="lt-activity-count">5</span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="lt-notif-dot"></span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="lt-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="s-investigation-body">
+    <div class="s-left-content">
+      <div class="s-left-scroll">
+        <div class="s-scroll-inner content-gap">
+
+        <!-- Hero (02-Evidence-05) -->
+        <div class="ev-hero">
+          <div class="ev-hero-header">
+            <div class="ev-tags">
+              <span class="pill pill-md pill-icon pill-red">
+                <img class="pill-ico" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUuNzc0MDIgMTUuNDg1NUw1IDE0LjcxMTVMOS43MTE1MiAxMEwxNC40MjMgMTQuNzExNUwxMy42NDkgMTUuNDg1NUw5LjcxMTUyIDExLjU0TDUuNzc0MDIgMTUuNDg1NVpNNS43NzQwMiAxMC40ODU1TDUgOS43MTE1Mkw5LjcxMTUyIDVMMTQuNDIzIDkuNzExNTJMMTMuNjQ5IDEwLjQ4NTVMOS43MTE1MiA2LjU0MDAyTDUuNzc0MDIgMTAuNDg1NVoiIGZpbGw9IiM5MjFBMUQiLz4KPC9zdmc+Cg==" style="width:20px;height:20px;">
+                High priority
+              </span>
+              <span class="pill pill-md pill-icon pill-transparent">
+                <img class="pill-ico" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkuOTk5ODIgMi40MTY4N0M4Ljk2MTM2IDIuNDE2ODcgNy45ODEzOSAyLjYxNDUyIDcuMDU5OTIgMy4wMDk4M0M2LjEzODQ1IDMuNDA1MTIgNS4zMzE4MyAzLjk0ODY1IDQuNjQwMDcgNC42NDA0M0MzLjk0ODI5IDUuMzMyMiAzLjQwNDc1IDYuMTM4NTMgMy4wMDk0NiA3LjA1OTQzQzIuNjE0MTYgNy45ODAzMiAyLjQxNjUgOC45NjM3NSAyLjQxNjUgMTAuMDA5N0MyLjQxNjUgMTEuMDU1NyAyLjYxNDE2IDEyLjAzNiAzLjAwOTQ2IDEyLjk1MDVDMy40MDQ3NSAxMy44NjUgMy45NDgyOSAxNC42NjgyIDQuNjQwMDcgMTUuMzU5OUM1LjMzMTgzIDE2LjA1MTcgNi4xMzcxNCAxNi41OTUyIDcuMDU2IDE2Ljk5MDVDNy45NzQ4OCAxNy4zODU4IDguOTU2MTUgMTcuNTgzNSA5Ljk5OTgyIDE3LjU4MzVDMTEuOTI5MyAxNy41ODM1IDEzLjU5MjQgMTYuOTYzMiAxNC45ODkyIDE1LjcyMjdDMTYuMzg1OSAxNC40ODIxIDE3LjIyMDYgMTIuOTM4NCAxNy40OTM0IDExLjA5MTVIMTYuMzg2OUMxNi4yMDc5IDEyLjIwMTYgMTUuNzcyMyAxMy4xODkgMTUuMDggMTQuMDUzOEMxNC4zODc2IDE0LjkxODcgMTMuNTI3NiAxNS41NjU5IDEyLjQ5OTggMTUuOTk1NFYxNS41MDAyQzEyLjQ5OTggMTUuMDg3NyAxMi4zNTI5IDE0LjczNDYgMTIuMDU5MiAxNC40NDA4QzExLjc2NTQgMTQuMTQ3MSAxMS40MTIzIDE0LjAwMDIgMTAuOTk5OCAxNC4wMDAySDguOTk5ODJWMTMuMDAwMkM4Ljk5OTgyIDEyLjcxNjggOC45MDM5OCAxMi40NzkzIDguNzEyMzIgMTIuMjg3N0M4LjUyMDY1IDEyLjA5NiA4LjI4MzE1IDEyLjAwMDIgNy45OTk4MiAxMi4wMDAySDYuOTk5ODJWMTAuMDAwMkg3LjkzNTcxVjguMDAwMThINi45OTk4MkwzLjY0NTY1IDExLjM1NDNDMy42MDkxOSAxMS4xMzIxIDMuNTc1NzcgMTAuOTA5OSAzLjU0NTQgMTAuNjg3N0MzLjUxNTAxIDEwLjQ2NTUgMy40OTk4MiAxMC4yMzYzIDMuNDk5ODIgMTAuMDAwMkMzLjQ5OTgyIDguMTk0NjMgNC4xMzE3NiA2LjY1OTkxIDUuMzk1NjUgNS4zOTYwMkM2LjY1OTU0IDQuMTMyMTMgOC4xOTQyNiAzLjUwMDE4IDkuOTk5ODIgMy41MDAxOFYyLjQxNjg3Wk0xNi45MDUzIDIuODIwNzJMMTQuMjM4NiA1LjQ3MTM3QzEzLjk4MjIgNS4yODU0NyAxMy43MDkxIDUuMTQ2NTggMTMuNDE5NCA1LjA1NDdDMTMuMTI5NiA0Ljk2MjgyIDEyLjgyMzEgNC45MTY4NyAxMi40OTk4IDQuOTE2ODdDMTEuNjM5OCA0LjkxNjg3IDEwLjkxMDkgNS4yMTU3NSAxMC4zMTMxIDUuODEzNUM5LjcxNTM4IDYuNDExMjYgOS40MTY1IDcuMTQwMTYgOS40MTY1IDguMDAwMThDOS40MTY1IDguODYwMjEgOS43MTUzOCA5LjU4OTExIDEwLjMxMzEgMTAuMTg2OUMxMC45MTA5IDEwLjc4NDYgMTEuNjM5OCAxMS4wODM1IDEyLjQ5OTggMTEuMDgzNUMxMy4zNTk4IDExLjA4MzUgMTQuMDg4NyAxMC43ODUgMTQuNjg2NSAxMC4xODc5QzE1LjI4NDMgOS41OTA4NyAxNS41ODMxIDguODYyODQgMTUuNTgzMSA4LjAwMzgxQzE1LjU4MzEgNy42NzU1NCAxNS41MzU5IDcuMzY0NTEgMTUuNDQxMyA3LjA3MDdDMTUuMzQ2NyA2Ljc3NjkgMTUuMjAzOCA2LjUwMTc5IDE1LjAxMjYgNi4yNDUzOUwxNy42NzkzIDMuNTk0NzVMMTYuOTA1MyAyLjgyMDcyWk0xMi40OTUxIDYuMDAwMThDMTMuMDUzOCA2LjAwMDE4IDEzLjUyNzYgNi4xOTMwNiAxMy45MTY1IDYuNTc4ODNDMTQuMzA1NCA2Ljk2NDU4IDE0LjQ5OTggNy40MzY4IDE0LjQ5OTggNy45OTU0OUMxNC40OTk4IDguNTU0MTggMTQuMzA2OSA5LjAyNzk2IDEzLjkyMTIgOS40MTY4NUMxMy41MzU0IDkuODA1NzQgMTMuMDYzMiAxMC4wMDAyIDEyLjUwNDUgMTAuMDAwMkMxMS45NDU4IDEwLjAwMDIgMTEuNDcyIDkuODA3MyAxMS4wODMxIDkuNDIxNTRDMTAuNjk0MyA5LjAzNTc5IDEwLjQ5OTggOC41NjM1NyAxMC40OTk4IDguMDA0ODdDMTAuNDk5OCA3LjQ0NjE5IDEwLjY5MjcgNi45NzI0MSAxMS4wNzg1IDYuNTgzNTJDMTEuNDY0MiA2LjE5NDYzIDExLjkzNjQgNi4wMDAxOCAxMi40OTUxIDYuMDAwMThaIiBmaWxsPSIjNkY3Mzc3Ii8+Cjwvc3ZnPgo=">
+                Audit report request
+              </span>
+            </div>
+            <h1 class="ev-hero-title"><strong>Risk synthesis</strong> - Expanding details to make sense.</h1>
+          </div>
+          <div class="ev-workflow">
+            <div class="ev-workflow-label">Workflow status</div>
+            <div class="ev-workflow-steps">
+              <div class="ev-step done">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Investigation
+</div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step done">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Scope
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step done">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiM4RUU0MDAiLz4KPHBhdGggZD0iTTguMjI5MDMgMTMuNzc0TDUuMDEyNyAxMC41MzY4TDUuNzU3ODggOS43OTE2N0w4LjIyOTAzIDEyLjI0MkwxNC4yNDE4IDYuMjVMMTQuOTg3IDcuMDE2TDguMjI5MDMgMTMuNzc0WiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Evidence
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step active">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiMxREQ5RjkiLz4KPHBhdGggZD0iTTExLjE2MzUgMTAuMDAwMUw3LjIyNTk1IDYuMDYyNkw3Ljk5OTk3IDUuMjg4NTdMMTIuNzExNSAxMC4wMDAxTDcuOTk5OTcgMTQuNzExNkw3LjIyNTk1IDEzLjkzNzZMMTEuMTYzNSAxMC4wMDAxWiIgZmlsbD0iIzI4MkUzNyIvPgo8L3N2Zz4K" width="20" height="20" alt=""></div>
+                Synthesis
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Edit &amp; Authorize
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Veracity scoring
+              </div>
+              <span class="ev-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="ev-step">
+                <div class="ev-step-circle"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjAwNyAxNy41ODM2QzguOTYzNzQgMTcuNTgzNiA3Ljk4MTI0IDE3LjM4NjMgNy4wNTk0NiAxNi45OTE1QzYuMTM3NjcgMTYuNTk2OCA1LjMzMDg1IDE2LjA1MzcgNC42MzkgMTUuMzYyMkMzLjk0NzE0IDE0LjY3MDYgMy40MDM3NiAxMy44NjQ1IDMuMDA4ODYgMTIuOTQzN0MyLjYxMzk2IDEyLjAyMjkgMi40MTY1IDExLjAzOTEgMi40MTY1IDkuOTkyMTZDMi40MTY1IDguOTQ1MjQgMi42MTM4NyA3Ljk2NDM3IDMuMDA4NTkgNy4wNDk1M0MzLjQwMzMxIDYuMTM0NjkgMy45NDY0MyA1LjMzMTM0IDQuNjM3OTYgNC42Mzk0OUM1LjMyOTUgMy45NDc2MyA2LjEzNTY2IDMuNDA0MjUgNy4wNTY0NCAzLjAwOTM1QzcuOTc3MjIgMi42MTQ0NCA4Ljk2MTA2IDIuNDE2OTkgMTAuMDA4IDIuNDE2OTlDMTEuMDU0OSAyLjQxNjk5IDEyLjAzNTggMi42MTQzNSAxMi45NTA2IDMuMDA5MDhDMTMuODY1NCAzLjQwMzggMTQuNjY4OCAzLjk0NjkyIDE1LjM2MDYgNC42Mzg0NUMxNi4wNTI1IDUuMzI5OTkgMTYuNTk1OSA2LjEzNDUzIDE2Ljk5MDggNy4wNTIwNkMxNy4zODU3IDcuOTY5NTggMTcuNTgzMSA4Ljk0OTk1IDE3LjU4MzEgOS45OTMxNkMxNy41ODMxIDExLjAzNjQgMTcuMzg1OCAxMi4wMTg5IDE2Ljk5MSAxMi45NDA3QzE2LjU5NjMgMTMuODYyNSAxNi4wNTMyIDE0LjY2OTMgMTUuMzYxNyAxNS4zNjExQzE0LjY3MDEgMTYuMDUzIDEzLjg2NTYgMTYuNTk2NCAxMi45NDgxIDE2Ljk5MTNDMTIuMDMwNSAxNy4zODYyIDExLjA1MDIgMTcuNTgzNiAxMC4wMDcgMTcuNTgzNlpNOS45OTk4MiAxNi41MDAzQzExLjgwNTQgMTYuNTAwMyAxMy4zNDAxIDE1Ljg2ODQgMTQuNjA0IDE0LjYwNDVDMTUuODY3OSAxMy4zNDA2IDE2LjQ5OTggMTEuODA1OSAxNi40OTk4IDEwLjAwMDNDMTYuNDk5OCA4LjE5NDc1IDE1Ljg2NzkgNi42NjAwMyAxNC42MDQgNS4zOTYxNEMxMy4zNDAxIDQuMTMyMjUgMTEuODA1NCAzLjUwMDMxIDkuOTk5ODIgMy41MDAzMUM4LjE5NDI2IDMuNTAwMzEgNi42NTk1NCA0LjEzMjI1IDUuMzk1NjUgNS4zOTYxNEM0LjEzMTc2IDYuNjYwMDMgMy40OTk4MiA4LjE5NDc1IDMuNDk5ODIgMTAuMDAwM0MzLjQ5OTgyIDExLjgwNTkgNC4xMzE3NiAxMy4zNDA2IDUuMzk1NjUgMTQuNjA0NUM2LjY1OTU0IDE1Ljg2ODQgOC4xOTQyNiAxNi41MDAzIDkuOTk5ODIgMTYuNTAwM1oiIGZpbGw9IiM2RjczNzciLz4KPC9zdmc+Cg==" width="20" height="20" alt=""></div>
+                Approve
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="section-gap">
+
+        <!-- Changelog: Correlating signals -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">1/4 - Correlating signals across domains</div>
+            <div class="section-subtitle">Mapping relationships between findings across all 8 sources. Cross-domain chains identified.</div>
+          </div>
+          <div class="ev-chains-card">
+            <div class="ev-chain-item">
+              <div class="ev-chain-item-title">Access Control chain</div>
+              <div class="ev-chain-item-body">Audit finding AC-2 (Projects) → ERM risk "Unauthorized Access" above appetite → 3 vendor assessments with weak access controls (3rd Risk) + 2 speak-up reports about shared passwords (Vault)</div>
+            </div>
+            <div class="ev-chain-item">
+              <div class="ev-chain-item-title">SEC Disclosure chain</div>
+              <div class="ev-chain-item-body">8-K materiality process gap (Compliance Maps) → no documented cyber risk management disclosure → peer enforcement action on identical gap (External Intel)</div>
+            </div>
+            <div class="ev-chain-item">
+              <div class="ev-chain-item-title">Vendor Concentration chain</div>
+              <div class="ev-chain-item-body">3 critical vendors share privileged access architecture (3rd Risk) → linked to same AC-2 finding → no compensating control documented (Frameworks)</div>
+            </div>
+          </div>
+        </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">2/4 — Filtering by materiality and relevance</div>
+              <div class="section-subtitle">Applying thresholds across 312 data points. Low-relevance items deprioritised but not excluded — available on request.</div>
+            </div>
+            <div class="card-default">
+              <div class="card-hero-row">
+                <div class="card-hero">
+                  <div class="card-hero-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    Priority findings
+                  </div>
+                  <div class="card-hero-value">18 <span class="card-hero-desc">>$500K or regulatory</span></div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 13l5 5 5-5"/><path d="M7 6l5 5 5-5"/></svg>
+                    Deprioritised
+                  </div>
+                  <div class="card-hero-value">43 <span class="card-hero-desc">below threshold</span></div>
+                </div>
+                <div class="card-hero">
+                  <div class="card-hero-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 8h4V4"/><path d="M16 4v4h4"/><path d="M20 16h-4v4"/><path d="M8 20H4v-4"/></svg>
+                    Context only
+                  </div>
+                  <div class="card-hero-value">251 <span class="card-hero-desc">retained, not surfaced</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="ev-section-evidence-pack" class="section">
+            <div class="section-header">
+              <div class="section-title">3/4 — Categorising against company risk taxonomy</div>
+              <div class="section-subtitle">Cross-category exposure flagged — Access Control weakness appears in Compliance, Operational, and Reputational simultaneously.</div>
+            </div>
+              <div class="card-default">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th class="col-records">Number of findings</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="col-source">Compliance</td>
+                      <td class="col-records">7</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Operational</td>
+                      <td class="col-records">5</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Reputational</td>
+                      <td class="col-records">4</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Financial</td>
+                      <td class="col-records">2</td>
+                    </tr>
+                    <tr>
+                      <td class="col-source">Strategic</td>
+                      <td class="col-records">0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Step 4 of 4 — Comparing posture against SEC disclosure requirements</div>
+            </div>
+            <div class="ev-chains-card">
+              <div class="ev-chain-item ev-chain-item-with-chip">
+                <div class="ev-chain-item-title">8-K materiality determination process</div>
+                <span class="pill pill-sm pill-red">Gap</span>
+              </div>
+              <div class="ev-chain-item ev-chain-item-with-chip">
+                <div class="ev-chain-item-title">Risk management disclosure documentation</div>
+                <span class="pill pill-sm pill-yellow">Partial</span>
+              </div>
+              <div class="ev-chain-item ev-chain-item-with-chip">
+                <div class="ev-chain-item-title">Governance oversight structure</div>
+                <span class="pill pill-sm pill-green">Covered</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Handoff section -->
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Handoff</div>
+              <div class="section-subtitle">Synthesis - Making sense is completed</div>
+            </div>
+            <div class="card-default">
+              <div class="card-title">Top 5 priority findings</div>
+              <div class="s-handoff-body">
+                <ol style="margin:0;padding:0;display:flex;flex-direction:column;gap:10px;list-style:none;">
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-red">1</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">Access control weakness — cross-domain, cross-vendor, 4-source corroboration</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-red">2</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">SEC 8-K materiality process undocumented — direct peer enforcement parallel</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-red">3</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">3 critical vendors sharing access architecture — no compensating control</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-yellow">4</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">CM-6 configuration remediation overdue 47 days — no escalation recorded</span></li>
+                  <li style="display:flex;align-items:flex-start;gap:10px;"><span class="pill pill-num pill-yellow">5</span><span style="font-size:14px;color:var(--t-secondary);line-height:1.5;">Risk management disclosure partial — regulator scrutiny rising per external intel</span></li>
+                </ol>
+                <div class="s-handoff-divider"></div>
+                <div class="alert-card alert-card-md alert-card-yellow">
+                  <div class="alert-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.86523 20.4999L11.9998 3L22.1343 20.4999H1.86523ZM4.44978 18.9999H19.5498L11.9998 5.99993L4.44978 18.9999ZM11.9998 17.8076C12.2286 17.8076 12.4205 17.7302 12.5753 17.5754C12.7301 17.4206 12.8075 17.2288 12.8075 16.9999C12.8075 16.7711 12.7301 16.5793 12.5753 16.4245C12.4205 16.2697 12.2286 16.1923 11.9998 16.1923C11.7709 16.1923 11.5791 16.2697 11.4243 16.4245C11.2695 16.5793 11.1921 16.7711 11.1921 16.9999C11.1921 17.2288 11.2695 17.4206 11.4243 17.5754C11.5791 17.7302 11.7709 17.8076 11.9998 17.8076ZM11.2498 15.1923H12.7498V10.1923H11.2498V15.1923Z" fill="currentColor"/></svg></div>
+                  <div class="alert-card-body">
+                    <div class="alert-card-title">Recommended focus areas</div>
+                    <div class="alert-card-sub">Access Management Controls · SEC Disclosure Readiness · Critical Vendor Cyber Posture</div>
+                  </div>
+                </div>
+                <div class="alert-card alert-card-md alert-card-green">
+                  <div class="alert-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.5808 16.2538L17.3038 9.53075L16.25 8.47693L10.5808 14.1462L7.73075 11.2962L6.67693 12.35L10.5808 16.2538ZM12.0016 21.5C10.6877 21.5 9.45268 21.2506 8.29655 20.752C7.1404 20.2533 6.13472 19.5765 5.2795 18.7217C4.42427 17.8669 3.74721 16.8616 3.24833 15.706C2.74944 14.5504 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45268 3.248 8.29655C3.74667 7.1404 4.42342 6.13472 5.27825 5.2795C6.1331 4.42427 7.13834 3.74721 8.29398 3.24833C9.44959 2.74944 10.6844 2.5 11.9983 2.5C13.3122 2.5 14.5473 2.74933 15.7034 3.248C16.8596 3.74667 17.8652 4.42342 18.7205 5.27825C19.5757 6.1331 20.2527 7.13834 20.7516 8.29398C21.2505 9.44959 21.5 10.6844 21.5 11.9983C21.5 13.3122 21.2506 14.5473 20.752 15.7034C20.2533 16.8596 19.5765 17.8652 18.7217 18.7205C17.8669 19.5757 16.8616 20.2527 15.706 20.7516C14.5504 21.2505 13.3156 21.5 12.0016 21.5ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76664 19.225 7.87498 17.675 6.32498C16.125 4.77498 14.2333 3.99998 12 3.99998C9.76664 3.99998 7.87498 4.77498 6.32498 6.32498C4.77498 7.87498 3.99998 9.76664 3.99998 12C3.99998 14.2333 4.77498 16.125 6.32498 17.675C7.87498 19.225 9.76664 20 12 20Z" fill="currentColor"/></svg></div>
+                  <div class="alert-card-body">
+                    <div class="alert-card-title">Cybersecurity Risk — Situational Overview</div>
+                    <div class="alert-card-sub">AI Reporting · Draft · Just created</div>
+                  </div>
+                  <div class="alert-card-actions">
+                    <button class="btn btn-primary btn-md open-report-btn" type="button">View and edit report</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /section-gap -->
+
+        </div><!-- end s-scroll-inner -->
+
+        <div class="chat-area">
+          <div class="chat-inner">
+            <div class="chat-input-row">
+              <textarea placeholder="Ask about evidence, review the pack, or re-run a source..."></textarea>
+              <div class="chat-bottom">
+                <div class="chat-chips-row">
+                  <div class="chat-chip">Summarise the evidence pack</div>
+                  <div class="chat-chip">Flag any gaps</div>
+                  <div class="chat-chip">Re-run External Intel</div>
+                </div>
+                <div class="chat-actions">
+                  <button class="btn btn-secondary btn-md">Clear</button>
+                  <button class="btn btn-primary btn-md" disabled>Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end s-left-scroll -->
+    </div>
+  </div>
+</div>
+
+</div><!-- end screens-wrapper -->
+
+</div><!-- end #view-synthesis -->
+
+
+<!-- ============================================================
+     VIEW 2: CHAT + DOCUMENT EDITOR
+     ============================================================ -->
+<div id="view-edit" class="view">
+
+<div style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+
+  <div class="lt-header">
+    <div class="lt-logo">
+      <div class="lt-logo-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="Diligent"></div>
+      Diligent  •  Automated Audit Reporting
+    </div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="lt-notif-dot"></span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="lt-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="body-layout">
+
+    <div class="chat-panel">
+      <div class="chat-scroll">
+        <div class="chat-scroll-inner">
+
+        <div class="msg-date">12 April 2026</div>
+
+        <!-- Step 1: Initial AI content (eases in block-by-block after 1s) -->
+        <div id="initial-ai-block">
+          <div class="ease-in-chunk">
+            <div class="msg-agent-header">
+              <div class="msg-agent-icon">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="GRC Assistant">
+              </div>
+              <div class="msg-agent-meta-col">
+                <span class="msg-agent-name">GRC Assistant</span>
+                <span class="msg-agent-time">03:14 PM</span>
+              </div>
+            </div>
+          </div>
+          <div class="ease-in-chunk">
+            <p class="msg-body-p">Your draft <strong>Cybersecurity Risk — Situational Overview</strong> is ready.</p>
+          </div>
+          <div class="ease-in-chunk">
+            <p class="msg-body-p">Take a look and let me know if you'd like any changes to the charts or narratives. You can also switch to Editor mode to make manual edits.</p>
+          </div>
+          <div class="ease-in-chunk">
+            <p class="msg-steps-label">Steps I'll follow in this process:</p>
+          </div>
+          <div class="ease-in-chunk">
+          <div class="steps-list">
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="pill pill-num">1</span>
+                <span class="step-title">Drafting situational overview</span>
+              </div>
+              <div class="step-body">Generating 1-page board-level summary across four sections: current situation, why it matters, what has changed, and key uncertainties. Writing in plain English — no technical jargon.</div>
+            </div>
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="pill pill-num">2</span>
+                <span class="step-title">Tagging statements by evidence type</span>
+              </div>
+              <div class="step-body">Each statement tagged to its evidential basis:</div>
+              <div class="step-tags">
+                <div class="step-tag-row">
+                  <span class="pill pill-sm pill-blue">Fact</span>
+                  Directly evidenced in the Evidence Pack — board can rely on this
+                </div>
+                <div class="step-tag-row">
+                  <span class="pill pill-sm pill-yellow">Assumption</span>
+                  Reasonable inference — management confirmation needed
+                </div>
+                <div class="step-tag-row">
+                  <span class="pill pill-sm pill-red">Emerging</span>
+                  External signal — no current internal evidence yet
+                </div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="pill pill-num">3</span>
+                <span class="step-title">Adapting tone for board audience</span>
+              </div>
+              <div class="step-body">Technical language translated for board consumption:</div>
+              <div class="step-examples">
+                <div class="step-example">
+                  <div class="step-ex-icon negative">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"/></svg>
+                  </div>
+                  <span>"NIST CSF AC-2 control ineffective"</span>
+                </div>
+                <div class="step-example">
+                  <div class="step-ex-icon positive">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5l2.5 2.5 3.5-4"/></svg>
+                  </div>
+                  <span>"Unauthorised access could expose customer data, creating regulatory and reputational risk"</span>
+                </div>
+                <div class="step-example">
+                  <div class="step-ex-icon additive">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 2v6M2 5h6"/></svg>
+                  </div>
+                  <span>"Our control posture is stronger than 65% of financial services peers — but the 3 gaps that remain are in areas regulators are actively scrutinising"</span>
+                </div>
+            </div>
+          </div>
+          </div>
+          </div>
+          <div class="ease-in-chunk">
+          <hr class="msg-divider" aria-hidden="true">
+          <p class="msg-closing">Situational overview drafted. Review the report on the right — probe any section or ask for revisions before steering the deep dive.</p>
+          <p class="msg-question">Would you like me to change anything in the draft now?</p>
+          </div>
+          <div class="ease-in-chunk">
+          <div class="reaction-row">
+            <button class="reaction-btn" title="Helpful">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+            </button>
+            <button class="reaction-btn" title="Not helpful">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+            </button>
+            <button class="reaction-btn" title="Copy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+            <button class="reaction-btn" title="More">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+            </button>
+          </div>
+          </div>
+          <div class="ease-in-chunk">
+          <div class="suggestions-panel">
+            <div class="suggestions-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+              Suggestions
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-arrow">↳</span>
+              Strengthen the vendor risk section
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-arrow">↳</span>
+              Add more peer comparison context
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-arrow">↳</span>
+              What's the basis for the SEC gap?
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- Step 3: User message 1 (Alexandra Chen) -->
+        <div id="user-msg-1" class="chat-block" style="display: none;">
+          <div class="msg-user-wrap">
+            <div class="msg-user-meta">
+              <span class="msg-user-name">Alexandra Chen</span>
+              <span class="msg-user-time">03:15 PM</span>
+              <div class="msg-user-avatar" aria-hidden="true">AC</div>
+            </div>
+            <div class="msg-user-bubble">
+              Thomas is going to push hard on the vendor risk section — he's been concerned since the Apex breach. Can you strengthen that and be more specific about what the contractual exposure looks like?
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Thinking state 1 -->
+        <div id="thinking-1" class="chat-block" style="display: none;">
+          <div class="msg-thinking-wrap">
+            <div class="msg-thinking-icon">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="GRC Assistant">
+            </div>
+            <div class="msg-thinking-dots">
+              Thinking <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: AI response 1 -->
+        <div id="ai-response-1" class="chat-block" style="display: none;">
+          <div class="msg-agent-header">
+            <div class="msg-agent-icon">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="GRC Assistant">
+            </div>
+            <div class="msg-agent-meta-col">
+              <span class="msg-agent-name">GRC Assistant</span>
+              <span class="msg-agent-time">03:14 PM</span>
+            </div>
+          </div>
+          <p class="msg-body-p">Understood — updating Section B with specific vendor contract details from 3rd Risk. Also flagging: vendor breach notification obligations under existing contracts haven't been assessed yet. I've marked that as a new uncertainty item.</p>
+        </div>
+
+        <!-- Step 6: User message 2 -->
+        <div id="user-msg-2" class="chat-block" style="display: none;">
+          <div class="msg-user-wrap">
+            <div class="msg-user-meta">
+              <span class="msg-user-name">Alexandra Chen</span>
+              <span class="msg-user-time">03:16 PM</span>
+              <div class="msg-user-avatar" aria-hidden="true">AC</div>
+            </div>
+            <div class="msg-user-bubble">
+              The CFO is sensitive about anything that suggests we might need to delay the SEC filing. Soften the language in Section C on the disclosure process — frame it as a gap we're actively addressing.
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7: Thinking state 2 -->
+        <div id="thinking-2" class="chat-block" style="display: none;">
+          <div class="msg-thinking-wrap">
+            <div class="msg-thinking-icon">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="GRC Assistant">
+            </div>
+            <div class="msg-thinking-dots">
+              Thinking <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7 (cont.): AI response 2 -->
+        <div id="ai-response-2" class="chat-block" style="display: none;">
+          <div class="msg-agent-header">
+            <div class="msg-agent-icon">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARxJREFUeAGVkkFOwzAQRec7hqo7U1WwqEDdsqlyBLgBnAQ4AidpOQEcAU6AJcSaXACRdUtmmLQqJE7dmL+IlRnPmz+2QarH85lQTKCSBJ4MP1y/vy3CtKE+CTn9XIyXMv/MZx9feZ7/C2DV2+myomMlATQV8KtCrpIAQxE6W1U00FVH+TMFnivE7QWMv5km2tnI5ngOMzTTjg3f7gTUlifa1VXcig9sC0AQulnvDy2frFgh3UtBJ0JOx5j+AkZqeRR0bSoYYasNoLY85PhTMFoLRHJr63uKa9kMsVTZ/5AoZh/Fkfc+CZDt2KUjPddrEuDAoNOdGPfJgHAECO7UfpEEaN8ACoi51OKnbcT2AWxGhRI8GC/6u9Dispn/AYHpXM6hcNiKAAAAAElFTkSuQmCC" alt="GRC Assistant">
+            </div>
+            <div class="msg-agent-meta-col">
+              <span class="msg-agent-name">GRC Assistant</span>
+              <span class="msg-agent-time">03:16 PM</span>
+            </div>
+          </div>
+          <p class="msg-body-p">Revised. Section C now reads: "The materiality determination process is being assessed for alignment with current SEC requirements — management is expected to confirm status within 72 hours." Tagged ASSUMPTION — board can see it's not confirmed absent.</p>
+        </div>
+
+        <!-- Review & authorize section -->
+        <div id="review-authorize-block" class="chat-block" style="display: none;">
+          <div class="ease-in-chunk">
+            <div class="review-heading">Please review the details and authorize</div>
+          </div>
+          <div class="ease-in-chunk">
+            <div class="review-card">
+              <div class="review-card-title">Focus areas to deep dive</div>
+              <div class="check-row">
+                Access management control chain
+                <div class="check-box">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l3 3 5-5"/></svg>
+                </div>
+              </div>
+              <div class="check-row">
+                Critical vendor cyber assessments
+                <div class="check-box">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l3 3 5-5"/></svg>
+                </div>
+              </div>
+              <div class="check-row">
+                SEC disclosure process maturity
+                <div class="check-box">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l3 3 5-5"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ease-in-chunk">
+            <div class="review-card">
+              <div class="review-card-title">Investigation boundaries</div>
+              <div class="toggle-row">
+                Include remediation effectiveness testing?
+                <div class="toggle"></div>
+              </div>
+              <div class="toggle-row">
+                Include individual names in report?
+                <div class="toggle"></div>
+              </div>
+              <div class="trend-row">
+                Historical trend depth
+                <div class="seg-btn">
+                  <button type="button" class="seg-opt">12 Months</button>
+                  <button type="button" class="seg-opt active">24 Months</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ease-in-chunk">
+            <div class="action-row">
+              <span class="action-label">Suggested actions</span>
+              <div class="action-btns">
+                <button type="button" class="btn btn-secondary btn-md">Back to investigation</button>
+                <button type="button" class="btn btn-secondary btn-md">Make more changes</button>
+                <button type="button" class="btn btn-primary btn-md">Confirm selection and authorize</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat input (inside scroll so content passes behind it for backdrop blur) -->
+        <div class="chat-input-footer">
+          <div class="chat-input-wrapper">
+            <div class="chat-input-glow" aria-hidden="true"></div>
+            <div class="chat-input-box">
+              <div id="chat-input-text" class="chat-input-inner placeholder" contenteditable="true">What should be the next step?</div>
+              <div class="chat-bar">
+                <div class="chat-bar-btn" title="Add">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                </div>
+                <div class="chat-flex"></div>
+                <div class="chat-send-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /chat-scroll-inner -->
+      </div><!-- /chat-scroll -->
+    </div><!-- /chat-panel -->
+
+    <div class="doc-panel">
+      <div class="doc-scroll">
+        <div class="doc-pills-row">
+          <span class="pill pill-sm pill-transparent">Draft</span>
+          <span class="doc-pill-dot" aria-hidden="true"></span>
+          <span class="pill pill-sm pill-transparent">Version 1</span>
+        </div>
+        <div class="doc-title">Cybersecurity Risk — Situational Overview</div>
+        <div class="doc-meta">
+          Scope: <strong>SEC Peer Incident Response</strong> &nbsp;•&nbsp; Created on: <strong>Feb 24, 2026</strong> &nbsp;•&nbsp; Audience: <strong>Audit Committee</strong>
+        </div>
+        <hr class="doc-divider">
+        <div class="doc-section">
+          <div class="doc-section-title">Current Situation</div>
+          <div class="doc-body"><span class="fact-chip">Fact</span> A peer financial services firm has received an SEC enforcement action for deficient cybersecurity controls under the new disclosure requirements. Our review finds structural similarities: unauthorised access risks exist across 8 controls, 3 critical vendors share the same access architecture vulnerability, and our cyber risk sits above appetite in the Enterprise Risk Register.</div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">Why It Matters <span id="update-pill-1" class="pill pill-sm pill-transparent" style="display:none; opacity:0; transition: opacity 0.5s ease;">Updated</span></div>
+          <div id="doc-body-1" class="doc-body"><span class="fact-chip">Fact</span> Unauthorised access could trigger SEC 8-K disclosure obligations within 4 business days. The 3 critical vendors collectively service 40% of customer transaction volume — a breach at any one could be material.</div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">What Has Changed <span id="update-pill-2" class="pill pill-sm pill-transparent" style="display:none; opacity:0; transition: opacity 0.5s ease;">Updated</span></div>
+          <div id="doc-body-2" class="doc-body"><span class="fact-chip">Fact</span> Since Q3 2025: CM-6 remediation is 47 days overdue, critical vendor high-risk count has risen from 1 to 3.</div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">Key Uncertainties</div>
+          <div class="doc-body" style="margin-bottom: 4px;">
+            Since the last Audit Committee review (Q3 2025), the CM-6 remediation plan has fallen 47 days overdue with no escalation recorded. The number of critical vendors with high cyber risk scores has increased from 1 to 3. ASSUMPTION — No material changes to the SEC disclosure process are assumed to have occurred, based on absence of updates in Compliance Maps — management confirmation required.
+          </div>
+          <div class="alert-card alert-card-sm alert-card-yellow">
+            <div class="alert-card-header">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+              <div class="alert-card-title">Assumption</div>
+            </div>
+            <div class="alert-card-sub">8-K materiality process gap inferred from absence of documentation — not confirmed absent. Management sign-off required before including in final report.</div>
+          </div>
+          <div class="alert-card alert-card-sm alert-card-red">
+            <div class="alert-card-header">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+              <div class="alert-card-title">Emerging</div>
+            </div>
+            <div class="alert-card-sub">Vendor breach notification obligations under existing contracts not yet assessed — this could accelerate disclosure timelines materially.</div>
+          </div>
+        </div>
+      </div>
+      <div class="doc-footer">
+        <button class="btn btn-secondary btn-md">Back to investigation</button>
+        <div style="display: flex; gap: 10px; margin-left: auto;">
+          <button class="btn btn-tertiary btn-md">Preview</button>
+          <button class="btn btn-primary btn-md">Confirm and authorize</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end #view-edit -->
+
+</div><!-- end #app-wrapper -->
+
+
+<script>
+(function() {
+  /* ============================================================
+     VIEW TRANSITION
+     ============================================================ */
+  var wrapper = document.getElementById('app-wrapper');
+
+  function transitionToEdit() {
+    wrapper.classList.add('transition-to-chat');
+    setTimeout(function() {
+      startChat();
+    }, 550);
+  }
+
+  /* "View and edit report" button in Synthesis view */
+  var openBtn = document.querySelector('#view-synthesis .open-report-btn');
+  if (openBtn) openBtn.addEventListener('click', transitionToEdit);
+
+  /* #chat hash shortcut */
+  if (window.location.hash === '#chat') {
+    transitionToEdit();
+  }
+
+
+  /* ============================================================
+     EDIT VIEW — CHAT ANIMATION
+     ============================================================ */
+  var PLACEHOLDER = 'What should be the next step?';
+  var PROMPT_1 = "Thomas is going to push hard on the vendor risk section \u2014 he\u2019s been concerned since the Apex breach. Can you strengthen that and be more specific about what the contractual exposure looks like?";
+  var PROMPT_2 = "The CFO is sensitive about anything that suggests we might need to delay the SEC filing. Soften the language in Section C on the disclosure process \u2014 frame it as a gap we\u2019re actively addressing.";
+  var THINKING_DURATION_MS = 5000;
+  var SCROLL_PAD = 16;
+
+  var initialAi = document.getElementById('initial-ai-block');
+  var userMsg1 = document.getElementById('user-msg-1');
+  var thinking1 = document.getElementById('thinking-1');
+  var aiResponse1 = document.getElementById('ai-response-1');
+  var userMsg2 = document.getElementById('user-msg-2');
+  var thinking2 = document.getElementById('thinking-2');
+  var aiResponse2 = document.getElementById('ai-response-2');
+  var reviewAuthorizeBlock = document.getElementById('review-authorize-block');
+  var updatePill1 = document.getElementById('update-pill-1');
+  var updatePill2 = document.getElementById('update-pill-2');
+  var docBody1 = document.getElementById('doc-body-1');
+  var docBody2 = document.getElementById('doc-body-2');
+  var chatInputText = document.getElementById('chat-input-text');
+  var chatInputBox = document.querySelector('#view-edit .chat-input-box');
+  var chatInputWrapper = document.querySelector('#view-edit .chat-input-wrapper');
+  var chatInputFooter = document.querySelector('#view-edit .chat-input-footer');
+  var chatSendBtn = document.querySelector('#view-edit .chat-send-btn');
+  var chatScroll = document.querySelector('#view-edit .chat-scroll');
+  var msgDate = document.querySelector('#view-edit .msg-date');
+
+  function updateSendButtonState() {
+    if (!chatSendBtn || !chatInputText) return;
+    var text = (chatInputText.textContent || '').trim();
+    var hasContent = text.length > 0 && text !== PLACEHOLDER;
+    if (hasContent) chatSendBtn.classList.add('active');
+    else chatSendBtn.classList.remove('active');
+  }
+
+  // Glow only while the user is actively typing
+  if (chatInputText && chatInputFooter) {
+    var glowTimeoutId = null;
+    function showGlowWhileTyping() {
+      chatInputFooter.classList.add('glow-active');
+      if (glowTimeoutId) clearTimeout(glowTimeoutId);
+      glowTimeoutId = setTimeout(function() {
+        chatInputFooter.classList.remove('glow-active');
+        glowTimeoutId = null;
+      }, 1500);
+    }
+    chatInputText.addEventListener('keydown', showGlowWhileTyping);
+    chatInputText.addEventListener('input', function() {
+      showGlowWhileTyping();
+      updateSendButtonState();
+    });
+    chatInputText.addEventListener('blur', function() {
+      if (glowTimeoutId) clearTimeout(glowTimeoutId);
+      glowTimeoutId = null;
+      chatInputFooter.classList.remove('glow-active');
+    });
+  }
+
+  function showUpdatePill(pill) {
+    if (!pill) return;
+    pill.style.display = '';
+    pill.style.opacity = '';
+    pill.style.transition = 'none';
+    requestAnimationFrame(function() {
+      pill.classList.add('pill-animate-in');
+    });
+    var docScrollEl = document.querySelector('#view-edit .doc-scroll');
+    if (docScrollEl && pill.closest('.doc-section')) {
+      var section = pill.closest('.doc-section');
+      setTimeout(function() {
+        section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
+  }
+
+  function updateDocBody(el, html) {
+    if (!el) return;
+    el.style.transition = 'opacity 0.2s ease';
+    el.style.opacity = '0.3';
+    setTimeout(function() {
+      el.classList.remove('updated');
+      el.innerHTML = html;
+      el.offsetHeight;
+      el.style.transition = 'opacity 0.4s ease';
+      el.style.opacity = '1';
+      el.classList.add('updated');
+    }, 200);
+  }
+
+  function showBlock(el) {
+    if (!el) return;
+    el.style.display = '';
+    el.offsetHeight;
+    requestAnimationFrame(function() {
+      el.classList.add('visible');
+    });
+  }
+
+  function scrollToShowAtTop(el) {
+    if (!chatScroll || !el) return;
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        setTimeout(function() {
+          var elTop = el.getBoundingClientRect().top;
+          var scrollContainerTop = chatScroll.getBoundingClientRect().top;
+          var scrollTopBefore = chatScroll.scrollTop;
+          var targetTop = scrollTopBefore + (elTop - scrollContainerTop) - SCROLL_PAD;
+          if (targetTop < 0) targetTop = 0;
+          chatScroll.scrollTop = targetTop;
+        }, 250);
+      });
+    });
+  }
+
+  function scrollToBottom() {
+    if (chatScroll) {
+      requestAnimationFrame(function() {
+        chatScroll.scrollTo({ top: chatScroll.scrollHeight, behavior: 'smooth' });
+      });
+    }
+  }
+
+  function typeIntoInput(fullText, done) {
+    if (chatInputFooter) chatInputFooter.classList.add('glow-active');
+    chatInputText.classList.remove('placeholder');
+    chatInputText.textContent = '';
+    chatInputText.style.color = '';
+    var i = 0;
+    var step = Math.max(1, Math.floor(fullText.length / 35));
+    var interval = setInterval(function() {
+      i = Math.min(i + step, fullText.length);
+      chatInputText.textContent = fullText.slice(0, i);
+      updateSendButtonState();
+      if (i >= fullText.length) {
+        clearInterval(interval);
+        if (chatInputFooter) chatInputFooter.classList.remove('glow-active');
+        if (done) done();
+      }
+    }, 52);
+  }
+
+  function resetPlaceholder() {
+    chatInputText.textContent = PLACEHOLDER;
+    chatInputText.classList.add('placeholder');
+    updateSendButtonState();
+  }
+
+  function startChat() {
+    chatScroll.classList.add('chat-started');
+    initialAi.classList.add('visible');
+    scrollToBottom();
+  }
+
+  // Triggers: typing starts on first focus of chat input; send only on Send button or Enter
+  var chatStep = 0;
+  var typingInProgress = false;
+
+  function runSendFirstPrompt() {
+    resetPlaceholder();
+    showBlock(userMsg1);
+    scrollToBottom();
+    chatStep = 2;
+    setTimeout(function() {
+      showBlock(thinking1);
+      scrollToShowAtTop(thinking1);
+      setTimeout(function() {
+        thinking1.style.display = 'none';
+        showBlock(aiResponse1);
+        scrollToShowAtTop(aiResponse1);
+        setTimeout(function() {
+          showUpdatePill(updatePill1);
+          updateDocBody(docBody1,
+            '<span class="fact-chip">Fact</span> Unauthorised access could trigger SEC 8-K disclosure obligations within 4 business days. The 3 critical vendors collectively service 40\u0025 of customer transaction volume \u2014 a breach at any one could be material. <span class="emerging-inline">Emerging</span> Vendor breach notification obligations under existing contracts have not yet been assessed \u2014 this could accelerate disclosure timelines materially and is flagged for urgent review.'
+          );
+        }, 600);
+        setTimeout(function() {
+          scrollToBottom();
+        }, 400);
+      }, THINKING_DURATION_MS);
+    }, 950);
+  }
+
+  function runSendSecondPrompt() {
+    resetPlaceholder();
+    showBlock(userMsg2);
+    scrollToShowAtTop(userMsg2);
+    chatStep = 4;
+    setTimeout(function() {
+      showBlock(thinking2);
+      scrollToShowAtTop(thinking2);
+      setTimeout(function() {
+        thinking2.style.display = 'none';
+        showBlock(aiResponse2);
+        scrollToShowAtTop(aiResponse2);
+        setTimeout(function() {
+          showUpdatePill(updatePill2);
+          updateDocBody(docBody2,
+            '<span class="fact-chip">Fact</span> Since Q3 2025: CM-6 remediation is 47 days overdue, critical vendor high-risk count has risen from 1 to 3. The materiality determination process is being assessed for alignment with current SEC requirements \u2014 management is expected to confirm status within 72 hours.'
+          );
+        }, 600);
+        setTimeout(function() {
+          showBlock(reviewAuthorizeBlock);
+          scrollToBottom();
+        }, 800);
+      }, THINKING_DURATION_MS);
+    }, 600);
+  }
+
+  function trySend() {
+    if (typingInProgress) return;
+    var text = (chatInputText.textContent || '').trim();
+    if (text.length === 0 || text === PLACEHOLDER) return;
+    if (chatStep === 1) {
+      runSendFirstPrompt();
+    } else if (chatStep === 3) {
+      runSendSecondPrompt();
+    }
+  }
+
+  chatInputText.addEventListener('focus', function() {
+    if (chatStep === 0 && !typingInProgress) {
+      typingInProgress = true;
+      typeIntoInput(PROMPT_1, function() {
+        typingInProgress = false;
+        chatStep = 1;
+      });
+    } else if (chatStep === 2 && !typingInProgress) {
+      typingInProgress = true;
+      typeIntoInput(PROMPT_2, function() {
+        typingInProgress = false;
+        chatStep = 3;
+      });
+    }
+  });
+
+  if (chatSendBtn) {
+    chatSendBtn.addEventListener('click', function() {
+      trySend();
+    });
+  }
+  chatInputText.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      trySend();
+    }
+  });
+
+  // Interactive checkboxes (scoped to #view-edit)
+  document.querySelectorAll('#view-edit .check-box').forEach(function(box) {
+    box.addEventListener('click', function() {
+      box.classList.toggle('unchecked');
+    });
+  });
+
+  // Interactive toggles (scoped to #view-edit)
+  document.querySelectorAll('#view-edit .toggle').forEach(function(tog) {
+    tog.addEventListener('click', function() {
+      tog.classList.toggle('off');
+    });
+  });
+
+  // Segmented button interaction (scoped to #view-edit)
+  document.querySelectorAll('#view-edit .seg-btn').forEach(function(group) {
+    group.querySelectorAll('.seg-opt').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        group.querySelectorAll('.seg-opt').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

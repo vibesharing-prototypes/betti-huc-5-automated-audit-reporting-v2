@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>test-header</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/headers.css">
+<style>
+
+:root {
+  --bg-base:     #f0f0f1;
+  --bg-surface:  #ffffff;
+  --t-primary:   #0a0a0a;
+  --t-secondary: #525252;
+  --t-tertiary:  #737373;
+  --border:      rgba(0,0,0,0.09);
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Section spacing: 32px between sections */
+.page > .section + .section {
+  margin-top: 32px;
+}
+
+/* ── Progress bars (from 02-Evidence-3) ── */
+.ev-progress-row { display: flex; align-items: center; }
+.ev-progress-item { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.ev-progress-label { font-size: 13px; font-weight: 600; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-track { flex: 1; height: 3px; background: rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden; }
+.ev-progress-fill  { height: 100%; border-radius: 2px; }
+.ev-progress-count { font-size: 13px; color: var(--t-secondary); white-space: nowrap; }
+.ev-progress-dot   { color: var(--t-tertiary); font-size: 6px; flex-shrink: 0; margin: 0 20px; }
+
+/* ── Status message ── */
+.ev-progress-status-container { display: flex; flex-direction: column; }
+.ev-progress-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ev-status-text-primary { font-size: 14px; font-weight: 600; color: var(--t-primary); }
+.ev-status-text-secondary { font-size: 13px; color: var(--t-secondary); line-height: 1.5; margin-top: 3px; }
+
+/* ── Table column widths ── */
+.col-result  { width: 60px; }
+.col-source  { width: 40%; }
+.col-records { width: 35%; }
+.col-fresh   { width: 120px; text-align: right; }
+.col-fresh .pill { float: right; }
+
+/* ── Spec reference box ── */
+.spec-ref {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 13px;
+  color: #5d4037;
+  line-height: 1.6;
+}
+.spec-ref code {
+  background: rgba(0,0,0,0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ════════════════════════════════════════════════════════
+       SPEC REFERENCE
+       ════════════════════════════════════════════════════════ -->
+  <div class="spec-ref" style="margin-bottom: 40px;">
+    <strong>headers.css test page</strong> — based on 02-Evidence-3.html<br>
+    Section title: <code>22px / 600 / #282E37 / lh 24px</code><br>
+    Section subtitle: <code>16px / 400 / #282E37 / lh 20px / ls 0.2px</code><br>
+    Card title: <code>18px / 600 / #282E37 / lh 24px</code><br>
+    Card subtitle: <code>14px / 400 / #282E37 / lh 20px / ls 0.2px</code><br>
+    Section header→card: <code>12px</code> · Section title→subtitle: <code>8px</code> · Between sections: <code>32px</code> · Card title→subtitle: <code>4px</code> · Card header→content: <code>12px</code> · Card sections gap: <code>16px</code>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       SECTION 1: Results  (single card with multiple card-sections)
+       ════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Results</h2>
+    </div>
+
+    <div class="card-default card-sections">
+
+      <!-- Card section 1: General progress -->
+      <div class="card-section">
+        <div class="card-header">
+          <h3 class="card-title">General progress</h3>
+        </div>
+        <div class="ev-progress-row">
+          <div class="ev-progress-item">
+            <span class="ev-progress-label">Findings</span>
+            <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+            <span class="ev-progress-count">120 / 120</span>
+          </div>
+          <span class="ev-progress-dot">●</span>
+          <div class="ev-progress-item">
+            <span class="ev-progress-label">Controls</span>
+            <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+            <span class="ev-progress-count">400 / 400</span>
+          </div>
+          <span class="ev-progress-dot">●</span>
+          <div class="ev-progress-item">
+            <span class="ev-progress-label">Obligations</span>
+            <div class="ev-progress-track"><div class="ev-progress-fill" style="width:100%;background:#8EE400;"></div></div>
+            <span class="ev-progress-count">30 / 30</span>
+          </div>
+        </div>
+        <div class="ev-progress-status">
+          <img src="Icons/Done.svg" width="20" height="20" alt="" style="flex-shrink:0;margin-top:1px">
+          <div>
+            <div class="ev-status-text-primary">Evidence Pack assembled — 8 of 8 sources complete.</div>
+            <div class="ev-status-text-secondary">All sources returned data. The pack has been saved to Boards as a supporting document. Review the summary below and confirm before synthesis begins.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card section 2: Pack summary -->
+      <div class="card-section">
+        <div class="card-header">
+          <h3 class="card-title">Pack summary</h3>
+        </div>
+        <div class="card-hero-row">
+          <div class="card-hero">
+            <div class="card-hero-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              Data points
+            </div>
+            <div class="card-hero-value">312 <span class="card-hero-desc">total</span></div>
+          </div>
+          <div class="card-hero">
+            <div class="card-hero-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              Sources completed
+            </div>
+            <div class="card-hero-value">8 <span class="card-hero-desc">of</span> 8</div>
+          </div>
+          <div class="card-hero">
+            <div class="card-hero-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+              Data freshness
+            </div>
+            <div class="card-hero-value">7 <span class="card-hero-desc">current</span> 1 <span class="card-hero-desc">recent</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       SECTION 2: Evidence pack collection  (section with subtitle + table card)
+       ════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Evidence pack collection</h2>
+      <p class="section-subtitle">All 8 sources returned data. Confirm to proceed to synthesis.</p>
+    </div>
+
+    <div class="card-default" style="gap:12px;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="col-result">Result</th>
+            <th class="col-source">Source</th>
+            <th class="col-records">Records</th>
+            <th class="col-fresh">Freshness</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">Projects — Findings &amp; Controls</td>
+            <td class="col-records">47 findings · 180 controls</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+          </tr>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">Frameworks — Risk Control Matrix</td>
+            <td class="col-records">180 controls · 8 ineffective</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+          </tr>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">ERM — Risk Register &amp; Appetite</td>
+            <td class="col-records">22 risks · 3 above appetite</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+          </tr>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">AI Risk Essentials — Alerts</td>
+            <td class="col-records">15 AI alerts · peer benchmarks</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+          </tr>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">Compliance Maps — SEC Obligations</td>
+            <td class="col-records">12 obligations · 3 gaps</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+          </tr>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">3rd Risk — Vendor Assessments</td>
+            <td class="col-records">8 vendors · 3 high-risk</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-yellow"><img src="Icons/Recent.svg" class="pill-ico">Recent</span></td>
+          </tr>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">Vault — Speak-up Themes</td>
+            <td class="col-records">4 themes · anonymised</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+          </tr>
+          <tr>
+            <td class="col-result"><img src="Icons/Done.svg" class="row-check" alt=""></td>
+            <td class="col-source">External Intel — Peer Enforcement</td>
+            <td class="col-records">6 enforcement actions</td>
+            <td class="col-fresh"><span class="pill pill-sm pill-icon pill-green"><img src="Icons/Checked.svg" class="pill-ico">Current</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-footer">
+        <button class="btn btn-secondary btn-md" style="border:none">Re-run a source</button>
+        <button class="btn btn-primary btn-md">Confirm Evidence pack</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       SECTION 3: Card with header + subtitle (demo)
+       ════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Clarifying options</h2>
+      <p class="section-subtitle">Set parameters before investigation begins</p>
+    </div>
+
+    <div class="card-default" style="gap:12px;">
+      <div class="card-header">
+        <h3 class="card-title">Scope parameters</h3>
+        <p class="card-subtitle">Toggle data domains and set the historical range for analysis</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; color:var(--t-secondary);">
+          Include third-party vendor cyber risks?
+          <span style="font-size:13px; color:#16a34a; font-weight:500;">Recommended ✓</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; color:var(--t-secondary);">
+          Include speak-up / Vault data (themes only, no PII)?
+          <span style="font-size:13px; color:#16a34a; font-weight:500;">Recommended ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-default" style="gap:12px;">
+      <div class="card-header">
+        <h3 class="card-title">Data domains to query</h3>
+        <p class="card-subtitle">All 6 recommended domains are pre-selected. Vault is optional.</p>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="card-sm"><div class="card-title">Projects</div><div class="card-body">Findings, walkthroughs, remediation</div></div>
+        <div class="card-sm"><div class="card-title">Frameworks</div><div class="card-body">Risk control matrix, test plans</div></div>
+        <div class="card-sm"><div class="card-title">ERM</div><div class="card-body">Risk register, appetite, velocity</div></div>
+        <div class="card-sm"><div class="card-title">AI Risk Essentials</div><div class="card-body">AI risk scores, peer benchmarks</div></div>
+        <div class="card-sm"><div class="card-title">Compliance Maps</div><div class="card-body">Obligations, gaps, SEC requirements</div></div>
+        <div class="card-sm"><div class="card-title">3rd Risk</div><div class="card-body">Vendor cyber scores, questionnaires</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

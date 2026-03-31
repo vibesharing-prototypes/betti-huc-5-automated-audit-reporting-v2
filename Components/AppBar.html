@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  COMPONENT: App Bar
+  Figma source: node-id=158-4128
+  Page: Component - 09 MAR 2026
+  ============================================================
+
+  STRUCTURE
+  ─────────────────────────────────────────────────────────────
+  app-bar  (W: Fill, H: 48px)
+  ├── app-bar-brand  (102 × 24, gap 8px)
+  │   ├── .Diligent D logo  (22 × 24) — SVG, 3-colour mark
+  │   └── Diligent wordmark  (72 × 20) — SVG vector, #1e1e1e
+  └── app-bar-actions  (115 × 32, gap 8px)
+      ├── Icon — Bell  (32 × 32, radius 12, pad 4px)
+      ├── Icon — More  (32 × 32, radius 12, pad 4px)
+      └── Avatar       (32 × 32, radius 12)
+
+  TOKENS
+  ─────────────────────────────────────────────────────────────
+  Background ........... #ffffff
+  Height ............... 48px
+  Padding (H) .......... 32px
+  Brand gap ............ 8px
+  Actions gap .......... 8px
+  Icon size ............ 32 × 32px
+  Icon border-radius ... 12px
+  Icon inner pad ....... 4px
+  Icon colour .......... #282e37
+  Wordmark colour ...... #1e1e1e
+  D-mark colours ....... #ee312e / #d3222a / #af292e
+  ============================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Bar — Component</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f0f0f1; }
+
+    /* ─── Preview scaffold ─────────────────────────────────── */
+    .preview-page { display: flex; flex-direction: column; gap: 40px; padding: 48px 40px; }
+    .preview-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #737373; margin-bottom: 12px; }
+    .preview-frame { background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden; }
+    .preview-iframe { width: 100%; height: 600px; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden; display: block; }
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 32px; }
+    .spec-table th { text-align: left; padding: 8px 12px; background: #f4f4f5; color: #525252; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .spec-table td { padding: 8px 12px; border-bottom: 1px solid rgba(0,0,0,0.06); color: #374151; font-family: 'Courier New', monospace; font-size: 12px; }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); vertical-align: middle; margin-right: 6px; }
+
+    /* ─── APP BAR COMPONENT — from 01-Intent-Capture-light.html ── */
+    :root {
+      --border: rgba(0,0,0,0.09);
+      --t-primary: #0a0a0a;
+    }
+    .lt-header {
+      display: flex;
+      align-items: center;
+      height: 48px;
+      padding: 0 20px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .lt-logo {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--t-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .lt-logo:hover { opacity: 0.7; }
+    .lt-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+    .lt-logo-mark img { width: 24px; height: 24px; display: block; }
+    .lt-spacer { flex: 1; }
+    .lt-header-nav { display: flex; align-items: center; gap: 8px; }
+    .lt-activity-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #ffffff;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1e293b;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s;
+    }
+    .lt-activity-pill:hover { border-color: #cbd5e1; }
+    .lt-activity-pill svg { width: 15px; height: 15px; flex-shrink: 0; color: #1e293b; }
+    .lt-activity-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 1px 7px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #64748b;
+    }
+    .lt-icon-btn {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      cursor: pointer;
+      color: #1e293b;
+      flex-shrink: 0;
+      transition: border-color 0.15s;
+    }
+    .lt-icon-btn:hover { border-color: #cbd5e1; }
+    .lt-icon-btn svg { width: 16px; height: 16px; }
+    .lt-notif-dot {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 9px;
+      height: 9px;
+      background: #0f172a;
+      border-radius: 50%;
+      border: 1.5px solid #ffffff;
+    }
+    .lt-avatar {
+  width: 32px;
+  height: 32px;
+  background: #bae6fd;
+  color: #0369a1;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+    
+  </style>
+</head>
+<body>
+
+<div class="preview-page">
+
+  <!-- Live preview — prototype in context -->
+  <div>
+    <p class="preview-label">Live preview — 01-Intent-Capture-light.html</p>
+    <iframe class="preview-iframe" src="../01-Intent-Capture-light.html" title="App Bar in prototype context"></iframe>
+  </div>
+
+  <!-- Isolated component -->
+  <div>
+    <p class="preview-label">App Bar · from 01-Intent-Capture-light.html — isolated</p>
+    <div class="preview-frame">
+
+      <!-- ══════════════════════════════════════════════════════
+           APP BAR — copy this block into your screens
+           ══════════════════════════════════════════════════════ -->
+      <div class="lt-header">
+        <div class="lt-logo">
+          <div class="lt-logo-mark"><img src="../Icons/D_icon.png" alt="Diligent"></div>
+          Diligent
+        </div>
+        <div class="lt-spacer"></div>
+        <div class="lt-header-nav">
+          <!-- Activity pill -->
+          <div class="lt-activity-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Recent system activity
+            <span class="lt-activity-count">5</span>
+          </div>
+          <!-- Bell with notification dot -->
+          <div class="lt-icon-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span class="lt-notif-dot"></span>
+          </div>
+          <!-- Kebab menu -->
+          <div class="lt-icon-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+          </div>
+          <!-- Avatar -->
+          <div class="lt-avatar">AC</div>
+        </div>
+      </div>
+      <!-- ══════════════════════════════════════════════════════ -->
+
+    </div>
+  </div>
+
+  <!-- Spec table -->
+  <table class="spec-table">
+    <thead>
+      <tr><th>Property</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Figma node</td><td>158-4128</td></tr>
+      <tr><td>Height</td><td>48px (fixed)</td></tr>
+      <tr><td>Width</td><td>Fill (100%)</td></tr>
+      <tr><td>Background</td><td><span class="swatch" style="background:#ffffff;"></span>#ffffff</td></tr>
+      <tr><td>Border bottom</td><td>1px solid rgba(0,0,0,0.08)  — not in Figma, added for screen separation</td></tr>
+      <tr><td>Padding (H)</td><td>32px left / 32px right</td></tr>
+      <tr><td>Layout</td><td>flex row · space-between · align-center</td></tr>
+      <tr><td colspan="2" style="font-weight:700; padding-top:12px;">Diligent Brand (left)</td></tr>
+      <tr><td>D logo size</td><td>22 × 24px</td></tr>
+      <tr><td>D logo colours</td><td><span class="swatch" style="background:#ee312e;"></span>#ee312e · <span class="swatch" style="background:#d3222a;"></span>#d3222a · <span class="swatch" style="background:#af292e;"></span>#af292e</td></tr>
+      <tr><td>Wordmark size</td><td>72 × 20px</td></tr>
+      <tr><td>Wordmark colour</td><td><span class="swatch" style="background:#1e1e1e;"></span>#1e1e1e</td></tr>
+      <tr><td>Brand gap</td><td>8px</td></tr>
+      <tr><td colspan="2" style="font-weight:700; padding-top:12px;">Right accessories</td></tr>
+      <tr><td>Actions gap</td><td>8px</td></tr>
+      <tr><td>Icon container</td><td>32 × 32px · border-radius 12px · padding 4px</td></tr>
+      <tr><td>Icon colour</td><td><span class="swatch" style="background:#282e37;"></span>#282e37</td></tr>
+      <tr><td>Avatar</td><td>32 × 32px · border-radius 12px · image fill or initials fallback</td></tr>
+      <tr><td>Notif dot</td><td>6px · <span class="swatch" style="background:#ee312e;"></span>#ee312e · 1.5px white border</td></tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

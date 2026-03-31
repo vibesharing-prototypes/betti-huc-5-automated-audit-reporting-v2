@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05-Preview-Approve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Components/layout.css">
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/app-chrome.css">
+<link rel="stylesheet" href="Components/alert-cards.css">
+<link rel="stylesheet" href="Components/hero-section.css">
+<link rel="stylesheet" href="Components/headers.css">
+<link rel="stylesheet" href="Components/chatbox.css">
+<style>
+
+/* ============================================================
+   05-Preview-Approve — PAGE-SPECIFIC STYLES
+   All shared styles come from Components/*.css
+   ============================================================ */
+
+/* Design tokens */
+:root {
+  --bg-base:         #f0f0f1;
+  --bg-surface:      #ffffff;
+  --bg-component:    #f4f4f5;
+  --t-primary:       #282E37;
+  --t-secondary:     #525252;
+  --t-tertiary:      #6F7377;
+  --text-very-muted: #A0A2A5;
+  --border:          rgba(0,0,0,0.09);
+  --border-secondary:rgba(0,0,0,0.14);
+  --green:           #16a34a;
+  --blue:            #1d4ed8;
+  --amber:           #b45309;
+  --red:             #D3222A;
+  --brand:           #D3222A;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   EDITOR TOOLBAR BAR — two rows
+   ============================================================ */
+.editor-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 8px 0 6px;
+  gap: 1px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 40; /* editor toolbar — below app header (50) */
+  position: relative;
+}
+
+/* Filename — absolutely centered in the bar */
+.editor-filename-center {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.editor-filename {
+  font-size: 13px; font-weight: 600;
+  color: var(--t-primary);
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+
+.editor-tools-right {
+  display: flex; align-items: center; gap: 4px;
+  position: absolute; right: 8px;
+  z-index: 1; /* above sibling toolbar items */
+}
+
+/* Tool buttons */
+.tool-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; border-radius: 6px;
+  cursor: pointer; color: var(--t-secondary);
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+  font-family: var(--font);
+  font-size: 12px; font-weight: 600;
+  padding: 0;
+  line-height: 1;
+}
+.tool-btn:hover { background: rgba(0,0,0,0.06); color: var(--t-primary); }
+.tool-btn.on { background: rgba(0,0,0,0.08); color: var(--t-primary); }
+.tool-btn svg { width: 14px; height: 14px; pointer-events: none; }
+
+/* Divider */
+.tool-div {
+  width: 1px; height: 18px;
+  background: var(--border-secondary);
+  flex-shrink: 0;
+  margin: 0 5px;
+}
+
+/* Paragraph style dropdown */
+.tool-select {
+  display: flex; align-items: center; gap: 4px;
+  height: 26px; padding: 0 8px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; cursor: pointer;
+  font-family: var(--font); font-size: 11px; font-weight: 400;
+  color: var(--t-secondary); white-space: nowrap;
+  transition: border-color 0.12s, color 0.12s;
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+.tool-select:hover { border-color: rgba(0,0,0,0.2); color: var(--t-primary); }
+.tool-select .chevron { width: 9px; height: 9px; color: var(--t-tertiary); flex-shrink: 0; }
+
+/* ============================================================
+   ACTION BAR — below toolbar
+   ============================================================ */
+.action-bar {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  padding: 0 32px;
+  background: rgba(177, 181, 199, 0.30);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 35; /* action bar — below toolbar (40), above content */
+}
+.action-bar-title {
+  font-size: 15px; font-weight: 600;
+  color: var(--t-primary);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+.action-bar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+/* Save status */
+.editor-save-status {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--t-tertiary);
+  white-space: nowrap;
+  padding: 0 4px;
+}
+.editor-save-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #16a34a; flex-shrink: 0;
+}
+
+/* ============================================================
+   BODY LAYOUT
+   ============================================================ */
+.editor-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* SIDEBAR — see Components/app-chrome.css */
+
+/* Main editor column */
+.editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  background: var(--bg-base);
+  position: relative;
+}
+
+/* Scrollable area — document + chat */
+.editor-scroll {
+  flex: 1;
+  overflow: hidden auto;
+  padding: 72px 20px 32px; /* top: 48px action-bar + 24px gap */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.editor-scroll::-webkit-scrollbar { width: 6px; }
+.editor-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+
+/* ============================================================
+   DOCUMENT PAGE
+   ============================================================ */
+.doc-page {
+  width: 100%;
+  max-width: 760px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 56px 64px 64px;
+  margin-bottom: 0;
+}
+
+/* Document typography */
+.doc-eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--t-tertiary); margin-bottom: 14px;
+}
+.doc-title {
+  font-size: 30px; font-weight: 600; letter-spacing: -0.025em;
+  color: var(--t-primary); line-height: 1.2; margin-bottom: 8px;
+}
+.doc-subtitle {
+  font-size: 13px; color: var(--t-tertiary); margin-bottom: 36px; line-height: 1.5;
+}
+.doc-hr {
+  height: 1px; background: var(--border); margin: 32px 0; border: none;
+}
+.doc-h2 {
+  font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--t-primary); margin-bottom: 10px; margin-top: 32px;
+}
+.doc-h2:first-of-type { margin-top: 0; }
+.doc-p {
+  font-size: 14px; color: var(--t-secondary); line-height: 1.75; margin-bottom: 14px;
+}
+.doc-p:last-child { margin-bottom: 0; }
+.doc-ul {
+  list-style: none; margin: 0 0 16px; padding: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.doc-ul li {
+  font-size: 14px; color: var(--t-secondary); line-height: 1.65;
+  padding-left: 18px; position: relative;
+}
+.doc-ul li::before { content: '·'; position: absolute; left: 4px; color: var(--t-tertiary); font-weight: 600; }
+
+/* Simulated text selection */
+.doc-sel {
+  background: rgba(29,217,249,0.15);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+
+/* Findings table */
+.doc-table-wrap { margin: 16px 0; overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+.doc-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.doc-table th {
+  text-align: left; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--t-tertiary); padding: 10px 14px;
+  border-bottom: 1px solid var(--border-secondary);
+  background: #fafafa;
+}
+.doc-table th:first-child { border-radius: 12px 0 0 0; }
+.doc-table th:last-child  { border-radius: 0 12px 0 0; }
+.doc-table td {
+  padding: 11px 14px; color: var(--t-secondary);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top; line-height: 1.5;
+}
+.doc-table tr:last-child td { border-bottom: none; }
+.doc-table tr:hover td { background: #fafafa; }
+
+/* Sign-off row */
+.doc-signoff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.doc-signoff-field {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #fafafa;
+}
+.doc-signoff-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--t-tertiary);
+}
+.doc-signoff-value {
+  font-size: 13px; color: var(--t-secondary);
+}
+.doc-signoff-value.pending {
+  color: #b45309; font-style: italic;
+}
+
+/* CHAT — see Components/chatbox.css */
+
+/* (chat-area CSS removed — now using floating pill) */
+.approval-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.approval-tab {
+  font-size: 14px;
+  font-weight: 400;
+  font-family: var(--font);
+  color: var(--t-tertiary);
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  margin-right: 24px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+  text-align: center;
+  min-width: 120px;
+}
+.approval-tab:hover { color: var(--t-primary); }
+.approval-tab.active { color: var(--t-primary); font-weight: 600; }
+.approval-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #E22E33;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ========== SCREEN 0: PREVIEW ========== -->
+<div class="screen active" id="screen-0">
+
+<!-- ============================================================
+     APP BAR
+     ============================================================ -->
+<div class="app-header">
+  <div class="app-logo">
+    <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+    Diligent  •  Automated Audit Reporting
+  </div>
+  <div class="app-spacer"></div>
+  <div class="app-header-nav">
+    <div class="app-activity-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Recent system activity
+      <span class="app-activity-count">5</span>
+    </div>
+    <div class="app-icon-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="app-notif-dot"></span>
+    </div>
+    <div class="app-icon-btn">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    </div>
+    <div class="app-avatar">AC</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     EDITOR TOOLBAR
+     ============================================================ -->
+<div class="editor-bar">
+
+  <!-- Formatting tools (left) -->
+
+    <!-- Undo / Redo -->
+    <button class="tool-btn" title="Undo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></svg>
+    </button>
+    <button class="tool-btn" title="Redo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 000 11H13"/></svg>
+    </button>
+
+    <div class="tool-div"></div>
+
+    <!-- Paragraph style -->
+    <button class="tool-select" title="Paragraph style">
+      Normal text
+      <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3.5l3 3 3-3"/></svg>
+    </button>
+
+    <div class="tool-div"></div>
+
+    <!-- Bold, Italic, Underline, Strikethrough -->
+    <button class="tool-btn on" title="Bold" style="font-size:13px;">B</button>
+    <button class="tool-btn" title="Italic" style="font-size:13px;font-style:italic;font-weight:600;">I</button>
+    <button class="tool-btn" title="Underline" style="font-size:13px;text-decoration:underline;text-underline-offset:2px;font-weight:600;">U</button>
+    <button class="tool-btn" title="Strikethrough" style="font-size:12px;text-decoration:line-through;font-weight:500;">S</button>
+
+    <div class="tool-div"></div>
+
+    <!-- Text colour / Highlight -->
+    <button class="tool-btn" title="Text colour">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l3 9H6L9 3z"/><rect x="4" y="19" width="16" height="2" rx="1" fill="currentColor" stroke="none"/><line x1="12" y1="12" x2="12" y2="17"/></svg>
+    </button>
+    <button class="tool-btn" title="Highlight">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3l4 4-9 9H6v-4l9-9z"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+    </button>
+
+    <div class="tool-div"></div>
+
+    <!-- Alignment -->
+    <button class="tool-btn on" title="Align left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <button class="tool-btn" title="Align centre">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="5" y1="18" x2="19" y2="18"/></svg>
+    </button>
+    <button class="tool-btn" title="Align right">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+    <div class="tool-div"></div>
+
+    <!-- Lists -->
+    <button class="tool-btn" title="Bullet list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/>
+        <circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </button>
+    <button class="tool-btn" title="Numbered list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/>
+        <text x="2" y="8.5" font-size="6.5" fill="currentColor" stroke="none" font-family="sans-serif" font-weight="700">1.</text>
+        <text x="2" y="14.5" font-size="6.5" fill="currentColor" stroke="none" font-family="sans-serif" font-weight="700">2.</text>
+        <text x="2" y="20.5" font-size="6.5" fill="currentColor" stroke="none" font-family="sans-serif" font-weight="700">3.</text>
+      </svg>
+    </button>
+
+    <div class="tool-div"></div>
+
+    <!-- Indent -->
+    <button class="tool-btn" title="Decrease indent">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="7" y1="12" x2="21" y2="12"/><line x1="7" y1="18" x2="21" y2="18"/><path d="M7 9l-4 3 4 3"/></svg>
+    </button>
+    <button class="tool-btn" title="Increase indent">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><path d="M3 9l4 3-4 3"/></svg>
+    </button>
+
+    <div class="tool-div"></div>
+
+    <!-- Link / Image / Table / Comment -->
+    <button class="tool-btn" title="Insert link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+    </button>
+    <button class="tool-btn" title="Insert image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </button>
+    <button class="tool-btn" title="Insert table">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
+    </button>
+    <button class="tool-btn" title="Add comment">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    </button>
+
+  <!-- Save status + more (right) -->
+  <div class="editor-tools-right">
+    <div class="editor-save-status">
+      <span class="editor-save-dot"></span>
+      Saved
+    </div>
+    <div class="tool-div"></div>
+    <button class="tool-btn" title="More options">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+    </button>
+  </div>
+
+</div><!-- end .editor-bar -->
+
+<!-- ============================================================
+     BODY
+     ============================================================ -->
+<div class="editor-body">
+
+  <!-- Icon sidebar -->
+  <div class="app-sidebar">
+    <div class="app-sidebar-icon active">
+      <!-- Document icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+    </div>
+    <div class="app-sidebar-icon">
+      <!-- Comments -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    </div>
+    <div class="app-sidebar-icon">
+      <!-- Version history -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 0 .5-4"/><polyline points="3 3 3 7 7 7"/></svg>
+    </div>
+    <div class="app-sidebar-spacer"></div>
+    <div class="app-sidebar-icon">
+      <!-- Settings -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </div>
+  </div>
+
+  <!-- Editor main area -->
+  <div class="editor-main">
+
+    <!-- Action bar — absolute, overlays scroll content for backdrop blur -->
+    <div class="action-bar">
+      <span class="action-bar-title">Cybersecurity Risk — Situational Overview</span>
+      <div class="action-bar-buttons">
+        <button class="btn btn-secondary btn-sm">Delete</button>
+        <button class="btn btn-primary btn-md" id="pa-approve-btn" type="button">Approve</button>
+      </div>
+    </div>
+
+    <div class="editor-scroll">
+
+      <!-- ======================================================
+           DOCUMENT PAGE
+           ====================================================== -->
+      <div class="doc-page">
+
+        <div class="doc-eyebrow">Diligent · Internal Audit · Confidential · Q1 2026</div>
+        <div class="doc-title">Cybersecurity Risk — Situational Overview</div>
+        <div class="doc-subtitle">Scope: <strong>SEC Peer Incident Response</strong> &nbsp;·&nbsp; Created on: <strong>Feb 24, 2026</strong> &nbsp;·&nbsp; Audience: <strong>Audit Committee</strong></div>
+
+        <hr class="doc-hr">
+
+        <!-- Executive Summary -->
+        <div class="doc-h2">Executive Summary</div>
+        <p class="doc-p">GlobalTech Financial Services faces material cybersecurity control exposure across three domains that require immediate Audit Committee attention ahead of the March board meeting. This report covers <span class="doc-sel">access management control failures</span>, critical vendor cyber risk, and SEC disclosure readiness gaps — assessed against the backdrop of recent enforcement actions against peer institutions.</p>
+
+        <hr class="doc-hr">
+
+        <!-- Audit Scope -->
+        <div class="doc-h2">Audit Scope</div>
+        <p class="doc-p">The audit covered the following AI systems and processes in scope for this review:</p>
+        <ul class="doc-ul">
+          <li>Automated risk scoring model (v2.4.1) deployed in the GRC platform</li>
+          <li>Document classification and extraction pipeline (NLP-based)</li>
+          <li>Compliance monitoring alert system and escalation workflows</li>
+          <li>Vendor risk assessment AI assistants — 3 active third-party integrations</li>
+        </ul>
+        <p class="doc-p">Systems excluded from scope: customer-facing product features, experimental models in staging, and AI components managed exclusively by third-party vendors under separate audit arrangements.</p>
+
+        <hr class="doc-hr">
+
+        <!-- Key Findings -->
+        <div class="doc-h2">Key Findings</div>
+        <div class="doc-table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Finding</th>
+                <th>Risk</th>
+                <th>Owner</th>
+                <th>Due</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>F-01</td>
+                <td>Risk scoring model lacks a documented explainability framework</td>
+                <td><span class="pill pill-sm pill-red">High</span></td>
+                <td>Data Science</td>
+                <td>30 Apr</td>
+              </tr>
+              <tr>
+                <td>F-02</td>
+                <td>Training data retention policy not aligned with GDPR Article 17</td>
+                <td><span class="pill pill-sm pill-red">High</span></td>
+                <td>Data Governance</td>
+                <td>15 May</td>
+              </tr>
+              <tr>
+                <td>F-03</td>
+                <td>Absence of human-in-the-loop controls for auto-escalation workflow</td>
+                <td><span class="pill pill-sm pill-red">High</span></td>
+                <td>GRC Platform</td>
+                <td>15 Apr</td>
+              </tr>
+              <tr>
+                <td>F-04</td>
+                <td>Model drift monitoring thresholds undefined for classification pipeline</td>
+                <td><span class="pill pill-sm pill-red">High</span></td>
+                <td>ML Engineering</td>
+                <td>30 Jun</td>
+              </tr>
+              <tr>
+                <td>F-05</td>
+                <td>Vendor AI integration audit logs retained for fewer than 90 days</td>
+                <td><span class="pill pill-sm pill-yellow">Medium</span></td>
+                <td>IT Security</td>
+                <td>1 Jun</td>
+              </tr>
+              <tr>
+                <td>F-06</td>
+                <td>Bias testing not performed on updated model versions prior to deployment</td>
+                <td><span class="pill pill-sm pill-yellow">Medium</span></td>
+                <td>Data Science</td>
+                <td>30 May</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr class="doc-hr">
+
+        <!-- Recommendations -->
+        <div class="doc-h2">Recommendations</div>
+        <p class="doc-p">Management is recommended to prioritise the following remediation actions in order of risk:</p>
+        <ul class="doc-ul">
+          <li>Establish a formal AI governance policy with defined roles, model risk tiers, and review cadence</li>
+          <li>Implement an explainability layer for all Tier 1 production models, with decision rationale logged per output</li>
+          <li>Update data retention schedules to comply with applicable privacy regulation across all active jurisdictions</li>
+          <li>Define and enforce bias and fairness testing as a mandatory gate in the model deployment pipeline</li>
+          <li>Configure human review checkpoints for all AI-initiated escalations rated Critical or High priority</li>
+        </ul>
+
+        <hr class="doc-hr">
+
+        <!-- Sign-off -->
+        <div class="doc-h2">Approval &amp; Sign-off</div>
+        <p class="doc-p">This report has been reviewed by the Head of Internal Audit and is pending authorisation from the Chief Audit Executive. Upon authorisation the report will be distributed to the Audit Committee and relevant control owners.</p>
+        <div class="doc-signoff">
+          <div class="doc-signoff-field">
+            <span class="doc-signoff-label">Head of Internal Audit</span>
+            <span class="doc-signoff-value">Alexandra Chen &nbsp;·&nbsp; 12 Apr 2026</span>
+          </div>
+          <div class="doc-signoff-field">
+            <span class="doc-signoff-label">Chief Audit Executive</span>
+            <span class="doc-signoff-value pending">Pending authorisation</span>
+          </div>
+        </div>
+
+      </div><!-- end .doc-page -->
+
+      <!-- ======================================================
+           CHAT AREA
+           ====================================================== -->
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .editor-scroll -->
+  </div><!-- end .editor-main -->
+
+</div><!-- end .editor-body -->
+
+</div><!-- end #screen-0 -->
+
+<!-- ========== SCREEN 1: APPROVE ========== -->
+<div class="screen" id="screen-1">
+
+<div class="app-header">
+  <div class="app-logo">
+    <div class="app-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+    Diligent  •  Boards Cloud
+  </div>
+  <div class="app-spacer"></div>
+  <div class="app-header-nav">
+    <div class="app-activity-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Recent system activity
+      <span class="app-activity-count">5</span>
+    </div>
+    <div class="app-icon-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="app-notif-dot"></span>
+    </div>
+    <div class="app-icon-btn">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    </div>
+    <div class="app-avatar">AC</div>
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="page-scroll hero-glow-yellow">
+    <div class="page-inner">
+
+      <!-- HERO SECTION — workflow variant -->
+      <div class="hero-section-workflow">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-red">
+              <img class="pill-ico" src="Icons/Sort ascending.svg" style="width:20px;height:20px;">
+              High priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="Icons/Audit.svg">
+              Assurance report request
+            </span>
+          </div>
+          <h1 class="hero-title"><strong>Cybersecurity Assurance Report</strong> — Feb 2026</h1>
+        </div>
+
+        <div class="hero-stepper">
+          <span class="hero-stepper-label">Workflow status</span>
+          <div class="hero-stepper-steps">
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+              Scope
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+              Evidence
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+              Synthesis &amp; Edit
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="Icons/Done.svg" width="20" height="20" alt=""></div>
+              Veracity scoring
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step pending current">
+              <div class="hero-step-icon"><img src="Icons/Pending.svg" width="20" height="20" alt=""></div>
+              Preview &amp; Approve
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END HERO SECTION -->
+
+      <div style="height:32px; flex-shrink:0;"></div>
+
+      <nav class="approval-tabs" role="tablist">
+        <button type="button" class="approval-tab" role="tab">Resolution document</button>
+        <button type="button" class="approval-tab" role="tab">Supporting materials</button>
+        <button type="button" class="approval-tab active" role="tab" aria-selected="true">Progress</button>
+      </nav>
+
+      <div style="padding: 24px 0 0; display:flex; flex-direction:column; gap:12px;">
+          <div style="background:#ffffff;border:1px solid var(--border);border-radius:16px;overflow:hidden;padding:16px 20px;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="col-participants">Participants</th>
+                  <th class="col-role">Role</th>
+                  <th class="col-response">Response</th>
+                  <th class="col-timestamp">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-1" aria-hidden="true">AC</span>
+                      <span>Alexandra Chen</span>
+                    </div>
+                  </td>
+                  <td class="col-role">CAE</td>
+                  <td class="col-response">Pending</td>
+                  <td class="col-timestamp">Feb 28, 10:32</td>
+                </tr>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-2" aria-hidden="true">TC</span>
+                      <span>Thomas Chen</span>
+                    </div>
+                  </td>
+                  <td class="col-role">Requestor</td>
+                  <td class="col-response">Pending</td>
+                  <td class="col-timestamp">Feb 27, 14:00</td>
+                </tr>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-3" aria-hidden="true">SM</span>
+                      <span>Sarah Miller</span>
+                    </div>
+                  </td>
+                  <td class="col-role">Internal Audit</td>
+                  <td class="col-response">Approved</td>
+                  <td class="col-timestamp">Feb 28, 09:15</td>
+                </tr>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-4" aria-hidden="true">JW</span>
+                      <span>James Wong</span>
+                    </div>
+                  </td>
+                  <td class="col-role">Compliance</td>
+                  <td class="col-response">—</td>
+                  <td class="col-timestamp">—</td>
+                </tr>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-5" aria-hidden="true">MS</span>
+                      <span>Maria Santos</span>
+                    </div>
+                  </td>
+                  <td class="col-role">Risk</td>
+                  <td class="col-response">—</td>
+                  <td class="col-timestamp">—</td>
+                </tr>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-6" aria-hidden="true">DP</span>
+                      <span>David Park</span>
+                    </div>
+                  </td>
+                  <td class="col-role">CISO</td>
+                  <td class="col-response">Approved</td>
+                  <td class="col-timestamp">Feb 27, 16:45</td>
+                </tr>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-7" aria-hidden="true">LF</span>
+                      <span>Lisa Foster</span>
+                    </div>
+                  </td>
+                  <td class="col-role">Legal</td>
+                  <td class="col-response">—</td>
+                  <td class="col-timestamp">—</td>
+                </tr>
+                <tr>
+                  <td class="col-participants">
+                    <div class="participant-cell">
+                      <span class="participant-avatar avatar-8" aria-hidden="true">RK</span>
+                      <span>Robert Kim</span>
+                    </div>
+                  </td>
+                  <td class="col-role">Board Secretary</td>
+                  <td class="col-response">Pending</td>
+                  <td class="col-timestamp">Feb 28, 08:00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert-card alert-card-md alert-card-blue">
+            <div class="alert-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.25 16.75H12.75V11H11.25V16.75ZM12 9.28845C12.2288 9.28845 12.4207 9.21105 12.5755 9.05625C12.7303 8.90145 12.8077 8.70963 12.8077 8.48078C12.8077 8.25194 12.7303 8.06012 12.5755 7.9053C12.4207 7.7505 12.2288 7.6731 12 7.6731C11.7711 7.6731 11.5793 7.7505 11.4245 7.9053C11.2697 8.06012 11.1923 8.25194 11.1923 8.48078C11.1923 8.70963 11.2697 8.90145 11.4245 9.05625C11.5793 9.21105 11.7711 9.28845 12 9.28845ZM12.0016 21.5C10.6877 21.5 9.45268 21.2506 8.29655 20.752C7.1404 20.2533 6.13472 19.5765 5.2795 18.7217C4.42427 17.8669 3.74721 16.8616 3.24833 15.706C2.74944 14.5504 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45268 3.248 8.29655C3.74667 7.1404 4.42342 6.13472 5.27825 5.2795C6.1331 4.42427 7.13834 3.74721 8.29398 3.24833C9.44959 2.74944 10.6844 2.5 11.9983 2.5C13.3122 2.5 14.5473 2.74933 15.7034 3.248C16.8596 3.74667 17.8652 4.42342 18.7205 5.27825C19.5757 6.1331 20.2527 7.13834 20.7516 8.29398C21.2505 9.44959 21.5 10.6844 21.5 11.9983C21.5 13.3122 21.2506 14.5473 20.752 15.7034C20.2533 16.8596 19.5765 17.8652 18.7217 18.7205C17.8669 19.5757 16.8616 20.2527 15.706 20.7516C14.5504 21.2505 13.3156 21.5 12.0016 21.5ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76664 19.225 7.87498 17.675 6.32498C16.125 4.77498 14.2333 3.99998 12 3.99998C9.76664 3.99998 7.87498 4.77498 6.32498 6.32498C4.77498 7.87498 3.99998 9.76664 3.99998 12C3.99998 14.2333 4.77498 16.125 6.32498 17.675C7.87498 19.225 9.76664 20 12 20Z" fill="currentColor"/></svg></div>
+            <div class="alert-card-body">
+              <div class="alert-card-title">CAE Professional Sign-off</div>
+              <div class="alert-card-sub">By authorizing distribution, I certify this report represents the audit function's professional assessment and is suitable for Audit Committee review.</div>
+            </div>
+            <div class="alert-card-actions">
+              <button type="button" class="btn btn-secondary btn-md">Request revision</button>
+              <button type="button" class="btn btn-primary btn-md">Certify and distribute</button>
+            </div>
+          </div>
+      </div>
+
+    </div><!-- end .page-inner -->
+
+      <!-- Chat bar (floating pill) -->
+      <div style="position:fixed; bottom:0; left:0; right:0; z-index:100; pointer-events:none; padding:0 0 20px;">
+        <div style="width:45vw; min-width:500px; margin:0 auto; padding:0 24px; pointer-events:auto;">
+          <div style="border-radius:16px; border:1px solid rgba(0,0,0,0.09); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:8px; box-shadow:0 -4px 32px rgba(0,0,0,0.10);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#f8fafc; border:1px solid rgba(0,0,0,0.05); flex-shrink:0; padding:6px;">
+                <img src="Icons/D_icon.png" alt="" style="width:100%; height:100%; object-fit:contain;">
+              </div>
+              <input type="text" placeholder="Ask about risks, assign owners, draft disclosures…" style="flex:1; background:transparent; font-size:14px; color:#1e293b; border:none; outline:none; font-family:'Plus Jakarta Sans',sans-serif;" />
+              <button style="display:flex; height:40px; width:40px; align-items:center; justify-content:center; border-radius:12px; background:#1e293b; color:#ffffff; border:none; cursor:pointer; flex-shrink:0; transition:background 0.15s;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div><!-- end .page-scroll -->
+</div><!-- end .page-body -->
+
+</div><!-- end #screen-1 -->
+
+<script>
+(function() {
+  function showScreen(index) {
+    document.querySelectorAll('.screen').forEach(function(el, i) {
+      el.classList.toggle('active', i === index);
+    });
+  }
+  document.getElementById('pa-approve-btn').addEventListener('click', function() {
+    showScreen(1);
+  });
+})();
+</script>
+<script src="workflow-bridge.js"></script>
+</body>
+</html>

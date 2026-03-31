@@ -1,0 +1,77 @@
+/* ============================================================
+   CARD-HERO COMPONENT
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Extracted from HUC-components.css (composite component).
+   Stat/metric cards with large hero numbers and small descriptors.
+
+   Classes:
+     .card-hero-row          — flex row, grey bg (#F9F9FC), 16px radius
+     .card-hero              — individual stat column (flex: 1, 20px padding)
+     .card-hero-label        — header text + icon (13px, 600)
+     .card-hero-value        — large number (36px, 600)
+     .card-hero-desc         — descriptor text (12px, 400)
+
+   Structure:
+     <div class="card-hero-row">
+       <div class="card-hero">
+         <div class="card-hero-label">
+           <svg>…</svg> Label
+         </div>
+         <div class="card-hero-value">42 <span class="card-hero-desc">description</span></div>
+       </div>
+     </div>
+
+   CSS variables used:
+     --t-primary    — primary text color
+     --t-secondary  — secondary text color
+     --t-tertiary   — tertiary text color
+
+   ⛔ AI: Do not override hero font sizes or padding.
+      .card-hero-row background is #F9F9FC — do not change.
+      .card-hero-value is 36px 600 weight — do not scale.
+   ============================================================ */
+
+.card-hero-row {
+  display: flex;
+  align-items: stretch;
+  background: #F9F9FC;
+  border-radius: 16px;
+}
+.card-hero {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card-hero-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t-secondary);
+}
+.card-hero-label svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  stroke-width: 2.2;
+  color: var(--t-secondary);
+}
+.card-hero-value {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--t-primary);
+  letter-spacing: -0.02em;
+}
+.card-hero-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--t-tertiary);
+  letter-spacing: 0;
+  line-height: 1;
+}

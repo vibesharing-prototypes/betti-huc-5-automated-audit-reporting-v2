@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout System Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../Components/layout.css">
+<link rel="stylesheet" href="../Components/app-chrome.css">
+<link rel="stylesheet" href="../Components/hero-section.css">
+<link rel="stylesheet" href="../Components/HUC-components.css">
+<link rel="stylesheet" href="../Components/headers.css">
+<link rel="stylesheet" href="../Components/chatbox.css">
+<style>
+:root {
+  --bg-base: #f0f0f1;
+  --bg-surface: #ffffff;
+  --t-primary: #282E37;
+  --t-secondary: #525252;
+  --t-tertiary: #6F7377;
+  --text-muted: #6F7377;
+  --border: rgba(0,0,0,0.09);
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --ui-dark: #1e293b;
+  --ui-darkest: #0f172a;
+  --ui-border-strong: #e2e8f0;
+  --ui-surface-tint: #f1f5f9;
+  --ui-text-dim: #64748b;
+  --brand: #D3222A;
+}
+
+/* Test-only styling for demo blocks */
+.demo-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #D3222A;
+  padding: 8px 12px;
+  background: rgba(211,34,42,0.06);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.demo-block {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 80px;
+}
+.demo-placeholder {
+  background: var(--bg-base);
+  border: 1px dashed rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  color: var(--t-tertiary);
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 1 — No sidebar layout
+     ============================================================ -->
+<div class="screen active" id="screen-1">
+
+  <!-- App header (from app-chrome.css) -->
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="app-logo-mark"><img src="../Icons/D_icon.png" alt="Diligent"></div>
+      Diligent &bull; Boards Cloud
+    </div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        Recent system activity<span class="app-activity-count">5</span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="app-notif-dot"></span>
+      </div>
+      <div class="app-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <!-- Page scroll (no sidebar) -->
+  <div class="page-scroll hero-glow-blue">
+    <div class="page-inner">
+
+      <div class="demo-label">Screen 1 — No sidebar layout</div>
+
+      <!-- Hero section -->
+      <div class="hero-section-workflow">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-red">High priority</span>
+            <span class="pill pill-md pill-transparent">Audit report request</span>
+          </div>
+          <h1 class="hero-title"><strong>Layout test</strong> — no sidebar variant.</h1>
+        </div>
+        <div class="hero-stepper">
+          <div class="hero-stepper-label">Workflow status</div>
+          <div class="hero-stepper-steps">
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+              Step 1
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step active current">
+              <div class="hero-step-icon"><img src="../Icons/Active.svg" width="20" height="20" alt=""></div>
+              Step 2
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg" width="20" height="20" alt=""></div>
+              Step 3
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content blocks -->
+      <div class="section-gap">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Content section</div>
+          </div>
+          <div class="demo-block">
+            <div class="flex-row">
+              <span class="pill pill-sm pill-green">Active</span>
+              <span style="font-size:14px; font-weight:600; color:var(--t-primary);">flex-row utility demo</span>
+            </div>
+            <div style="margin-top:12px;">
+              <div class="flex-wrap">
+                <span class="pill pill-sm pill-green">Tag 1</span>
+                <span class="pill pill-sm pill-green">Tag 2</span>
+                <span class="pill pill-sm pill-green">Tag 3</span>
+                <span class="pill pill-sm pill-green">Tag 4</span>
+                <span class="pill pill-sm pill-green">Tag 5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Another section</div>
+          </div>
+          <div class="demo-placeholder">page-inner keeps content at max-width 1024px, centered</div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Scroll test</div>
+          </div>
+          <div class="demo-placeholder" style="min-height:300px;">Tall block to test scroll behavior</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Chat (from chatbox.css) -->
+    <div class="chat-area">
+      <div class="chat-inner">
+        <div class="chat-input-row">
+          <textarea placeholder="Challenge any assumption or ask why before authorizing..."></textarea>
+          <div class="chat-bottom">
+            <div class="chat-chips-row">
+              <div class="chat-chip">Sample prompt</div>
+              <div class="chat-chip">Another prompt</div>
+            </div>
+            <div class="chat-actions">
+              <button class="btn btn-md btn-secondary">Clear</button>
+              <button class="btn btn-md btn-primary">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ============================================================
+     SCREEN 2 — With sidebar layout
+     ============================================================ -->
+<div class="screen" id="screen-2">
+
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="app-logo-mark"><img src="../Icons/D_icon.png" alt="Diligent"></div>
+      Diligent &bull; Boards Cloud
+    </div>
+    <div class="app-spacer"></div>
+    <div class="app-header-nav">
+      <div class="app-avatar">AC</div>
+    </div>
+  </div>
+
+  <!-- page-body wraps sidebar + scroll -->
+  <div class="page-body">
+
+    <!-- Sidebar (from app-chrome.css) -->
+    <div class="app-sidebar">
+      <div class="app-sidebar-icon active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      </div>
+      <div class="app-sidebar-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      </div>
+      <div class="app-sidebar-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+      </div>
+    </div>
+
+    <div class="page-scroll hero-glow-blue">
+      <div class="page-inner">
+
+        <div class="demo-label">Screen 2 — With sidebar layout</div>
+
+        <div class="hero-section-workflow">
+          <div class="hero-header">
+            <h1 class="hero-title"><strong>Sidebar variant</strong> — with icon rail.</h1>
+          </div>
+        </div>
+
+        <div class="section-gap">
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">Content area</div>
+            </div>
+            <div class="demo-placeholder">Sidebar pushes content area — page-scroll fills remaining width</div>
+          </div>
+          <div class="section">
+            <div class="section-header">
+              <div class="section-title">More content</div>
+            </div>
+            <div class="demo-placeholder" style="min-height:400px;">Tall block for scroll test</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="chat-area">
+        <div class="chat-inner">
+          <div class="chat-input-row">
+            <textarea placeholder="Type here..."></textarea>
+            <div class="chat-bottom">
+              <div class="chat-chips-row"></div>
+              <div class="chat-actions">
+                <button class="btn btn-md btn-primary">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Screen switcher for testing -->
+<div style="position:fixed; bottom:12px; right:12px; z-index:999; display:flex; gap:4px;">
+  <button onclick="switchScreen(1)" style="padding:6px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-size:12px;">Screen 1 (no sidebar)</button>
+  <button onclick="switchScreen(2)" style="padding:6px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-size:12px;">Screen 2 (sidebar)</button>
+</div>
+<script>
+function switchScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+}
+</script>
+
+</body>
+</html>

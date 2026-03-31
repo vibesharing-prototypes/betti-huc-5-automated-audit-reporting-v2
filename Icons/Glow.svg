@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="320" viewBox="-120 -120 1040 320">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0.5" x2="1" y2="0.5">
+      <stop offset="0%" stop-color="#D3222A"/>
+      <stop offset="50%" stop-color="#C247FA"/>
+      <stop offset="100%" stop-color="#00AAF3"/>
+    </linearGradient>
+    <filter id="b" x="-120" y="-120" width="1040" height="320" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+  <ellipse cx="400" cy="40" rx="400" ry="40" fill="url(#g)" opacity="0.12" filter="url(#b)"/>
+</svg>

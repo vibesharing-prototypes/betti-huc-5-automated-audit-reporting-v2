@@ -1,0 +1,155 @@
+/* ============================================================
+   HEADERS — Section & Card header typography
+
+   Layout hierarchy:
+     Section  = Section header  + 1+ Cards
+     Card     = Card header     + Card content + Card footer
+
+   Naming:
+     Section:  .section-title  / .section-subtitle  → .section-header
+     Card:     .card-title     / .card-subtitle     → .card-header
+
+   Universal rule: any header → 12px gap → content
+
+   CSS variables used (define in host page or :root):
+     --font  — font family (fallback: 'Plus Jakarta Sans', sans-serif)
+
+   Requires: cards from huc-components.css
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. SECTION
+   Container for section header + cards.
+
+   Classes:
+     .section              — vertical flex container
+     .section-header       — title + optional subtitle
+     .section-title        — 20px / 600
+     .section-subtitle     — 16px / 400
+
+   Spacing:
+     Between section title & subtitle:    6px
+     Between section header & cards:      12px  (gap on .section)
+     Between two .section elements:       24px  (use .section-gap on parent wrapper)
+
+   Structure:
+     <div class="section">
+       <div class="section-header">
+         <h2 class="section-title">Evidence pack collection</h2>
+         <p class="section-subtitle">Optional description</p>
+       </div>
+       <div class="card-default">…</div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. CARD HEADER
+   Title + optional subtitle at the top of a card.
+
+   Classes:
+     .card-header          — title + optional subtitle
+     .card-title           — 16px / 600
+     .card-subtitle        — 14px / 400
+
+   Spacing:
+     Between card title & subtitle:       4px
+     Between card header & card content:  12px  (gap on card-section / card)
+
+   Structure:
+     <div class="card-default">
+       <div class="card-header">
+         <h3 class="card-title">General progress</h3>
+         <p class="card-subtitle">Optional description</p>
+       </div>
+       <!-- card content -->
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #282E37;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #6F7377;
+  margin: 0;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. CARD SECTION DIVIDER
+   When a card has multiple sections, separate them with
+   .card-section. Vertical gap between card sections: 16px.
+
+   Structure:
+     <div class="card-default card-sections">
+       <div class="card-section">
+         <div class="card-header">…</div>
+         <!-- content -->
+       </div>
+       <div class="card-section">
+         <div class="card-header">…</div>
+         <!-- content -->
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+.card-sections {
+  gap: 16px;
+}
+
+.card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

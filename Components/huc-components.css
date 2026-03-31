@@ -1,0 +1,840 @@
+/* ============================================================
+   HUC COMPONENTS — CORE PRIMITIVES
+   Author: Bettina Szekany
+   AI Partner: AI Claude Code
+
+   Core design system primitives — buttons, cards, pills, tables,
+   layout spacing, typography (section/card headers).
+
+   Composite components (separate files):
+     chatbox.css       — standard chatbox
+     chat-w-glow.css   — chatbox with glow effect (Sunrise-glow)
+     hero-section.css  — hero section (workflow + notification variants)
+     alert-cards.css   — alert card component
+     card-hero.css     — stat/metric hero cards
+
+   CSS variables used (define in host page or :root):
+     --bg-surface   — card / surface background  (fallback: #ffffff)
+     --border       — border color               (fallback: #E0E0E0)
+     --t-primary    — primary text color          (fallback: #282E37)
+     --t-secondary  — secondary text color        (fallback: #525252)
+     --t-tertiary   — tertiary text color
+     --font         — font family
+   ============================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   1. BUTTONS
+   Classes:
+     .btn                   — base (always required)
+     .btn-primary           — dark fill, white text
+     .btn-secondary         — transparent, bordered
+     .btn-tertiary          — transparent, no border
+     .btn-md                — medium size
+     .btn-sm                — small size
+
+   Usage:
+     <button class="btn btn-primary btn-md">Label</button>
+     <button class="btn btn-secondary btn-sm">Label</button>
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Base ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+/* ── Primary ────────────────────────────────────────────── */
+.btn.btn-primary {
+  background: #282E37;
+  color: #ffffff;
+}
+.btn.btn-primary:hover {
+  background: #464E53;
+}
+
+/* ── Secondary ──────────────────────────────────────────── */
+.btn.btn-secondary {
+  background: transparent;
+  color: #282E37;
+  border: 1px solid #A0A2A5;
+}
+.btn.btn-secondary:hover {
+  background: #F3F3F3;
+}
+
+/* ── Tertiary ──────────────────────────────────────────── */
+.btn.btn-tertiary {
+  background: transparent;
+  color: #282E37;
+  border: 1px solid transparent;
+}
+.btn.btn-tertiary:hover {
+  background: #F3F3F3;
+}
+
+/* ── Medium ─────────────────────────────────────────────── */
+.btn.btn-md {
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+/* ── Small ──────────────────────────────────────────────── */
+.btn.btn-sm {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* ── Icon visibility ───────────────────────────────────── */
+.btn.btn-icon-hidden img {
+  display: none;
+}
+
+/* ── Icon padding adjustments ─────────────────────────── */
+/* Medium: reduce by 4px per icon side */
+.btn.btn-md:has(img:first-child)  { padding-left: 14px; }
+.btn.btn-md:has(img:last-child)   { padding-right: 14px; }
+
+/* Small: reduce by 2px per icon side */
+.btn.btn-sm:has(img:first-child)  { padding-left: 10px; }
+.btn.btn-sm:has(img:last-child)   { padding-right: 10px; }
+
+/* ── Disabled ───────────────────────────────────────────── */
+.btn:disabled {
+  cursor: not-allowed;
+}
+.btn.btn-primary:disabled {
+  background: rgba(40, 46, 55, 0.30);
+}
+.btn.btn-secondary:disabled {
+  opacity: 0.5;
+}
+.btn.btn-tertiary:disabled {
+  opacity: 0.5;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   1b. LAYOUT — Vertical spacing hierarchy
+
+   Spacing model (top → bottom):
+     .content-gap    32px   Hero → section-gap wrapper
+     .section-gap    24px   Section → Section
+     .section        12px   Section header → card(s)        (headers.css)
+     .section-header  6px   Section title → subtitle         (headers.css)
+     .card-header     6px   Card title → subtitle
+     .card-default   12px   Card internal gap (header → content, card → card)
+     .card-section-gap 16px Stacked sections inside a card (e.g. Results in 02-Evidence-3)
+
+   Usage:
+     <div class="scroll-wrapper content-gap">
+       <div class="hero">…</div>
+       <div class="section-gap">
+         <div class="section">
+           <div class="section-header">
+             <div class="section-title">…</div>
+             <div class="section-subtitle">…</div>
+           </div>
+           <div class="card-default card-section-gap">
+             <div>…section 1…</div>
+             <div>…section 2…</div>
+           </div>
+         </div>
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+.content-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.section-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.card-section-gap {
+  gap: 16px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. CARDS
+   Classes:
+     .card-default               — 16px radius, 16px padding
+     .card-sm                    — 16px radius, 14px padding
+
+   When to use each size:
+     .card-default  — single card spanning the content area (full-width)
+     .card-sm       — cards stacking horizontally (side-by-side grids)
+
+   Inner child classes (optional):
+     .card-title                 — bold heading inside card
+     .card-body                  — body text inside card
+
+   Structure:
+     <div class="card-default">
+       <div class="card-title">Heading</div>
+       <div class="card-body">Body text</div>
+     </div>
+
+   Notes:
+     - Both sizes use border: 1px solid var(--border)
+     - Background defaults to var(--bg-surface, #ffffff)
+     - Overflow: hidden is NOT set by default (add inline if needed)
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Shared ─────────────────────────────────────────────── */
+.card-default,
+.card-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border, #E0E0E0);
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Default (full-width) ────────────────────────────── */
+.card-default {
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* ── Small (horizontal stacking) ─────────────────────── */
+.card-sm {
+  border-radius: 16px;
+  padding: 14px;
+  gap: 8px;
+}
+
+/* ── Card body typography vars ──
+   Classes live in Components/card-typography.css (not yet included).
+   Vars kept here so .table th/td can reference them.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --card-body:    16px;
+  --card-body-md: 14px;
+  --card-body-sm: 12px;
+  --card-body-xs: 11px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2b. SECTION & CARD HEADERS — typography
+   Naming:
+     Section:  .section-title  / .section-subtitle  → .section-header
+     Card:     .card-title     / .card-subtitle     → .card-header
+
+   Universal rule: any header → 12px gap → content
+
+   Spacing summary:
+     Section title → subtitle:      8px
+     Section header → card:         12px
+     Between sections:              32px
+     Card title → subtitle:         4px
+     Card header → content:         12px
+     Between card sections:         16px
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Section ─────────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Inherits .h3-bold token: 18px / 600 */
+.section-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--fc-default, #282E37);
+  margin: 0;
+}
+
+/* Inherits .body-default + fc-muted tokens */
+.section-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: var(--fc-muted, #6F7377);
+  margin: 0;
+}
+
+/* ── Card header ─────────────────────────────────────────── */
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Inherits .h4-bold token: 16px / 600 */
+.card-title {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--fc-default, #282E37);
+  margin: 0;
+}
+
+/* Inherits .body-md + fc-muted tokens */
+.card-subtitle {
+  font-family: 'Plus Jakarta Sans', var(--font, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: var(--fc-muted, #6F7377);
+  margin: 0;
+}
+
+/* ── Label ──────────────────────────────────────────────── */
+.label-sm {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t-secondary, #525252);
+}
+
+/* ── Card sections (multiple sections in one card) ───────── */
+.card-sections {
+  gap: 16px;
+}
+
+.card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Card grid — 3-column layout for side-by-side card-sm ── */
+.card-grid-1-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. PILLS
+   Classes:
+     .pill                — base (always required)
+     .pill-md             — medium size
+     .pill-sm             — small size
+     .pill-icon           — reduces left padding for icon
+     .pill-num            — fixed 24x24 number badge
+
+   Colors:
+     .pill-yellow, .pill-green, .pill-blue,
+     .pill-purple, .pill-red, .pill-transparent
+
+   Structure:
+     <span class="pill pill-md pill-green pill-icon">
+       <img class="pill-ico" src="icon.svg">Label
+     </span>
+   ──────────────────────────────────────────────────────────────── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 400;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* ── Size: medium ── */
+.pill-md {
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: #282E37;
+}
+.pill-md.pill-icon { padding-left: 12px; }
+.pill-md .pill-ico { width: 20px; height: 20px; }
+
+/* ── Size: small ── */
+.pill-sm {
+  padding: 3px 10px;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+}
+.pill-sm.pill-icon { padding-left: 8px; }
+.pill-sm .pill-ico { width: 16px; height: 16px; }
+
+/* ── Color: yellow ── */
+.pill-yellow { background: #FFF2AA; border-color: #FEE400; }
+.pill-yellow .pill-ico { color: #6A5F00; }
+.pill-sm.pill-yellow { color: #6A5F00; }
+
+/* ── Color: green ── */
+.pill-green { background: #D2FF9C; border-color: #8EE400; }
+.pill-green .pill-ico { color: #3F6900; }
+.pill-sm.pill-green { color: #3F6900; }
+
+/* ── Color: blue ── */
+.pill-blue { background: #D7F6FF; border-color: #1DD9F9; }
+.pill-blue .pill-ico { color: #006879; }
+.pill-sm.pill-blue { color: #006879; }
+
+/* ── Color: purple ── */
+.pill-purple { background: #F7D8FF; border-color: #DB8BFF; }
+.pill-purple .pill-ico { color: #7300A1; }
+.pill-sm.pill-purple { color: #7300A1; }
+
+/* ── Color: red ── */
+.pill-red { background: #FFEDEB; border-color: #FF8981; }
+.pill-red .pill-ico { color: #921A1D; }
+.pill-sm.pill-red { color: #921A1D; }
+
+/* ── Color: transparent ── */
+.pill-transparent { background: none; border-color: #A0A2A5; }
+.pill-transparent .pill-ico { color: #6F7377; }
+.pill-sm.pill-transparent { color: #282E37; }
+
+/* ── Size: number (fixed 24x24) ── */
+.pill-num {
+  width: 24px; height: 24px;
+  padding: 0;
+  justify-content: center;
+  background: none; border-color: #DADADA;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: #282E37;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   4. TABLES
+   Table sits on a card (.card-default or equivalent).
+   No dedicated wrapper — the card provides bg, border, radius.
+
+   Classes:
+     .table                — base
+     .participant-cell     — flex row with avatar + name
+     .participant-avatar   — 36x36 rounded avatar
+     .avatar-1 … .avatar-8 — avatar color slots
+     .row-check            — 20x20 status icon
+     .text-center          — center-align utility
+     .table-footer         — button row below table
+     .table-footer-note    — small note below footer
+
+   Structure:
+     <div class="card-default">
+       <table class="table">
+         <thead><tr><th>…</th></tr></thead>
+         <tbody><tr><td>…</td></tr></tbody>
+       </table>
+       <div class="table-footer">
+         <button class="btn btn-primary btn-sm">Action</button>
+       </div>
+     </div>
+   ──────────────────────────────────────────────────────────────── */
+
+/* Table base */
+.table { width: 100%; border-collapse: collapse; }
+
+/* Header row */
+.table thead tr { border-bottom: 1px solid var(--border); }
+.table th {
+  padding: 8px 12px;
+  font-size: var(--card-body-sm, 12px);
+  font-weight: 600;
+  color: var(--t-secondary);
+  text-align: left;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* Body rows */
+.table tbody tr { border-bottom: 1px solid var(--border); }
+.table tbody tr:last-child { border-bottom: none; }
+.table td {
+  padding: 8px 12px;
+  font-size: var(--card-body-md, 14px);
+  color: var(--t-secondary);
+  vertical-align: middle;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* ── First-column weight rule ───────────────────────────────
+   If td:first-child has text → that cell is bold (600).
+   If td:first-child has only icon/avatar/indicator (no text)
+   → td:nth-child(2) is bold (600).
+   ─────────────────────────────────────────────────────────── */
+.table td:first-child { font-weight: 600; }
+.table td:first-child:has(img, svg, .row-check):not(:has(.participant-cell)) { font-weight: 400; }
+.table td:first-child:has(img, svg, .row-check):not(:has(.participant-cell)) ~ td:nth-child(2) { font-weight: 600; }
+
+/* ── Participants column — avatar display ───────────────── */
+.table .participant-cell { display: flex; align-items: center; gap: 16px; }
+.table .participant-cell > span:not(.participant-avatar) { font-weight: 600; }
+.table .participant-avatar {
+  width: 36px; height: 36px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 11px; font-weight: 600;
+  font-family: var(--font); letter-spacing: 0.02em;
+}
+.table .participant-avatar.avatar-1 { background: #bae6fd; color: #0369a1; }
+.table .participant-avatar.avatar-2 { background: #a7f3d0; color: #047857; }
+.table .participant-avatar.avatar-3 { background: #e9d5ff; color: #6b21a8; }
+.table .participant-avatar.avatar-4 { background: #fed7aa; color: #c2410c; }
+.table .participant-avatar.avatar-5 { background: #fecdd3; color: #be123c; }
+.table .participant-avatar.avatar-6 { background: #c7d2fe; color: #3730a3; }
+.table .participant-avatar.avatar-7 { background: #ddd6fe; color: #5b21b6; }
+.table .participant-avatar.avatar-8 { background: #99f6e4; color: #0f766e; }
+
+/* ── Visual-only cell alignment ─────────────────────────── */
+.table td:has(.pill) { text-align: center; }
+.table .text-center { text-align: center; }
+
+/* ── Status indicators ──────────────────────────────────── */
+.table .row-check { width: 20px; height: 20px; display: block; margin: 0 auto; }
+
+/* ── Table footer ───────────────────────────────────────── */
+.table-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+}
+.table-footer-note {
+  font-size: 10px; color: var(--t-tertiary); margin-top: -4px;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   5. CHATBOX
+   Standard chatbox with frosted-glass sticky footer.
+
+   Classes:
+     .chat-area          — outer wrapper (sticky, frosted glass)
+     .chat-inner         — content column (max-width 1064px)
+     .chat-input-row     — white card with gradient accent line
+     .chat-bottom        — chips left, actions right
+     .chat-chips-row     — suggestion chip container
+     .chat-chip          — individual chip
+     .chat-actions       — button group (Clear / Send)
+
+   Structure:
+     <div class="chat-area">
+       <div class="chat-inner">
+         <div class="chat-input-row">
+           <textarea placeholder="..."></textarea>
+           <div class="chat-bottom">
+             <div class="chat-chips-row">
+               <div class="chat-chip">Chip label</div>
+             </div>
+             <div class="chat-actions">
+               <button class="btn btn-secondary btn-md">Clear</button>
+               <button class="btn btn-primary btn-md" disabled>Send</button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+   Requires host page to define:
+     --bg-base, --border, --t-primary, --t-secondary, --t-tertiary, --font
+   Requires: buttons (section 1) for Clear / Send buttons
+   ──────────────────────────────────────────────────────────────── */
+
+/* Outer wrapper — sticky at scroll-container bottom, frosted glass.
+   Negative margins break out of parent's horizontal padding for edge-to-edge.
+   Host scroll container should use overflow-x: hidden (or clip) to prevent
+   horizontal scroll caused by the breakout. */
+.chat-area {
+  padding: 24px 0;
+  background: rgba(240, 240, 241, 0.30);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
+  box-sizing: border-box;
+  z-index: 10; /* chat area — above scrollable content */
+  isolation: isolate;
+}
+
+/* Content column — 1024px content + 40px safe-area padding = 1064px.
+   This makes the chat-input-row align exactly with the 1024px content above. */
+.chat-inner {
+  width: 100%;
+  max-width: 1064px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* White card with gradient accent line at top */
+.chat-input-row {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+.chat-input-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+}
+
+/* Textarea */
+.chat-input-row textarea {
+  width: 100%;
+  height: 56px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  color: var(--t-primary);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+.chat-input-row textarea::placeholder { color: var(--t-tertiary); }
+
+/* Bottom row: chips left, actions right */
+.chat-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Suggestion chips */
+.chat-chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chat-chip {
+  font-size: 14px;
+  color: var(--t-secondary);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { border-color: #cbd5e1; color: var(--t-primary); }
+
+/* Button group — buttons styled by section 1 */
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   6. GLOBAL TYPOGRAPHY
+   Lightweight type scale + font-color tokens.
+
+   Headings:
+     .h1            — 40px / 400  (hero title)
+     .h1-bold        — 40px / 600
+     .h2            — 28px / 400
+     .h2-bold        — 28px / 600
+     .h3            — 18px / 400  (section title)
+     .h3-bold        — 18px / 600
+     .h4            — 16px / 400  (card title)
+     .h4-bold        — 16px / 600
+
+   Body:
+     .body-default  — 14px / 400
+     .body-md       — 12px / 400
+     .body-sm       — 11px / 400
+
+   Utility:
+     .font-btn-md   — 16px / 600, lh 25px, ls 1%
+     .font-btn-sm   — 14px / 600, lh 20px, ls 1%
+     .eyebrow       — 11px / 600, uppercase, tracked
+
+   Font colors:
+     .fc-default    — #282E37
+     .fc-muted      — #6F7377
+     .fc-disabled   — #A0A2A5
+     .fc-inverse    — #ffffff
+
+   Component class mapping (Plan A):
+     .section-title    → .h3-bold tokens   (18px / 600)
+     .section-subtitle → .body-default + fc-muted
+     .card-title       → .h4-bold tokens   (16px / 600)
+     .card-subtitle    → .body-md + fc-muted
+
+   Notes:
+     • All headings default to regular (400). Add -bold for 600.
+     • Every class sets font-family so it works outside card context.
+
+   ⛔ AI: Do NOT create additional weight variants (.h1-light,
+      .h1-semibold, etc.). Only regular (400) and bold (600) exist.
+      Do NOT add margin or padding to heading classes — spacing is
+      handled by layout classes (.section, .card-header, etc.).
+      Do NOT change hex values for font colors.
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Font color tokens (CSS variables) ───────────────────── */
+:root {
+  --fc-default:  #282E37;
+  --fc-muted:    #6F7377;
+  --fc-disabled: #A0A2A5;
+  --fc-inverse:  #ffffff;
+}
+
+/* ── Font color utility classes ──────────────────────────── */
+.fc-default  { color: var(--fc-default); }
+.fc-muted    { color: var(--fc-muted); }
+.fc-disabled { color: var(--fc-disabled); }
+.fc-inverse  { color: var(--fc-inverse); }
+
+/* ── Headings ────────────────────────────────────────────── */
+
+/* H1 — 40px */
+.h1, .h1-bold {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 40px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--fc-default);
+  margin: 0;
+}
+.h1      { font-weight: 300; }
+.h1-bold { font-weight: 600; }
+
+/* H2 — 28px */
+.h2, .h2-bold {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--fc-default);
+  margin: 0;
+}
+.h2      { font-weight: 400; }
+.h2-bold { font-weight: 600; }
+
+/* H3 — 18px (section title) */
+.h3, .h3-bold {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--fc-default);
+  margin: 0;
+}
+.h3      { font-weight: 400; }
+.h3-bold { font-weight: 600; }
+
+/* H4 — 16px (card title) */
+.h4, .h4-bold {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--fc-default);
+  margin: 0;
+}
+.h4      { font-weight: 400; }
+.h4-bold { font-weight: 600; }
+
+/* ── Body ────────────────────────────────────────────────── */
+.body-default {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  color: var(--fc-default);
+}
+.body-md {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+  color: var(--fc-default);
+}
+.body-sm {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: var(--fc-default);
+}
+
+/* ── Utility: button font sizes ──────────────────────────── */
+.font-btn-md {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 25px;
+  letter-spacing: 0.01em;
+}
+.font-btn-sm {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.01em;
+}
+
+/* ── Utility: eyebrow ────────────────────────────────────── */
+.eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fc-muted);
+}

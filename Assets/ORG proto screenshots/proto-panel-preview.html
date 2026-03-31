@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proto Panel Preview — With Screen Tabs</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: #18181b;
+    color: #e4e4e7;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  /* ── Proto Panel ── */
+  .pp-bar {
+    background: linear-gradient(180deg, #111113 0%, #1a1a1d 55%, #1c1c1f 100%);
+    border-bottom: 1px solid #2e2e32;
+    flex-shrink: 0;
+    z-index: 200;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 34px;
+    box-shadow:
+      inset 0 1px 0 rgba(0,0,0,0.8),
+      inset 0 3px 12px rgba(0,0,0,0.5),
+      0 3px 10px rgba(0,0,0,0.35);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 12px;
+  }
+  .pp-bar::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,0.07) 15%,
+      rgba(255,255,255,0.07) 85%,
+      transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .pp-bar.pp-open { max-height: 130px; }
+
+  /* Collapsed row */
+  .pp-collapsed {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 34px;
+    padding: 0 14px 0 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .pp-collapsed:hover { background: rgba(255,255,255,0.02); }
+  .pp-collapsed:hover .pp-label { color: #c0c0c3; }
+
+  .pp-label {
+    font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: #909093;
+    transition: color 0.15s;
+    white-space: nowrap;
+  }
+
+  .pp-chevron {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #8a8a8d;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s, transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+  }
+  .pp-chevron:hover { color: #c0c0c3; }
+  .pp-bar.pp-open .pp-chevron { transform: rotate(180deg); }
+
+  /* Expanded panel */
+  .pp-expanded {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 16px 11px;
+    opacity: 0;
+    transform: perspective(480px) rotateX(-6deg) translateY(-6px);
+    transform-origin: top center;
+    transition:
+      opacity 0.25s 0.04s,
+      transform 0.28s 0.04s cubic-bezier(0.2, 0.8, 0.4, 1);
+    pointer-events: none;
+  }
+  .pp-bar.pp-open .pp-expanded {
+    opacity: 1;
+    transform: perspective(480px) rotateX(0deg) translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Top row: state toggle + description */
+  .pp-top-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .pp-divider {
+    width: 1px;
+    height: 20px;
+    background: #424246;
+    margin: 0 16px;
+    flex-shrink: 0;
+  }
+
+  .pp-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pp-group-label {
+    font-size: 12px;
+    color: #8a8a8d;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  /* Pill toggles */
+  .pp-pill {
+    display: flex;
+    background: #111113;
+    border: 1px solid #424246;
+    border-radius: 20px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .pp-btn {
+    font-family: inherit;
+    font-size: 12px;
+    border: none;
+    background: none;
+    color: #8a8a8d;
+    padding: 3px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .pp-btn:hover:not(.pp-active):not(.pp-state-active) { color: #c0c0c3; }
+
+  .pp-state-pill .pp-btn.pp-active {
+    background: #2a2040;
+    color: #9d84e8;
+    border: 1px solid rgba(157, 132, 232, 0.25);
+  }
+
+  .pp-description {
+    font-size: 15px;
+    color: #8a8a8d;
+    line-height: 1.5;
+    letter-spacing: 0.03em;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+
+  /* ── Screen tabs row ── */
+  .pp-tabs-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .pp-tabs-label {
+    font-size: 12px;
+    color: #8a8a8d;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    margin-right: 10px;
+  }
+  .pp-tabs {
+    display: flex;
+    gap: 2px;
+    background: #111113;
+    border: 1px solid #424246;
+    border-radius: 20px;
+    padding: 2px;
+    overflow-x: auto;
+  }
+  .pp-tab {
+    font-family: inherit;
+    font-size: 11px;
+    border: none;
+    background: none;
+    color: #68686b;
+    padding: 3px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .pp-tab:hover:not(.pp-tab-active) { color: #c0c0c3; }
+  .pp-tab.pp-tab-active {
+    background: #2e2e32;
+    color: #ccccce;
+  }
+  .pp-tab-divider {
+    width: 1px;
+    height: 14px;
+    background: #333336;
+    margin: auto 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── Content iframe ── */
+  .pp-frame {
+    flex: 1;
+    border: none;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Proto Panel ── -->
+<div class="pp-bar" id="pp-bar">
+  <div class="pp-collapsed" id="pp-collapsed">
+    <span class="pp-label">PROTOTYPE CONTROLS &mdash; NOT PART OF THE PRODUCT</span>
+    <button class="pp-chevron" aria-label="Toggle">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="pp-expanded">
+    <!-- Row 1: Description -->
+    <div class="pp-top-row">
+      <p class="pp-description">Automated Audit Reporting</p>
+    </div>
+    <!-- Row 2: Screen tabs -->
+    <div class="pp-tabs-row">
+      <span class="pp-tabs-label">SCREEN</span>
+      <div class="pp-tabs">
+        <button class="pp-tab pp-tab-active" data-screen="0">01. Investigation</button>
+        <button class="pp-tab" data-screen="1">02. Evidence</button>
+        <button class="pp-tab" data-screen="2">03. Synthesis and Edit</button>
+        <button class="pp-tab" data-screen="3">04. Veracity scoring</button>
+        <button class="pp-tab" data-screen="4">05. Preview-Approve</button>
+        <div class="pp-tab-divider"></div>
+        <button class="pp-tab" data-screen="5">Full Workflow</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Content frame ── -->
+<iframe class="pp-frame" id="pp-frame"></iframe>
+
+<script>
+  // Expand/collapse
+  const bar = document.getElementById('pp-bar');
+  document.getElementById('pp-collapsed').addEventListener('click', () => {
+    bar.classList.toggle('pp-open');
+    document.body.classList.toggle('pp-open', bar.classList.contains('pp-open'));
+  });
+
+  // Screen tab → file mapping
+  const screenMap = {
+    '0': { file: '01-Investigation.html' },
+    '1': { file: '02-Evidence-v2.html' },
+    '2': { file: '03-Synthesis-to-Chat.html' },
+    '3': { file: '04-Veracity-scoring.html' },
+    '4': { file: '05-Preview-Approve.html' },
+    '5': { file: 'full-workflow.html' },
+  };
+
+  const frame = document.getElementById('pp-frame');
+  const tabs = document.querySelectorAll('.pp-tab[data-screen]');
+  let currentFile = '';
+
+  function loadScreen(id) {
+    const entry = screenMap[id];
+    if (!entry) return;
+
+    tabs.forEach(t => t.classList.remove('pp-tab-active'));
+    document.querySelector(`.pp-tab[data-screen="${id}"]`)?.classList.add('pp-tab-active');
+
+    if (entry.file !== currentFile) {
+      currentFile = entry.file;
+      frame.src = entry.file;
+    }
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', e => {
+      e.stopPropagation();
+      loadScreen(tab.dataset.screen);
+    });
+  });
+
+  // Auto-open panel on load, load first screen
+  setTimeout(() => {
+    bar.classList.add('pp-open');
+    loadScreen('0');
+  }, 300);
+</script>
+
+</body>
+</html>

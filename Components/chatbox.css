@@ -1,0 +1,128 @@
+/* ============================================================
+   CHATBOX COMPONENT
+   Usage:
+     HTML structure:
+       <div class="chat-area">
+         <div class="chat-inner">
+           <div class="chat-input-row">
+             <textarea placeholder="..."></textarea>
+             <div class="chat-bottom">
+               <div class="chat-chips-row">
+                 <div class="chat-chip">Chip label</div>
+               </div>
+               <div class="chat-actions">
+                 <button class="btn btn-secondary btn-md">Clear</button>
+                 <button class="btn btn-primary btn-md" disabled>Send</button>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+
+     Requires host page to define:
+       --bg-base, --border, --t-primary, --t-secondary, --t-tertiary, --font
+     Requires: Components/buttons.css for Clear / Send buttons
+   ============================================================ */
+
+/* Outer wrapper — sticky at scroll-container bottom, frosted glass.
+   Negative margins break out of parent's horizontal padding for edge-to-edge.
+   Host scroll container should use overflow-x: hidden (or clip) to prevent
+   horizontal scroll caused by the breakout. */
+.chat-area {
+  padding: 24px 0;
+  background: rgba(240, 240, 241, 0.30);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
+  box-sizing: border-box;
+  z-index: 10; /* chat area — above scrollable content */
+  isolation: isolate;
+}
+
+/* Content column — 1024px content + 40px safe-area padding = 1064px.
+   This makes the chat-input-row align exactly with the 1024px content above. */
+.chat-inner {
+  width: 100%;
+  max-width: 1064px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* White card with gradient accent line at top */
+.chat-input-row {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+.chat-input-row::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+}
+
+/* Textarea */
+.chat-input-row textarea {
+  width: 100%;
+  height: 56px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  /* body-default — uses .body-default token: 14px / 400 */
+  font-size: 14px;
+  color: var(--fc-default, var(--t-primary));
+  font-family: var(--font);
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+.chat-input-row textarea::placeholder { color: var(--fc-muted, var(--t-tertiary)); }
+
+/* Bottom row: chips left, actions right */
+.chat-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Suggestion chips */
+.chat-chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+/* body-default — uses .body-default token: 14px / 400 */
+.chat-chip {
+  font-size: 14px;
+  color: var(--fc-muted, var(--t-secondary));
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { border-color: #cbd5e1; color: var(--fc-default, var(--t-primary)); }
+
+/* Button group — buttons styled by buttons.css */
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}

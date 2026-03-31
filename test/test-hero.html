@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test — Hero Section Component</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../Components/HUC-components.css">
+<link rel="stylesheet" href="../Components/hero-section.css">
+<style>
+:root {
+  --bg-base:       #f0f0f1;
+  --bg-surface:    #ffffff;
+  --t-primary:     #282E37;
+  --t-secondary:   #525252;
+  --t-tertiary:    #6F7377;
+  --border:        rgba(0,0,0,0.09);
+  --font:          'Plus Jakarta Sans', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-base);
+  color: var(--t-primary);
+}
+
+/* ── Test page layout ── */
+.test-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+.test-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.test-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t-tertiary);
+  padding: 8px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  align-self: flex-start;
+}
+
+/* ── Glow demo containers ── */
+.glow-container {
+  border-radius: 16px;
+  padding: 40px 20px;
+  border: 1px solid var(--border);
+}
+/* Full-height glow container — matches real screen sizing so gradient spreads correctly */
+.glow-container-full {
+  min-height: 80vh;
+  border-radius: 16px;
+  padding: 60px 20px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+</style>
+</head>
+<body>
+
+<div class="test-page">
+
+  <!-- ════════════════════════════════════════════════════════════
+       1. WORKFLOW — Blue glow, active step (Investigation)
+       Reference: 02-Evidence screen 0
+       ════════════════════════════════════════════════════════════ -->
+  <div class="test-section">
+    <div class="test-label">Workflow variant — Blue glow (active state)</div>
+    <div class="glow-container-full hero-glow-blue">
+      <div class="hero-section-workflow">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-red">
+              <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+              High priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="../Icons/Audit.svg">
+              Audit report request
+            </span>
+          </div>
+          <h1 class="hero-title"><strong>Collecting evidence</strong> has started.</h1>
+        </div>
+        <div class="hero-stepper">
+          <div class="hero-stepper-label">Workflow status</div>
+          <div class="hero-stepper-steps">
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Investigation
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step active">
+              <div class="hero-step-icon"><img src="../Icons/Active.svg"></div>
+              Evidence
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Synthesis
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Edit &amp; Authorize
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Veracity scoring
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Approve
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       2. WORKFLOW — Green glow, done state (Evidence complete)
+       Reference: 02-Evidence screen 2
+       ════════════════════════════════════════════════════════════ -->
+  <div class="test-section">
+    <div class="test-label">Workflow variant — Green glow (done state)</div>
+    <div class="glow-container-full hero-glow-green">
+      <div class="hero-section-workflow">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-red">
+              <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+              High priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="../Icons/Audit.svg">
+              Audit report request
+            </span>
+          </div>
+          <h1 class="hero-title"><strong>Scanning sources</strong> is complete.</h1>
+        </div>
+        <div class="hero-stepper">
+          <div class="hero-stepper-label">Workflow status</div>
+          <div class="hero-stepper-steps">
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Investigation
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Evidence
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Synthesis
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Edit &amp; Authorize
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Veracity scoring
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Approve
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       3. PRIORITY PILL VARIANTS (all three levels)
+       ════════════════════════════════════════════════════════════ -->
+  <div class="test-section">
+    <div class="test-label">Priority pill variants</div>
+    <div class="glow-container" style="background: var(--bg-surface); display:flex; gap:16px; align-items:center; justify-content:center;">
+      <span class="pill pill-md pill-icon pill-red">
+        <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+        High priority
+      </span>
+      <span class="pill pill-md pill-icon pill-purple">
+        <img class="pill-ico" src="../Icons/Dash.svg" style="width:20px;height:20px;">
+        Medium priority
+      </span>
+      <span class="pill pill-md pill-icon pill-blue">
+        <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+        Low priority
+      </span>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       4. WORKFLOW — Medium priority + different topic
+       ════════════════════════════════════════════════════════════ -->
+  <div class="test-section">
+    <div class="test-label">Workflow variant — Medium priority, different topic pill</div>
+    <div class="glow-container-full hero-glow-blue">
+      <div class="hero-section-workflow">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-purple">
+              <img class="pill-ico" src="../Icons/Dash.svg" style="width:20px;height:20px;">
+              Medium priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="../Icons/Document.svg">
+              Compliance review
+            </span>
+          </div>
+          <h1 class="hero-title"><strong>Veracity scoring</strong> — analyzing and scoring evidence.</h1>
+        </div>
+        <div class="hero-stepper">
+          <div class="hero-stepper-label">Workflow status</div>
+          <div class="hero-stepper-steps">
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Investigation
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Evidence
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Synthesis
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg"></div>
+              Edit &amp; Authorize
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step active">
+              <div class="hero-step-icon"><img src="../Icons/Active.svg"></div>
+              Veracity scoring
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step">
+              <div class="hero-step-icon"><img src="../Icons/Next.svg"></div>
+              Approve
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       5. NOTIFICATION — with both buttons
+       Reference: 01-Investigation screen 1
+       ════════════════════════════════════════════════════════════ -->
+  <div class="test-section">
+    <div class="test-label">Notification variant — High priority (red glow), 2 buttons + pager</div>
+    <div class="glow-container-full hero-glow-red">
+      <div class="hero-section-notif">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-red">
+              <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+              High priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="../Icons/Audit.svg">
+              Audit report request
+            </span>
+          </div>
+          <h1 class="hero-title">Hi Alexandra, <strong>1 high priority task</strong> needs your attention.</h1>
+        </div>
+        <div class="hero-notif">
+          <div class="hero-notif-message">
+            <div class="hero-notif-title">Thomas Chen has requested an assurance report.</div>
+            <div class="hero-notif-body">Assess cybersecurity control posture and SEC disclosure readiness before Thursday's Audit Committee meeting.</div>
+          </div>
+          <div class="hero-notif-actions">
+            <button class="btn btn-secondary btn-md">Delegate</button>
+            <button class="btn btn-primary btn-md">Review</button>
+          </div>
+          <div class="hero-pager">
+            <button class="hero-pager-btn" aria-label="Previous">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="hero-pager-dots">
+              <span class="hero-pager-dot active"></span>
+              <span class="hero-pager-dot"></span>
+              <span class="hero-pager-dot"></span>
+            </div>
+            <button class="hero-pager-btn" aria-label="Next">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       6. NOTIFICATION — primary button only (no secondary)
+       ════════════════════════════════════════════════════════════ -->
+  <div class="test-section">
+    <div class="test-label">Notification variant — Medium priority (purple glow), primary button only</div>
+    <div class="glow-container-full hero-glow-purple">
+      <div class="hero-section-notif">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-purple">
+              <img class="pill-ico" src="../Icons/Dash.svg" style="width:20px;height:20px;">
+              Medium priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="../Icons/Document.svg">
+              Compliance review
+            </span>
+          </div>
+          <h1 class="hero-title">Hi Alexandra, <strong>a compliance review</strong> is ready.</h1>
+        </div>
+        <div class="hero-notif">
+          <div class="hero-notif-message">
+            <div class="hero-notif-title">Q4 regulatory compliance check completed.</div>
+            <div class="hero-notif-body">Review the findings and approve the report before end of business Friday.</div>
+          </div>
+          <div class="hero-notif-actions">
+            <button class="btn btn-primary btn-md">Review</button>
+          </div>
+          <div class="hero-pager">
+            <button class="hero-pager-btn" aria-label="Previous">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="hero-pager-dots">
+              <span class="hero-pager-dot"></span>
+              <span class="hero-pager-dot active"></span>
+              <span class="hero-pager-dot"></span>
+            </div>
+            <button class="hero-pager-btn" aria-label="Next">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       7. NOTIFICATION — Low priority (cyan/blue glow)
+       ════════════════════════════════════════════════════════════ -->
+  <div class="test-section">
+    <div class="test-label">Notification variant — Low priority (cyan glow)</div>
+    <div class="glow-container-full hero-glow-cyan">
+      <div class="hero-section-notif">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-blue">
+              <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+              Low priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="../Icons/Document.svg">
+              Policy update
+            </span>
+          </div>
+          <h1 class="hero-title">Hi Alexandra, <strong>a policy update</strong> is available for review.</h1>
+        </div>
+        <div class="hero-notif">
+          <div class="hero-notif-message">
+            <div class="hero-notif-title">Annual data retention policy has been refreshed.</div>
+            <div class="hero-notif-body">No action required until next quarter — review at your convenience.</div>
+          </div>
+          <div class="hero-notif-actions">
+            <button class="btn btn-secondary btn-md">Dismiss</button>
+            <button class="btn btn-primary btn-md">Review</button>
+          </div>
+          <div class="hero-pager">
+            <button class="hero-pager-btn" aria-label="Previous">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="hero-pager-dots">
+              <span class="hero-pager-dot"></span>
+              <span class="hero-pager-dot"></span>
+              <span class="hero-pager-dot active"></span>
+            </div>
+            <button class="hero-pager-btn" aria-label="Next">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

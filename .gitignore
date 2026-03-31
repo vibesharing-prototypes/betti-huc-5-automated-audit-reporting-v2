@@ -1,0 +1,6 @@
+*.zip
+*.pdf
+.DS_Store
+.claude/
+.cursor/
+.mcp.json

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test: 05-Preview-Approve hero section</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../Components/huc-components.css">
+<link rel="stylesheet" href="../Components/alert-cards.css">
+<link rel="stylesheet" href="../Components/hero-section.css">
+<link rel="stylesheet" href="../Components/headers.css">
+<link rel="stylesheet" href="../Components/chatbox.css">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg-base:         #f0f0f1;
+  --bg-surface:      #ffffff;
+  --bg-sidebar:      #e8e8ea;
+  --bg-component:    #f4f4f5;
+
+  --t-primary:       #282E37;
+  --t-secondary:     #525252;
+  --t-tertiary:      #6F7377;
+  --text-very-muted: #A0A2A5;
+
+  --border:          rgba(0,0,0,0.09);
+  --border-secondary:rgba(0,0,0,0.14);
+
+  --green:  #16a34a;
+  --blue:   #1d4ed8;
+  --amber:  #b45309;
+  --red:    #D3222A;
+  --brand:  #D3222A;
+
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   APP HEADER (copied from 05-Preview-Approve)
+   ============================================================ */
+.lt-header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 50;
+}
+.lt-logo {
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--t-primary);
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+}
+.lt-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+.lt-logo-mark img { width: 24px; height: 24px; display: block; }
+.lt-spacer { flex: 1; }
+.lt-header-nav { display: flex; align-items: center; gap: 8px; }
+.lt-activity-pill {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: #ffffff;
+  font-size: 13px; font-weight: 400; color: #1e293b;
+  cursor: pointer; white-space: nowrap;
+}
+.lt-activity-pill svg { width: 15px; height: 15px; flex-shrink: 0; color: #1e293b; }
+.lt-activity-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #f1f5f9; border-radius: 20px; padding: 1px 7px;
+  font-size: 12px; font-weight: 400; color: #64748b;
+}
+.lt-icon-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #ffffff; cursor: pointer; color: #1e293b;
+  flex-shrink: 0;
+}
+.lt-icon-btn svg { width: 16px; height: 16px; }
+.lt-notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 9px; height: 9px;
+  background: #0f172a; border-radius: 50%; border: 1.5px solid #ffffff;
+}
+.lt-avatar {
+  width: 32px; height: 32px;
+  background: #bae6fd; color: #0369a1;
+  border-radius: 10px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   BODY LAYOUT
+   Follows the same pattern as 04-Veracity-scoring:
+     .page-body  → flex column, fills viewport below header
+     .page-scroll → scrollable area with glow background
+     .page-inner  → centered content column (max-width 1024px)
+   ============================================================ */
+.page-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+.page-scroll {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 44px 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scrollbar-width: none;
+}
+.page-scroll::-webkit-scrollbar { display: none; }
+.page-inner {
+  width: 100%;
+  max-width: 1024px;
+}
+
+/* Tabs */
+.approval-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.approval-tab {
+  font-size: 14px;
+  font-weight: 400;
+  font-family: var(--font);
+  color: var(--t-tertiary);
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  margin-right: 24px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+  text-align: center;
+  min-width: 120px;
+}
+.approval-tab:hover { color: var(--t-primary); }
+.approval-tab.active { color: var(--t-primary); font-weight: 600; }
+.approval-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #E22E33;
+}
+
+/* Chat area — uses sticky positioning from chatbox.css.
+   No local override needed; the component's calc(100%+40px) + negative margins
+   break out of page-scroll's 20px horizontal padding. */
+
+.ev-section-title { font-size: 18px; font-weight: 600; color: var(--t-primary); margin-bottom: 12px; }
+
+/* Table styles from the original */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th {
+  text-align: left; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--t-tertiary); padding: 10px 14px;
+  border-bottom: 1px solid var(--border-secondary);
+}
+.table td {
+  padding: 11px 14px; color: var(--t-secondary);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.table tr:last-child td { border-bottom: none; }
+.participant-cell { display: flex; align-items: center; gap: 8px; }
+.participant-avatar {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; flex-shrink: 0;
+}
+.avatar-1 { background: #bae6fd; color: #0369a1; }
+.avatar-2 { background: #fde68a; color: #92400e; }
+.avatar-3 { background: #bbf7d0; color: #166534; }
+.avatar-4 { background: #e9d5ff; color: #6b21a8; }
+.avatar-5 { background: #fecaca; color: #991b1b; }
+.avatar-6 { background: #fed7aa; color: #9a3412; }
+.avatar-7 { background: #c7d2fe; color: #3730a3; }
+.avatar-8 { background: #fde68a; color: #78350f; }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     APP BAR
+     ============================================================ -->
+<div class="lt-header">
+  <div class="lt-logo">
+    <div class="lt-logo-mark"><img src="../Icons/D_icon.png" alt="Diligent"></div>
+    Diligent  ·  Boards Cloud
+  </div>
+  <div class="lt-spacer"></div>
+  <div class="lt-header-nav">
+    <div class="lt-activity-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Recent system activity
+      <span class="lt-activity-count">5</span>
+    </div>
+    <div class="lt-icon-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="lt-notif-dot"></span>
+    </div>
+    <div class="lt-icon-btn">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+    </div>
+    <div class="lt-avatar">AC</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     BODY
+     ============================================================ -->
+<div class="page-body">
+  <div class="page-scroll hero-glow-yellow">
+    <div class="page-inner">
+
+      <!-- HERO SECTION — workflow variant -->
+      <div class="hero-section-workflow">
+        <div class="hero-header">
+          <div class="hero-tags">
+            <span class="pill pill-md pill-icon pill-red">
+              <img class="pill-ico" src="../Icons/Sort ascending.svg" style="width:20px;height:20px;">
+              High priority
+            </span>
+            <span class="pill pill-md pill-icon pill-transparent">
+              <img class="pill-ico" src="../Icons/Audit.svg">
+              Audit report request
+            </span>
+          </div>
+          <h1 class="hero-title"><strong>Cybersecurity Assurance Report</strong> — Feb 2026</h1>
+        </div>
+
+        <div class="hero-stepper">
+          <span class="hero-stepper-label">Workflow status</span>
+          <div class="hero-stepper-steps">
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+              Investigation
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+              Scope
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+              Evidence
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+              Synthesis
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+              Edit &amp; Authorize
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step done">
+              <div class="hero-step-icon"><img src="../Icons/Done.svg" width="20" height="20" alt=""></div>
+              Veracity scoring
+            </div>
+            <span class="hero-step-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div class="hero-step pending current">
+              <div class="hero-step-icon"><img src="../Icons/Pending.svg" width="20" height="20" alt=""></div>
+              Preview and approve
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END HERO SECTION -->
+
+      <!-- 32px gap between hero and tabs -->
+      <div style="height:32px; flex-shrink:0;"></div>
+
+      <!-- Tabs -->
+      <nav class="approval-tabs" role="tablist">
+        <button type="button" class="approval-tab" role="tab">Resolution document</button>
+        <button type="button" class="approval-tab" role="tab">Supporting materials</button>
+        <button type="button" class="approval-tab active" role="tab" aria-selected="true">Progress</button>
+      </nav>
+
+      <!-- Content -->
+      <div class="content-gap" style="padding: 24px 0 0; display:flex; flex-direction:column; gap:12px;">
+          <div style="background:#ffffff;border:1px solid var(--border);border-radius:16px;overflow:hidden;padding:16px 20px;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Participants</th>
+                  <th>Role</th>
+                  <th>Response</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-1">AC</span><span>Alexandra Chen</span></div></td>
+                  <td>CAE</td>
+                  <td>Pending</td>
+                  <td>Feb 28, 10:32</td>
+                </tr>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-2">TC</span><span>Thomas Chen</span></div></td>
+                  <td>Requestor</td>
+                  <td>Pending</td>
+                  <td>Feb 27, 14:00</td>
+                </tr>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-3">SM</span><span>Sarah Miller</span></div></td>
+                  <td>Internal Audit</td>
+                  <td>Approved</td>
+                  <td>Feb 28, 09:15</td>
+                </tr>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-4">JW</span><span>James Wong</span></div></td>
+                  <td>Compliance</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-5">MS</span><span>Maria Santos</span></div></td>
+                  <td>Risk</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-6">DP</span><span>David Park</span></div></td>
+                  <td>CISO</td>
+                  <td>Approved</td>
+                  <td>Feb 27, 16:45</td>
+                </tr>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-7">LF</span><span>Lisa Foster</span></div></td>
+                  <td>Legal</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><div class="participant-cell"><span class="participant-avatar avatar-8">RK</span><span>Robert Kim</span></div></td>
+                  <td>Board Secretary</td>
+                  <td>Pending</td>
+                  <td>Feb 28, 08:00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="alert-card alert-card-md alert-card-blue">
+            <div class="alert-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.25 16.75H12.75V11H11.25V16.75ZM12 9.28845C12.2288 9.28845 12.4207 9.21105 12.5755 9.05625C12.7303 8.90145 12.8077 8.70963 12.8077 8.48078C12.8077 8.25194 12.7303 8.06012 12.5755 7.9053C12.4207 7.7505 12.2288 7.6731 12 7.6731C11.7711 7.6731 11.5793 7.7505 11.4245 7.9053C11.2697 8.06012 11.1923 8.25194 11.1923 8.48078C11.1923 8.70963 11.2697 8.90145 11.4245 9.05625C11.5793 9.21105 11.7711 9.28845 12 9.28845ZM12.0016 21.5C10.6877 21.5 9.45268 21.2506 8.29655 20.752C7.1404 20.2533 6.13472 19.5765 5.2795 18.7217C4.42427 17.8669 3.74721 16.8616 3.24833 15.706C2.74944 14.5504 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45268 3.248 8.29655C3.74667 7.1404 4.42342 6.13472 5.27825 5.2795C6.1331 4.42427 7.13834 3.74721 8.29398 3.24833C9.44959 2.74944 10.6844 2.5 11.9983 2.5C13.3122 2.5 14.5473 2.74933 15.7034 3.248C16.8596 3.74667 17.8652 4.42342 18.7205 5.27825C19.5757 6.1331 20.2527 7.13834 20.7516 8.29398C21.2505 9.44959 21.5 10.6844 21.5 11.9983C21.5 13.3122 21.2506 14.5473 20.752 15.7034C20.2533 16.8596 19.5765 17.8652 18.7217 18.7205C17.8669 19.5757 16.8616 20.2527 15.706 20.7516C14.5504 21.2505 13.3156 21.5 12.0016 21.5Z" fill="currentColor"/></svg></div>
+            <div class="alert-card-body">
+              <div class="alert-card-title">CAE Professional Sign-off</div>
+              <div class="alert-card-sub">By authorizing distribution, I certify this report represents the audit function's professional assessment and is suitable for Audit Committee review.</div>
+            </div>
+            <div class="alert-card-actions">
+              <button type="button" class="btn btn-secondary btn-md">Request revision</button>
+              <button type="button" class="btn btn-primary btn-md">Certify and distribute</button>
+            </div>
+          </div>
+      </div>
+
+    </div><!-- end .page-inner -->
+
+    <!-- Chat area (fixed, full-width — sibling of page-inner, inside page-scroll) -->
+    <div class="chat-area">
+      <div class="chat-inner">
+        <div class="chat-input-row">
+          <textarea placeholder="Ask about evidence, review the pack, or re-run a source..."></textarea>
+          <div class="chat-bottom">
+            <div class="chat-chips-row">
+              <div class="chat-chip">Summarise the evidence pack</div>
+              <div class="chat-chip">Flag any gaps</div>
+              <div class="chat-chip">Re-run External Intel</div>
+            </div>
+            <div class="chat-actions">
+              <button class="btn btn-secondary btn-md">Clear</button>
+              <button class="btn btn-primary btn-md" disabled>Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end .page-scroll -->
+</div><!-- end .page-body -->
+
+</body>
+</html>

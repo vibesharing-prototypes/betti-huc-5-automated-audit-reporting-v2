@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02-Evidence-light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS — avo.re bw light translation
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --bg-base:       #f0f0f1;
+  --bg-surface:    #ffffff;
+  --bg-sidebar:    #e8e8ea;
+
+  /* Dark-alias names → light values (keeps var() refs working) */
+  --bg-primary:    #f0f0f1;
+  --bg-elevated:   #ffffff;
+  --bg-component:  #f4f4f5;
+
+  /* Text */
+  --t-primary:     #0a0a0a;
+  --t-secondary:   #525252;
+  --t-tertiary:    #737373;
+
+  /* Text aliases */
+  --text-primary:    #0a0a0a;
+  --text-secondary:  #525252;
+  --text-muted:      #737373;
+  --text-very-muted: #a3a3a3;
+
+  /* Borders */
+  --border:           rgba(0,0,0,0.09);
+  --border-primary:   rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+
+  /* Semantic palette — adapted for light bg */
+  --green:  #16a34a;
+  --blue:   #1d4ed8;
+  --amber:  #b45309;
+  --red:    #D3222A;
+  --purple: #7c3aed;
+  --orange: #ea580c;
+  --brand:  #D3222A;
+
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   PROTOTYPE NAV BAR
+   ============================================================ */
+#proto-nav {
+  background: rgba(236,72,153,0.04);
+  border-bottom: 1px solid rgba(236,72,153,0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 40px;
+  flex-shrink: 0;
+  z-index: 9999;
+  position: relative;
+}
+#proto-nav .proto-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #db2777;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+#proto-nav .proto-pills {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#proto-nav .proto-pills::-webkit-scrollbar { display: none; }
+.proto-pill {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(219,39,119,0.5);
+  background: rgba(236,72,153,0.04);
+  border: 1px solid rgba(236,72,153,0.15);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.proto-pill:hover { color: #db2777; border-color: rgba(236,72,153,0.4); }
+.proto-pill.active {
+  color: #9d174d;
+  border-color: #db2777;
+  border-bottom-width: 2px;
+  background: rgba(236,72,153,0.08);
+}
+#proto-nav .proto-hint {
+  font-size: 10px;
+  color: rgba(219,39,119,0.35);
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+/* ============================================================
+   SCREENS WRAPPER
+   ============================================================ */
+#screens-wrapper {
+  position: relative;
+  height: calc(100vh - 40px);
+  overflow: hidden;
+}
+.screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   PULSE / LOADING ANIMATIONS
+   ============================================================ */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse { animation: pulse 1.4s ease-in-out infinite; }
+.loading-dots::after {
+  content: '●●●';
+  animation: pulse 1.2s ease-in-out infinite;
+  letter-spacing: 3px;
+}
+
+/* ============================================================
+   APP HEADER — lt-header (matches 01-Intent-Capture-light)
+   ============================================================ */
+.lt-header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.lt-logo {
+  font-size: 14px; font-weight: 500; letter-spacing: -0.01em;
+  color: var(--t-primary);
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.lt-logo:hover { opacity: 0.7; }
+.lt-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+.lt-logo-mark img { width: 24px; height: 24px; display: block; }
+.lt-spacer { flex: 1; }
+.lt-header-nav { display: flex; align-items: center; gap: 8px; }
+.lt-activity-pill {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: #ffffff;
+  font-size: 13px; font-weight: 500; color: #1e293b;
+  cursor: pointer; white-space: nowrap; transition: border-color 0.15s;
+}
+.lt-activity-pill:hover { border-color: #cbd5e1; }
+.lt-activity-pill svg { width: 15px; height: 15px; flex-shrink: 0; color: #1e293b; }
+.lt-activity-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #f1f5f9; border-radius: 20px; padding: 1px 7px;
+  font-size: 12px; font-weight: 500; color: #64748b;
+}
+.lt-icon-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #ffffff; cursor: pointer; color: #1e293b;
+  flex-shrink: 0; transition: border-color 0.15s;
+}
+.lt-icon-btn:hover { border-color: #cbd5e1; }
+.lt-icon-btn svg { width: 16px; height: 16px; }
+.lt-notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 9px; height: 9px;
+  background: #0f172a; border-radius: 50%; border: 1.5px solid #ffffff;
+}
+.lt-avatar {
+  width: 32px; height: 32px;
+  background: #e2e8f0; border-radius: 50%;
+  cursor: pointer; flex-shrink: 0;
+}
+
+/* ============================================================
+   INVESTIGATION LAYOUT
+   ============================================================ */
+.investigation-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Left icon sidebar */
+.lt-sidebar {
+  width: 48px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.lt-sidebar-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--t-tertiary);
+  transition: all 0.15s;
+}
+.lt-sidebar-icon:hover { background: rgba(0,0,0,0.06); color: var(--t-secondary); }
+.lt-sidebar-icon.active { background: rgba(211,34,42,0.08); color: var(--brand); }
+.lt-sidebar-icon svg { width: 18px; height: 18px; }
+
+/* LEFT CONTENT AREA */
+.left-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+.left-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 44px 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scrollbar-width: none;
+  background: transparent;
+}
+.left-scroll::-webkit-scrollbar { display: none; }
+.left-scroll-inner {
+  width: 100%;
+  max-width: 1024px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* AGENT MESSAGE BLOCK */
+.agent-block {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.agent-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  color: var(--t-tertiary);
+  text-transform: uppercase;
+}
+.agent-label.orange    { color: #ea580c; }
+.agent-label.synth     { color: #7c3aed; }
+.agent-label.grc       { color: #1d4ed8; }
+.agent-label.forensic  { color: #ea580c; }
+.agent-label.confidence { color: #16a34a; }
+.agent-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--t-primary);
+  line-height: 1.4;
+}
+.agent-subtitle { font-size: 12px; color: var(--t-tertiary); }
+.agent-body {
+  font-size: 13px;
+  color: var(--t-secondary);
+  line-height: 1.6;
+}
+.agent-msg {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.agent-text { font-size: 13px; color: var(--t-secondary); line-height: 1.6; }
+.agent-text p { margin: 0 0 8px; }
+.agent-text p:last-child { margin-bottom: 0; }
+
+/* BADGES */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.badge-red    { background: rgba(211,34,42,0.08);  color: #D3222A; border: 1px solid rgba(211,34,42,0.2); }
+.badge-green  { background: rgba(22,163,74,0.08);  color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+.badge-blue   { background: rgba(29,78,216,0.08);  color: #1d4ed8; border: 1px solid rgba(29,78,216,0.2); }
+.badge-amber  { background: rgba(180,83,9,0.08);   color: #b45309; border: 1px solid rgba(180,83,9,0.2); }
+.badge-orange { background: rgba(234,88,12,0.08);  color: #ea580c; border: 1px solid rgba(234,88,12,0.2); }
+.badge-muted  { background: #f4f4f5; color: var(--t-tertiary); border: 1px solid var(--border); }
+
+/* TOGGLE */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { flex: 1; font-size: 13px; color: var(--t-secondary); }
+.toggle-rec { font-size: 10px; color: #16a34a; font-weight: 600; }
+.toggle {
+  width: 36px;
+  height: 20px;
+  background: #16a34a;
+  border-radius: 10px;
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.toggle.off { background: #e4e4e7; border: 1px solid var(--border); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px;
+  right: 2px;
+  transition: left 0.2s cubic-bezier(0.34,1.56,0.64,1), right 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toggle.off::after { right: auto; left: 2px; background: #a1a1aa; }
+
+/* SECTION LABEL */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--t-tertiary);
+  margin-bottom: 8px;
+}
+
+/* SCOPE TABLE */
+.scope-table { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+.scope-row { display: flex; border-bottom: 1px solid var(--border); font-size: 13px; }
+.scope-row:last-child { border-bottom: none; }
+.scope-key {
+  width: 160px; flex-shrink: 0; padding: 10px 14px;
+  color: var(--t-tertiary); font-size: 11px; font-weight: 600;
+  background: #f8f8f9; border-right: 1px solid var(--border);
+}
+.scope-val { flex: 1; padding: 10px 14px; color: var(--t-secondary); display: flex; align-items: center; gap: 8px; }
+
+/* SCOPE PILLS */
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.scope-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; padding: 4px 10px; border-radius: 20px;
+  background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.2); color: #16a34a;
+}
+.scope-pill.off { background: #f4f4f5; border-color: var(--border); color: var(--t-tertiary); text-decoration: line-through; }
+
+/* WARN BOX */
+.warn-box {
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.warn-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; color: #92400e; }
+.warn-content { flex: 1; }
+.warn-title { font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 4px; }
+.warn-body  { font-size: 12px; color: var(--t-tertiary); line-height: 1.5; }
+.warn-btn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px; font-weight: 600;
+  color: #92400e;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+/* INFO BOX */
+.info-box {
+  background: rgba(29,78,216,0.04);
+  border: 1px solid rgba(29,78,216,0.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.info-content { flex: 1; font-size: 12px; color: var(--t-secondary); line-height: 1.5; }
+.info-content strong { color: #1d4ed8; }
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px; font-weight: 600;
+  color: #1d4ed8;
+  background: rgba(29,78,216,0.06);
+  border: 1px solid rgba(29,78,216,0.18);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* PROGRESS BAR */
+.progress-item { margin-bottom: 12px; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.progress-label { font-size: 12px; color: var(--t-secondary); }
+.progress-val   { font-size: 12px; color: var(--t-tertiary); }
+.progress-track { height: 6px; background: #e4e4e7; border-radius: 3px; overflow: hidden; }
+.progress-fill  { height: 100%; background: #1DD9F9; border-radius: 3px; transition: width 0.4s ease; }
+
+/* SOURCE QUEUE ITEM */
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.source-item:last-child { border-bottom: none; }
+.source-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.source-info { flex: 1; min-width: 0; }
+.source-name   { font-size: 12px; font-weight: 600; color: var(--t-secondary); }
+.source-detail { font-size: 11px; color: var(--t-tertiary); }
+
+/* EVIDENCE TABLE */
+.evidence-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.evidence-table th {
+  text-align: left;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--t-tertiary);
+  padding: 10px 14px;
+  background: #f8f8f9;
+  border-bottom: 1px solid var(--border);
+}
+.evidence-table td {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--t-secondary);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.evidence-table tr:last-child td { border-bottom: none; }
+.evidence-table tr:hover td { background: #f8f8f9; }
+.check-green { color: #16a34a; font-size: 14px; }
+.amber-text  { color: #b45309; }
+
+/* CHAT INPUT AREA */
+.chat-area {
+  border-top: 1px solid var(--border);
+  padding: 12px 32px 16px;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+.chat-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.chat-chip {
+  font-size: 11px;
+  color: var(--t-tertiary);
+  background: #f4f4f5;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { border-color: #cbd5e1; color: var(--t-primary); }
+.chat-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f4f5;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+.chat-input-row:focus-within { border-color: rgba(0,0,0,0.2); }
+.chat-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none; outline: none;
+  font-size: 13px;
+  color: var(--t-primary);
+  font-family: var(--font);
+}
+.chat-input-row input::placeholder { color: var(--t-tertiary); }
+.send-btn {
+  width: 28px; height: 28px;
+  background: #1e293b;
+  border: none; border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.send-btn:hover { background: #0f172a; }
+.send-btn svg { width: 14px; height: 14px; fill: #fff; }
+
+/* ============================================================
+   RIGHT PANEL
+   ============================================================ */
+.right-panel {
+  width: 320px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.right-panel::-webkit-scrollbar { width: 4px; }
+.right-panel::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+
+.panel-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.panel-section:last-child { border-bottom: none; }
+.panel-section-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--t-tertiary);
+  margin-bottom: 12px;
+}
+
+/* STAGE HEADER */
+.stage-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
+.stage-title { font-size: 14px; font-weight: 700; color: var(--t-primary); margin-bottom: 6px; }
+.stage-badge-row { display: flex; align-items: center; gap: 8px; }
+
+/* STAGE NAVIGATOR DOTS */
+.stage-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.stage-dot-group { display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; z-index: 1; }
+.stage-dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border-secondary);
+  background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  color: var(--t-tertiary);
+  transition: all 0.2s;
+}
+.stage-dot.done         { background: #1DD9F9; border-color: #1DD9F9; color: #fff; }
+.stage-dot.active       { background: #1DD9F9; border-color: #1DD9F9; color: #fff; animation: pulse 1.4s ease-in-out infinite; transform: scale(1.12); }
+.stage-dot.active-amber { background: #b45309; border-color: #b45309; color: #fff; animation: pulse 1.4s ease-in-out infinite; }
+.stage-dot.pending      { background: #ffffff; border-color: var(--border); color: var(--t-tertiary); }
+.stage-dot-label { font-size: 9px; color: var(--t-tertiary); text-align: center; white-space: nowrap; }
+.stage-dot-label.active       { color: #0891b2; font-weight: 600; }
+.stage-dot-label.done         { color: #0891b2; }
+.stage-dot-label.active-amber { color: #b45309; font-weight: 600; }
+.stage-line {
+  flex: 1; height: 2px;
+  background: var(--border);
+  margin-bottom: 16px;
+  min-width: 8px; max-width: 24px;
+}
+.stage-line.done { background: #1DD9F9; }
+
+/* GATE BOX */
+.gate-box {
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(180,83,9,0.18);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #92400e;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.gate-box .gate-icon { font-size: 14px; margin-right: 6px; }
+
+/* PANEL BUTTONS */
+.btn-primary-full {
+  width: 100%;
+  padding: 11px 16px;
+  background: #1e293b;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.15s, transform 0.1s;
+  margin-bottom: 8px;
+  font-family: var(--font);
+}
+.btn-primary-full:hover  { background: #0f172a; }
+.btn-primary-full:active { transform: scale(0.98); }
+
+.btn-secondary-link {
+  width: 100%;
+  padding: 8px 16px;
+  background: #ffffff;
+  color: var(--t-secondary);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  font-family: var(--font);
+}
+.btn-secondary-link:hover { background: #f4f4f5; border-color: #d4d4d8; }
+
+/* WHAT HAPPENS NEXT */
+.next-list { display: flex; flex-direction: column; gap: 10px; }
+.next-item { display: flex; gap: 10px; font-size: 12px; color: var(--t-tertiary); line-height: 1.5; }
+.next-num {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #f4f4f5;
+  border: 1px solid var(--border);
+  font-size: 9px; font-weight: 700;
+  color: var(--t-tertiary);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+/* STAT ROWS */
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-key           { color: var(--t-tertiary); }
+.stat-value         { color: var(--t-secondary); font-weight: 600; }
+.stat-value.green   { color: #16a34a; }
+.stat-label         { color: var(--t-tertiary); font-size: 12px; }
+
+/* ============================================================
+   INV LAYOUT — alternate vocabulary (aliases)
+   ============================================================ */
+.inv-layout { display: flex; flex: 1; overflow: hidden; }
+.inv-main   { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; background: var(--bg-base); }
+.inv-content {
+  flex: 1; overflow-y: auto;
+  padding: 24px 32px;
+  display: flex; flex-direction: column; gap: 16px;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.inv-content::-webkit-scrollbar { width: 6px; }
+.inv-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+
+.inv-input-bar { border-top: 1px solid var(--border); padding: 12px 32px 16px; background: #ffffff; flex-shrink: 0; }
+.inv-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.inv-chip {
+  font-size: 11px; color: var(--t-tertiary);
+  background: #f4f4f5; border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 11px;
+  cursor: pointer; transition: all 0.15s;
+}
+.inv-chip:hover { border-color: #cbd5e1; color: var(--t-primary); }
+.inv-input-row {
+  display: flex; align-items: center; gap: 8px;
+  background: #f4f4f5; border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px 14px;
+}
+.inv-input-row:focus-within { border-color: rgba(0,0,0,0.2); }
+.inv-send {
+  width: 28px; height: 28px;
+  background: #1e293b; border: none; border-radius: 8px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; color: #fff;
+  flex-shrink: 0; font-family: var(--font); line-height: 1;
+  transition: background 0.15s;
+}
+.inv-send:hover { background: #0f172a; }
+
+.inv-panel {
+  width: 320px; flex-shrink: 0;
+  background: #ffffff; border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.inv-panel::-webkit-scrollbar { width: 4px; }
+.inv-panel::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+
+/* Stage nav variant */
+.stage-nav:has(.stage-nav-header) {
+  flex-direction: column; align-items: stretch;
+  justify-content: flex-start; padding: 0;
+}
+.stage-nav-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
+}
+.stage-nav-title  { font-size: 14px; font-weight: 700; color: var(--t-primary); }
+.stage-nav-status { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; border: 1px solid; }
+.stage-dots { display: flex; align-items: center; padding: 14px 20px 4px; }
+.stage-dots .stage-dot  { flex-shrink: 0; }
+.stage-dots .stage-line { flex: 1; min-width: 6px; max-width: none; margin-bottom: 0; }
+.stage-labels { display: flex; justify-content: space-between; padding: 4px 20px 14px; border-bottom: 1px solid var(--border); }
+.stage-label { font-size: 9px; color: var(--t-tertiary); text-align: center; white-space: nowrap; }
+.stage-label.active { color: #0891b2; font-weight: 600; }
+.stage-label.done   { color: #0891b2; }
+
+/* PRIMARY / SECONDARY BUTTONS */
+.btn-primary {
+  width: 100%; padding: 11px 16px;
+  background: #1e293b; color: #fff;
+  border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; display: block; text-align: center;
+  transition: background 0.15s, transform 0.1s;
+  margin-bottom: 8px; font-family: var(--font);
+}
+.btn-primary:hover  { background: #0f172a; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary.green  { background: #16a34a; color: #fff; }
+.btn-primary.green:hover { background: #15803d; }
+
+.btn-secondary {
+  display: block; width: 100%; padding: 8px 16px;
+  background: #ffffff; color: var(--t-secondary);
+  border: 1px solid #e2e8f0; border-radius: 12px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: center;
+  transition: all 0.15s; font-family: var(--font);
+}
+.btn-secondary:hover { background: #f4f4f5; border-color: #d4d4d8; }
+
+/* APP LOGO / AVATAR aliases */
+.app-logo {
+  width: 24px; height: 24px;
+  background: #f4f4f5; border: 1px solid var(--border);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--t-primary);
+  flex-shrink: 0; text-decoration: none;
+}
+.app-breadcrumb { font-size: 13px; font-weight: 500; color: var(--t-tertiary); margin-left: 10px; }
+.app-avatar {
+  width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #475569; cursor: pointer;
+}
+.avatar-ac { background: #e2e8f0; color: #475569; }
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.mt4  { margin-top: 4px; }
+.mt8  { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mb8  { margin-bottom: 8px; }
+.mb12 { margin-bottom: 12px; }
+.flex-row { display: flex; align-items: center; gap: 8px; }
+.text-muted  { color: var(--t-tertiary); }
+.text-green  { color: #16a34a; }
+.text-amber  { color: #b45309; }
+.text-blue   { color: #1d4ed8; }
+.text-red    { color: #D3222A; }
+.fw600 { font-weight: 600; }
+.fz11  { font-size: 11px; }
+.fz12  { font-size: 12px; }
+
+/* ============================================================
+   MICROINTERACTIONS
+   ============================================================ */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.screen.active .agent-block,
+.screen.active .agent-msg { animation: slideUp 0.28s ease both; }
+.screen.active .left-scroll > .agent-block:nth-child(2),
+.screen.active .inv-content > .agent-msg:nth-child(2) { animation-delay: 0.07s; }
+.screen.active .left-scroll > .agent-block:nth-child(3),
+.screen.active .inv-content > .agent-msg:nth-child(3) { animation-delay: 0.14s; }
+.screen.active .left-scroll > .agent-block:nth-child(4),
+.screen.active .inv-content > .agent-msg:nth-child(4) { animation-delay: 0.21s; }
+.btn-primary-full:active { transform: scale(0.98); }
+
+/* ============================================================
+   HERO SECTION — exact match to 01-Intent-Capture-light.html
+   ============================================================ */
+/* Screen backgrounds carry the gradient (matches #lt-screen-2 in 01-Intent-Capture-light.html) */
+#screen-0, #screen-1 {
+  background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(0,195,215,0.28) 0%, transparent 65%), var(--bg-base);
+}
+.lt-s1-hero {
+  border-radius: 24px;
+  padding: 0 80px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.lt-s1-page-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--t-primary);
+  line-height: 1.2;
+}
+.lt-s1-page-title strong { font-weight: 700; }
+.s2-workflow {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.s2-workflow-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(0,0,0,0.4); }
+.s2-workflow-steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.s2-workflow-step { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t-secondary); }
+.s2-workflow-step.active { color: var(--t-primary); font-weight: 700; }
+.s2-step-circle {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--t-tertiary); flex-shrink: 0;
+}
+.s2-step-circle.active { background: #1DD9F9; border-color: #1DD9F9; color: #006879; }
+.s2-workflow-arrow { color: var(--t-tertiary); display: flex; align-items: center; }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     PROTOTYPE NAV BAR
+     ============================================================ -->
+<div id="proto-nav">
+  <div class="proto-label">HUC · 02 Evidence</div>
+  <div class="proto-pills">
+    <div class="proto-pill active" id="pill-0" onclick="showScreen(0)">4 · Evidence Gathering</div>
+    <div class="proto-pill" id="pill-1" onclick="showScreen(1)">5 · Evidence Pack</div>
+  </div>
+  <div class="proto-hint">← → keys to navigate</div>
+</div>
+
+<!-- SCREENS WRAPPER -->
+<div id="screens-wrapper">
+
+<!-- ============================================================
+     SCREEN 0 — Evidence Gathering
+     ============================================================ -->
+<div class="screen active" id="screen-0">
+  <div class="lt-header">
+    <div class="lt-logo">
+      <div class="lt-logo-mark"><img src="../Icons/D_icon.png" alt="Diligent"></div>
+      Diligent
+    </div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="lt-activity-count">5</span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="lt-notif-dot"></span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="lt-avatar"></div>
+    </div>
+  </div>
+
+  <div class="investigation-body">
+    <!-- Left Content -->
+    <div class="left-content">
+      <div class="left-scroll">
+        <div class="left-scroll-inner">
+
+        <!-- Hero -->
+        <div class="lt-s1-hero">
+          <div class="lt-s1-hero-header">
+            <h1 class="lt-s1-page-title">Audit reporting <strong>evidence gathering</strong> is in progress.</h1>
+          </div>
+          <div class="s2-workflow">
+            <div class="s2-workflow-label">Workflow Status</div>
+            <div class="s2-workflow-steps">
+              <div class="s2-workflow-step" style="color:var(--t-tertiary);">
+                <div class="s2-step-circle" style="background:#8EE400;border-color:#8EE400;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5l2.5 2.5 3.5-4" stroke="#3a5a00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                Intent capture
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step" style="color:var(--t-tertiary);">
+                <div class="s2-step-circle" style="background:#8EE400;border-color:#8EE400;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5l2.5 2.5 3.5-4" stroke="#3a5a00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                Scope
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step active">
+                <div class="s2-step-circle active"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1.5l3.5 3.5-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                Evidence
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"></div>
+                Synthesis &amp; Steering
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"></div>
+                Deep Dive &amp; Scoring
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"></div>
+                Report &amp; Approval
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-block">
+          <div class="agent-label orange">Intelligence Scout</div>
+          <div class="agent-title">Evidence gathering started — scanning 8 sources in parallel.</div>
+          <div class="agent-body">Results surface as each source completes. You can continue working while I gather data — I'll surface findings as they arrive.</div>
+        </div>
+
+        <div class="agent-block">
+          <div class="agent-label orange">Intelligence Scout</div>
+          <div class="agent-title">✓ Projects complete — 47 findings retrieved (12 high/critical).</div>
+          <div class="agent-body">Remediation data included. 12 findings rated High or Critical with open remediation items. Oldest open finding: 14 months.</div>
+        </div>
+
+        <div class="agent-block">
+          <div class="agent-label orange">Intelligence Scout</div>
+          <div class="agent-title">✓ Frameworks complete — 180 controls scanned, 8 flagged ineffective.</div>
+          <div class="agent-body">Risk control matrix reviewed. 8 controls assessed as ineffective in the cybersecurity domain. Test plans retrieved for all 180 controls.</div>
+        </div>
+
+        <div class="agent-block" style="border-color: rgba(29,78,216,0.2);">
+          <div class="agent-label orange">Intelligence Scout</div>
+          <div class="agent-title" style="display:flex;align-items:center;gap:10px;">
+            ERM scanning
+            <span style="font-size:12px;color:var(--t-tertiary);font-weight:400;" class="loading-dots"></span>
+          </div>
+          <div class="agent-body">Retrieving risk register, appetite thresholds and velocity data...</div>
+        </div>
+
+        </div><!-- end left-scroll-inner -->
+      </div><!-- end left-scroll -->
+
+      <div class="chat-area">
+        <div class="chat-chips">
+          <div class="chat-chip">Prioritise Compliance Maps first</div>
+          <div class="chat-chip">Why is ERM taking so long?</div>
+          <div class="chat-chip">Skip External Intel — not needed</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" placeholder="Steer the investigation or ask about a source...">
+          <button class="send-btn">
+            <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 1 — Evidence Pack
+     ============================================================ -->
+<div class="screen" id="screen-1">
+  <div class="lt-header">
+    <div class="lt-logo">
+      <div class="lt-logo-mark"><img src="../Icons/D_icon.png" alt="Diligent"></div>
+      Diligent
+    </div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-activity-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Recent system activity
+        <span class="lt-activity-count">5</span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="lt-notif-dot"></span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="lt-avatar"></div>
+    </div>
+  </div>
+
+  <div class="investigation-body">
+    <!-- Left Content -->
+    <div class="left-content">
+      <div class="left-scroll">
+        <div class="left-scroll-inner">
+
+        <!-- Hero -->
+        <div class="lt-s1-hero">
+          <div class="lt-s1-hero-header">
+            <h1 class="lt-s1-page-title">Audit reporting <strong>evidence review</strong> is in progress.</h1>
+          </div>
+          <div class="s2-workflow">
+            <div class="s2-workflow-label">Workflow Status</div>
+            <div class="s2-workflow-steps">
+              <div class="s2-workflow-step" style="color:var(--t-tertiary);">
+                <div class="s2-step-circle" style="background:#8EE400;border-color:#8EE400;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5l2.5 2.5 3.5-4" stroke="#3a5a00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                Intent capture
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step" style="color:var(--t-tertiary);">
+                <div class="s2-step-circle" style="background:#8EE400;border-color:#8EE400;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5l2.5 2.5 3.5-4" stroke="#3a5a00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                Scope
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step active">
+                <div class="s2-step-circle active"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 1.5l3.5 3.5-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                Evidence
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"></div>
+                Synthesis &amp; Steering
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"></div>
+                Deep Dive &amp; Scoring
+              </div>
+              <span class="s2-workflow-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <div class="s2-workflow-step">
+                <div class="s2-step-circle"></div>
+                Report &amp; Approval
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agent-block">
+          <div class="agent-label orange">Intelligence Scout</div>
+          <div class="agent-title">✓ Evidence Pack assembled — 7 of 7 sources complete.</div>
+          <div class="agent-body">All selected sources returned data. Vault was excluded per your scope settings. The pack has been saved to Boards as supporting material for the Audit Committee book. Review the pack and confirm the evidence base before synthesis begins.</div>
+        </div>
+
+        <!-- Evidence Pack Table -->
+        <div class="agent-block" style="padding:0;overflow:hidden;">
+          <div style="padding:16px 24px 12px;font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--t-tertiary);">
+            Evidence Pack — 308 Data Points Across 7 Sources
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="evidence-table" style="border:none;border-radius:0;">
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Records</th>
+                  <th>Freshness</th>
+                  <th style="text-align:center;">✓</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Projects</strong> — Findings &amp; Controls</td>
+                  <td>47 findings · 180 controls</td>
+                  <td><span class="text-green">Current</span></td>
+                  <td style="text-align:center;"><span class="check-green">✓</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Frameworks</strong> — Risk Control Matrix</td>
+                  <td>8 controls · 8 ineffective</td>
+                  <td><span class="text-green">Current</span></td>
+                  <td style="text-align:center;"><span class="check-green">✓</span></td>
+                </tr>
+                <tr>
+                  <td><strong>ERM</strong> — Risk Register &amp; Appetite</td>
+                  <td>22 risks · 3 above appetite</td>
+                  <td><span class="text-green">Current</span></td>
+                  <td style="text-align:center;"><span class="check-green">✓</span></td>
+                </tr>
+                <tr>
+                  <td><strong>AI Risk Essentials</strong> — Alerts</td>
+                  <td>15 AI alerts · peer benchmarks</td>
+                  <td><span class="text-green">Current</span></td>
+                  <td style="text-align:center;"><span class="check-green">✓</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Compliance Maps</strong> — SEC Obligations</td>
+                  <td>12 obligations · 3 gaps</td>
+                  <td><span class="text-green">Current</span></td>
+                  <td style="text-align:center;"><span class="check-green">✓</span></td>
+                </tr>
+                <tr>
+                  <td><strong>3rd Risk</strong> — Vendor Assessments</td>
+                  <td>6 vendors · 3 high-risk</td>
+                  <td><span class="amber-text">Recent</span></td>
+                  <td style="text-align:center;"><span class="check-green">✓</span></td>
+                </tr>
+                <tr>
+                  <td><strong>External Intel</strong> — Peer Enforcement</td>
+                  <td>6 enforcement actions</td>
+                  <td><span class="text-green">Current</span></td>
+                  <td style="text-align:center;"><span class="check-green">✓</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Info Box: Saved to Boards -->
+        <div class="info-box">
+          <div style="font-size:18px;flex-shrink:0;">📋</div>
+          <div class="info-content">
+            <strong>Saved to Boards</strong> — Evidence Pack · Cybersecurity Assurance Report<br>
+            Available as supporting material in the Audit Committee board pack.
+            <br>
+            <button class="info-btn">Open in Boards ↗</button>
+          </div>
+        </div>
+
+        </div><!-- end left-scroll-inner -->
+      </div><!-- end left-scroll -->
+
+      <div class="chat-area">
+        <div class="chat-chips">
+          <div class="chat-chip">Any gaps in the evidence base?</div>
+          <div class="chat-chip">Why is 3rd Risk marked Recent?</div>
+          <div class="chat-chip">Add another source before synthesis</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" placeholder="Challenge the evidence base or request additional sources...">
+          <button class="send-btn">
+            <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end screens-wrapper -->
+
+<script>
+  let currentScreen = 0;
+  const totalScreens = 2;
+
+  function showScreen(index) {
+    document.querySelectorAll('.screen').forEach((p, i) => {
+      p.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.proto-pill').forEach((p, i) => {
+      p.classList.toggle('active', i === index);
+    });
+    currentScreen = index;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (index === 0) {
+      setTimeout(() => {
+        document.querySelectorAll('.progress-fill[data-width]').forEach(el => {
+          el.style.width = el.dataset.width;
+        });
+      }, 150);
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' && currentScreen < totalScreens - 1) showScreen(currentScreen + 1);
+    if (e.key === 'ArrowLeft'  && currentScreen > 0)                showScreen(currentScreen - 1);
+  });
+
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.progress-fill[data-width]').forEach(el => {
+      el.style.width = '0%';
+    });
+    // Animate progress bars on initial load
+    setTimeout(() => {
+      document.querySelectorAll('.progress-fill[data-width]').forEach(el => {
+        el.style.width = el.dataset.width;
+      });
+    }, 300);
+  });
+
+  document.addEventListener('click', e => {
+    const toggle = e.target.closest('.toggle');
+    if (toggle) {
+      toggle.classList.toggle('off');
+      const card = toggle.closest('.domain-card');
+      if (card) {
+        card.classList.toggle('on',  !toggle.classList.contains('off'));
+        card.classList.toggle('off',  toggle.classList.contains('off'));
+      }
+      if (card) card.style.opacity = toggle.classList.contains('off') ? '0.6' : '';
+    }
+    const timeBtn = e.target.closest('.time-btn');
+    if (timeBtn) {
+      const group = timeBtn.closest('.time-btn-group');
+      if (group) {
+        group.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+        timeBtn.classList.add('active');
+      }
+    }
+  });
+</script>
+</body>
+</html>

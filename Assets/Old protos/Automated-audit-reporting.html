@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automated Audit Reporting — Full Workflow</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #18181b; }
+  body { display: flex; flex-direction: column; }
+
+  /* ── Step indicator ── */
+  .wf-step-bar {
+    background: #282E37;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 12px;
+    color: #8a8a8d;
+    letter-spacing: 0.04em;
+    z-index: 100;
+  }
+  .wf-step {
+    padding: 3px 10px;
+    border-radius: 14px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .wf-step.active {
+    background: #fff;
+    color: #282E37;
+    font-weight: 600;
+  }
+  .wf-step.done {
+    color: #4ade80;
+  }
+  .wf-step:not(.active) {
+    cursor: pointer;
+  }
+  .wf-step:not(.active):hover {
+    color: #c0c0c3;
+  }
+  .wf-arrow {
+    color: #555;
+  }
+
+  /* ── Iframe ── */
+  .wf-frame {
+    flex: 1;
+    border: none;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<script src="proto-panel.js"
+        data-description="Automated Audit Reporting"
+        data-theme-toggle="false"
+        data-state-toggle="false"></script>
+
+<!-- Step indicator -->
+<div class="wf-step-bar">
+  <span class="wf-step active" data-step="0">01. Investigation</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="1">02. Evidence</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="2">03. Synthesis and Edit</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="3">04. Veracity scoring</span>
+  <span class="wf-arrow">&rarr;</span>
+  <span class="wf-step" data-step="4">05. Preview-Approve</span>
+</div>
+
+<iframe class="wf-frame" id="wf-frame"></iframe>
+
+<script>
+  const frame = document.getElementById('wf-frame');
+  const steps = document.querySelectorAll('.wf-step[data-step]');
+  let currentStep = -1;
+
+  // Flow definition — bridge script in each source file handles button hooking
+  const flow = [
+    { file: '01-Investigation.html' },
+    { file: '02-Evidence-v2.html' },
+    { file: '03-Synthesis-to-Chat.html' },
+    { file: '04-Veracity-scoring.html' },
+    { file: '05-Preview-Approve.html' }
+  ];
+
+  // Listen for postMessage from iframes to advance steps
+  window.addEventListener('message', (e) => {
+    if (e.data && typeof e.data.wfAdvance === 'number') {
+      goToStep(e.data.wfAdvance);
+    }
+  });
+
+  function updateStepIndicator(stepIndex) {
+    steps.forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i < stepIndex) s.classList.add('done');
+      if (i === stepIndex) s.classList.add('active');
+    });
+  }
+
+  function goToStep(stepIndex) {
+    if (stepIndex >= flow.length) return;
+    currentStep = stepIndex;
+    const step = flow[stepIndex];
+    updateStepIndicator(stepIndex);
+    frame.src = step.file;
+  }
+
+  // No iframe load handler needed — workflow-bridge.js in each
+  // source file handles button hooking via postMessage
+
+  // Make tabs clickable
+  steps.forEach(step => {
+    step.addEventListener('click', () => {
+      const idx = parseInt(step.dataset.step, 10);
+      if (idx !== currentStep) goToStep(idx);
+    });
+  });
+
+  // Start the flow
+  goToStep(0);
+</script>
+
+</body>
+</html>

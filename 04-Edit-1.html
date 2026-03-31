@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04-Edit-1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Components/huc-components.css">
+<link rel="stylesheet" href="Components/headers.css">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg-base:       #f0f0f1;
+  --bg-surface:    #ffffff;
+  --bg-component:  #f4f4f5;
+
+  --t-primary:     #282E37;
+  --t-secondary:   #282E37;
+  --t-tertiary:    #6F7377;
+
+  --border:           rgba(0,0,0,0.09);
+  --border-secondary: rgba(0,0,0,0.14);
+
+  --brand: #D3222A;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--bg-base);
+  color: var(--t-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   APP HEADER
+   ============================================================ */
+.lt-header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.lt-logo {
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--t-primary);
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.lt-logo:hover { opacity: 0.7; }
+.lt-logo-mark { width: 24px; height: 24px; flex-shrink: 0; }
+.lt-logo-mark img { width: 24px; height: 24px; display: block; }
+.lt-spacer { flex: 1; }
+.lt-header-nav { display: flex; align-items: center; gap: 8px; }
+.lt-icon-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: #ffffff; cursor: pointer; color: #1e293b;
+  flex-shrink: 0; transition: border-color 0.15s;
+}
+.lt-icon-btn:hover { border-color: #cbd5e1; }
+.lt-icon-btn svg { width: 16px; height: 16px; }
+.lt-notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 9px; height: 9px;
+  background: #0f172a; border-radius: 50%; border: 1.5px solid #ffffff;
+}
+.lt-avatar {
+  width: 32px;
+  height: 32px;
+  background: #bae6fd;
+  color: #0369a1;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   BODY LAYOUT
+   ============================================================ */
+.body-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 48px);
+  background: #F6F6F9;
+}
+
+/* ============================================================
+   LEFT PANEL
+   ============================================================ */
+.chat-panel {
+  flex: 0 0 44%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #F6F6F9;
+}
+.chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+.chat-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+}
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.3);
+}
+
+/* Date divider */
+.msg-date {
+  text-align: center;
+  font-size: 12px;
+  color: var(--t-tertiary);
+  padding: 20px 0 16px;
+  position: relative;
+}
+.msg-date::before, .msg-date::after {
+  content: '';
+  position: absolute;
+  top: calc(50% + 2px);
+  height: 1px;
+  background: var(--border);
+}
+.msg-date::before { left: 0; width: calc(50% - 52px); }
+.msg-date::after  { right: 0; width: calc(50% - 52px); }
+
+/* Agent message header */
+.msg-agent-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.msg-agent-icon {
+  width: 24px; height: 24px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.msg-agent-icon img { width: 24px; height: 24px; display: block; }
+.msg-agent-meta-col { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.msg-agent-name { font-size: 13px; font-weight: 600; color: var(--t-secondary); }
+.msg-agent-time { font-size: 11px; color: var(--t-secondary); }
+
+/* Agent body text */
+.msg-body-p {
+  font-size: 14px;
+  color: var(--t-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.msg-body-p:last-of-type { margin-bottom: 0; }
+.msg-body-p strong { color: var(--t-primary); font-weight: 600; }
+
+.msg-steps-label {
+  font-size: 14px;
+  color: var(--t-secondary);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+/* ============================================================
+   STEP CARDS
+   ============================================================ */
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.step-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.step-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+/* .step-num — now using pill pill-num from Components/pills.css */
+.step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--t-primary);
+  line-height: 1.3;
+}
+.step-body {
+  font-size: 13px;
+  color: var(--t-secondary);
+  line-height: 1.55;
+}
+
+/* Tag chips in step 2 */
+.step-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+.step-tag-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--t-secondary);
+  line-height: 1.4;
+}
+
+/* Translation examples in step 3 */
+.step-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.step-example {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--t-secondary);
+  line-height: 1.5;
+}
+.step-ex-icon {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.step-ex-icon svg { width: 10px; height: 10px; }
+.step-ex-icon.negative { background: rgba(211,34,42,0.1); }
+.step-ex-icon.negative svg { color: #D3222A; }
+.step-ex-icon.positive { background: rgba(22,163,74,0.12); }
+.step-ex-icon.positive svg { color: #16a34a; }
+.step-ex-icon.additive { background: #f4f4f5; border: 1px solid var(--border-secondary); }
+.step-ex-icon.additive svg { color: var(--t-tertiary); }
+
+/* Divider after step cards */
+.msg-divider {
+  border: none;
+  border-top: 1px solid #DADADA;
+  margin: 0 0 20px 0;
+}
+
+/* ============================================================
+   CLOSING TEXT + QUESTION
+   ============================================================ */
+.msg-closing {
+  font-size: 14px;
+  color: var(--t-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.msg-question {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--t-primary);
+  margin-bottom: 14px;
+}
+
+/* ============================================================
+   REACTION BUTTONS
+   ============================================================ */
+.reaction-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.reaction-btn {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--t-tertiary);
+  transition: all 0.15s;
+}
+.reaction-btn:hover { background: var(--bg-component); color: var(--t-secondary); }
+.reaction-btn svg { width: 16px; height: 16px; }
+
+/* ============================================================
+   SUGGESTIONS PANEL (Figma 226-7483)
+   ============================================================ */
+.suggestions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+.suggestions-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 0 2px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t-tertiary);
+  letter-spacing: 0.03em;
+}
+.suggestions-label svg { width: 13px; height: 13px; }
+.suggestion-item {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 16px 8px 12px;
+  background: #ffffff;
+  border-radius: 24px 4px 16px 24px; /* tl 24, tr 4, br 16, bl 24 — chat-bubble */
+  font-size: 14px;
+  font-weight: 400;
+  color: #282e37;
+  letter-spacing: 0.02em;
+  line-height: 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: fit-content;
+  max-width: 100%;
+  justify-content: flex-end;
+}
+.suggestion-item:hover { background: #f4f4f5; }
+.suggestion-arrow {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t-tertiary);
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ============================================================
+   CHAT INPUT FOOTER
+   ============================================================ */
+/* Chat footer — full-width blur bar (breaks out of .chat-scroll padding) */
+.chat-input-footer {
+  margin-left: -24px;
+  margin-right: -24px;
+  width: calc(100% + 48px);
+  padding: 24px 20px;
+  background: rgba(240,240,241,0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  box-sizing: border-box;
+  z-index: 10;
+  isolation: isolate;
+}
+.chat-input-box {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 24px;
+  padding: 14px 16px;
+  position: relative;
+}
+.chat-input-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: linear-gradient(to right, #ffffff, #D3222A, #C247FA, #00AAF3, #ffffff);
+  border-radius: 24px 24px 0 0;
+}
+.chat-placeholder {
+  font-size: 14px;
+  color: var(--t-tertiary);
+  padding: 2px 0 8px;
+  line-height: 1.5;
+}
+.chat-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.chat-bar-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--t-tertiary);
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+.chat-bar-btn:hover { border-color: #cbd5e1; }
+.chat-bar-btn svg { width: 14px; height: 14px; }
+.chat-flex { flex: 1; }
+.chat-send-btn {
+  width: 28px; height: 28px;
+  background: #1e293b;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: background 0.15s, opacity 0.15s;
+}
+.chat-send-btn:hover { background: #0f172a; opacity: 0.7; }
+.chat-send-btn svg { width: 13px; height: 13px; }
+
+/* ============================================================
+   RIGHT PANEL — document viewer
+   ============================================================ */
+.doc-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border-top-left-radius: 24px;
+}
+.doc-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.doc-scroll::-webkit-scrollbar { width: 4px; }
+.doc-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+
+/* Draft / Version pills — Figma 226-7503 */
+.doc-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.doc-pill-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #282e37;
+  flex-shrink: 0;
+}
+.doc-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--t-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.doc-meta {
+  font-size: 13px;
+  color: var(--t-secondary);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.doc-meta strong { font-weight: 600; }
+.doc-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.doc-section { margin-bottom: 24px; }
+.doc-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--t-primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.3;
+}
+.fact-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 400;
+  color: #0e7490;
+  background: #D7F6FF;
+  border: 1px solid #1DD9F9;
+  border-radius: 20px;
+  padding: 2px 9px;
+  white-space: nowrap;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.emerging-inline {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 400;
+  color: #D3222A;
+  background: rgba(211,34,42,0.06);
+  border: 1px solid rgba(211,34,42,0.2);
+  border-radius: 20px;
+  padding: 2px 9px;
+  vertical-align: middle;
+  margin: 0 3px;
+}
+.doc-body {
+  font-size: 14px;
+  color: var(--t-secondary);
+  line-height: 1.6;
+}
+.doc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px 30px 24px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.btn-outline {
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.btn-outline:hover { background: #f4f4f5; border-color: #d4d4d8; }
+.btn-tertiary {
+  background: #ffffff;
+  color: #1e293b;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.btn-tertiary:hover { background: #f4f4f5; }
+.btn-dark {
+  background: #1e293b;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.btn-dark:hover { background: #0f172a; }
+
+</style>
+</head>
+<body>
+
+<div style="display:flex; flex-direction:column; height:100vh; overflow:hidden;">
+
+  <!-- APP HEADER -->
+  <div class="lt-header">
+    <div class="lt-logo">
+      <div class="lt-logo-mark"><img src="Icons/D_icon.png" alt="Diligent"></div>
+      Diligent  •  Automated Audit Reporting
+    </div>
+    <div class="lt-spacer"></div>
+    <div class="lt-header-nav">
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="lt-notif-dot"></span>
+      </div>
+      <div class="lt-icon-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="lt-avatar">AC</div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body-layout">
+
+    <!-- =====================================================
+         LEFT PANEL
+         ===================================================== -->
+    <div class="chat-panel">
+      <div class="chat-scroll">
+
+        <!-- Date divider -->
+        <div class="msg-date">12 April 2026</div>
+
+        <!-- GRC Assistant message -->
+        <div class="msg-agent-header">
+          <div class="msg-agent-icon">
+            <img src="Icons/D_icon.png" alt="GRC Assistant">
+          </div>
+          <div class="msg-agent-meta-col">
+            <span class="msg-agent-name">GRC Assistant</span>
+            <span class="msg-agent-time">03:14 PM</span>
+          </div>
+        </div>
+
+        <p class="msg-body-p">Your draft <strong>Cybersecurity Risk — Situational Overview</strong> is ready.</p>
+        <p class="msg-body-p">Take a look and let me know if you'd like any changes to the charts or narratives. You can also switch to Editor mode to make manual edits.</p>
+
+        <p class="msg-steps-label">Steps I'll follow in this process:</p>
+
+        <!-- Step cards -->
+        <div class="steps-list">
+
+          <!-- Step 1 -->
+          <div class="step-card">
+            <div class="step-card-header">
+              <span class="pill pill-num">1</span>
+              <span class="step-title">Drafting situational overview</span>
+            </div>
+            <div class="step-body">Generating 1-page board-level summary across four sections: current situation, why it matters, what has changed, and key uncertainties. Writing in plain English — no technical jargon.</div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-card">
+            <div class="step-card-header">
+              <span class="pill pill-num">2</span>
+              <span class="step-title">Tagging statements by evidence type</span>
+            </div>
+            <div class="step-body">Each statement tagged to its evidential basis:</div>
+            <div class="step-tags">
+              <div class="step-tag-row">
+                <span class="pill pill-sm pill-blue">Fact</span>
+                Directly evidenced in the Evidence Pack — board can rely on this
+              </div>
+              <div class="step-tag-row">
+                <span class="pill pill-sm pill-yellow">Assumption</span>
+                Reasonable inference — management confirmation needed
+              </div>
+              <div class="step-tag-row">
+                <span class="pill pill-sm pill-red">Emerging</span>
+                External signal — no current internal evidence yet
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step-card">
+            <div class="step-card-header">
+              <span class="pill pill-num">3</span>
+              <span class="step-title">Adapting tone for board audience</span>
+            </div>
+            <div class="step-body">Technical language translated for board consumption:</div>
+            <div class="step-examples">
+              <div class="step-example">
+                <div class="step-ex-icon negative">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"/></svg>
+                </div>
+                <span>"NIST CSF AC-2 control ineffective"</span>
+              </div>
+              <div class="step-example">
+                <div class="step-ex-icon positive">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5l2.5 2.5 3.5-4"/></svg>
+                </div>
+                <span>"Unauthorised access could expose customer data, creating regulatory and reputational risk"</span>
+              </div>
+              <div class="step-example">
+                <div class="step-ex-icon additive">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 2v6M2 5h6"/></svg>
+                </div>
+                <span>"Our control posture is stronger than 65% of financial services peers — but the 3 gaps that remain are in areas regulators are actively scrutinising"</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /steps-list -->
+
+        <hr class="msg-divider" aria-hidden="true">
+
+        <p class="msg-closing">Situational overview drafted. Review the report on the right — probe any section or ask for revisions before steering the deep dive.</p>
+        <p class="msg-question">Would you like me to change anything in the draft now?</p>
+
+        <!-- Reaction buttons -->
+        <div class="reaction-row">
+          <button class="reaction-btn" title="Helpful">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+          </button>
+          <button class="reaction-btn" title="Not helpful">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+          </button>
+          <button class="reaction-btn" title="Copy">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="reaction-btn" title="More">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+          </button>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="suggestions-panel">
+          <div class="suggestions-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+            Suggestions
+          </div>
+          <div class="suggestion-item">
+            <span class="suggestion-arrow">↳</span>
+            Strengthen the vendor risk section
+          </div>
+          <div class="suggestion-item">
+            <span class="suggestion-arrow">↳</span>
+            Add more peer comparison context
+          </div>
+          <div class="suggestion-item">
+            <span class="suggestion-arrow">↳</span>
+            What's the basis for the SEC gap?
+          </div>
+        </div>
+
+        <!-- Chat input (inside scroll so content passes behind it for backdrop blur) -->
+        <div class="chat-input-footer">
+          <div class="chat-input-box">
+            <div class="chat-placeholder">Placeholder text or suggestion for prompt</div>
+            <div class="chat-bar">
+              <div class="chat-bar-btn" title="Add">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+              </div>
+              <div class="chat-flex"></div>
+              <div class="chat-send-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /chat-scroll -->
+
+    </div><!-- /chat-panel -->
+
+    <!-- =====================================================
+         RIGHT PANEL — document viewer
+         ===================================================== -->
+    <div class="doc-panel">
+      <div class="doc-scroll">
+
+        <div class="doc-pills-row">
+          <span class="pill pill-sm pill-transparent">Draft</span>
+          <span class="doc-pill-dot" aria-hidden="true"></span>
+          <span class="pill pill-sm pill-transparent">Version 1</span>
+        </div>
+
+        <div class="doc-title">Cybersecurity Risk — Situational Overview</div>
+        <div class="doc-meta">
+          Scope: <strong>SEC Peer Incident Response</strong> &nbsp;•&nbsp; Created on: <strong>Feb 24, 2026</strong> &nbsp;•&nbsp; Audience: <strong>Audit Committee</strong>
+        </div>
+
+        <hr class="doc-divider">
+
+        <!-- Current Situation -->
+        <div class="doc-section">
+          <div class="doc-section-title">Current Situation</div>
+          <div class="doc-body"><span class="fact-chip">Fact</span> A peer financial services firm has received an SEC enforcement action for deficient cybersecurity controls under the new disclosure requirements. Our review finds structural similarities: unauthorised access risks exist across 8 controls, 3 critical vendors share the same access architecture vulnerability, and our cyber risk sits above appetite in the Enterprise Risk Register.</div>
+        </div>
+
+        <!-- Why It Matters -->
+        <div class="doc-section">
+          <div class="doc-section-title">
+            Why It Matters
+            <span class="pill pill-sm pill-transparent">Updated</span>
+          </div>
+          <div class="doc-body"><span class="fact-chip">Fact</span> Unauthorised access could trigger SEC 8-K disclosure obligations within 4 business days. The 3 critical vendors collectively service 40% of customer transaction volume — a breach at any one could be material. <span class="emerging-inline">Emerging</span> Vendor breach notification obligations under existing contracts have not yet been assessed — this could accelerate disclosure timelines materially and is flagged for urgent review.</div>
+        </div>
+
+        <!-- What Has Changed -->
+        <div class="doc-section">
+          <div class="doc-section-title">
+            What Has Changed
+            <span class="pill pill-sm pill-transparent">Updated</span>
+          </div>
+          <div class="doc-body"><span class="fact-chip">Fact</span> Since Q3 2025: CM-6 remediation is 47 days overdue, critical vendor high-risk count has risen from 1 to 3.</div>
+        </div>
+
+        <!-- Key Uncertainties -->
+        <div class="doc-section">
+          <div class="doc-section-title">Key Uncertainties</div>
+          <div class="doc-body" style="margin-bottom: 4px;">
+            Since the last Audit Committee review (Q3 2025), the CM-6 remediation plan has fallen 47 days overdue with no escalation recorded. The number of critical vendors with high cyber risk scores has increased from 1 to 3. ASSUMPTION — No material changes to the SEC disclosure process are assumed to have occurred, based on absence of updates in Compliance Maps — management confirmation required.
+          </div>
+          <div class="alert-card alert-card-sm alert-card-yellow" style="margin-top:12px;">
+            <div class="alert-card-header">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="currentColor" style="width:100%;height:100%;"><path d="M1.865 21L12 3l10.135 18H1.865zm2.585-1.5h15.1L12 6 4.45 19.5zM12 17.808a.77.77 0 00.577-.231.77.77 0 00.23-.577.77.77 0 00-.23-.577.77.77 0 00-.577-.23.77.77 0 00-.577.23.77.77 0 00-.23.577.77.77 0 00.23.577.77.77 0 00.577.23zM11.25 15.192h1.5V10.2h-1.5v4.992z"/></svg></div>
+              <div class="alert-card-title">Assumption</div>
+            </div>
+            <div class="alert-card-sub">8-K materiality process gap inferred from absence of documentation — not confirmed absent. Management sign-off required before including in final report.</div>
+          </div>
+          <div class="alert-card alert-card-sm alert-card-red" style="margin-top:12px;">
+            <div class="alert-card-header">
+              <div class="alert-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+              <div class="alert-card-title">Emerging</div>
+            </div>
+            <div class="alert-card-sub">Vendor breach notification obligations under existing contracts not yet assessed — this could accelerate disclosure timelines materially.</div>
+          </div>
+        </div>
+
+      </div><!-- /doc-scroll -->
+
+      <div class="doc-footer">
+        <button class="btn btn-secondary btn-md">Back to investigation</button>
+        <div style="display: flex; gap: 10px; margin-left: auto;">
+          <button class="btn btn-tertiary btn-md">Preview</button>
+          <button class="btn btn-primary btn-md">Confirm and authorize</button>
+        </div>
+      </div>
+    </div><!-- /doc-panel -->
+
+  </div><!-- /body-layout -->
+
+</div>
+
+</body>
+</html>

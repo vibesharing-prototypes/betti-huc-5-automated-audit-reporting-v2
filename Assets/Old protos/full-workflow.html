@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Workflow</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #F5F5F5; }
+  body {
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  .workflow-section {
+    flex-shrink: 0;
+    border-bottom: 3px solid #E0E0E0;
+    position: relative;
+  }
+  .workflow-section:last-child { border-bottom: none; }
+
+  .section-label {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #282E37;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 6px 16px;
+    text-transform: uppercase;
+  }
+
+  .workflow-section iframe {
+    width: 100%;
+    border: none;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div class="workflow-section">
+  <div class="section-label">01. Investigation</div>
+  <iframe src="01-Investigation.html" id="frame-01"></iframe>
+</div>
+
+<div class="workflow-section">
+  <div class="section-label">02. Evidence</div>
+  <iframe src="02-Evidence-v2.html" id="frame-02"></iframe>
+</div>
+
+<div class="workflow-section">
+  <div class="section-label">03. Synthesis and Edit</div>
+  <iframe src="03-Synthesis-to-Chat.html" id="frame-03"></iframe>
+</div>
+
+<div class="workflow-section">
+  <div class="section-label">04. Veracity scoring</div>
+  <iframe src="04-Veracity-scoring.html" id="frame-04"></iframe>
+</div>
+
+<div class="workflow-section">
+  <div class="section-label">05. Preview-Approve</div>
+  <iframe src="05-Preview-Approve.html" id="frame-05"></iframe>
+</div>
+
+<script>
+  // Auto-size each iframe to its content height
+  function resizeFrame(frame) {
+    try {
+      const doc = frame.contentDocument || frame.contentWindow.document;
+      frame.style.height = doc.documentElement.scrollHeight + 'px';
+    } catch(e) {}
+  }
+
+  document.querySelectorAll('iframe').forEach(frame => {
+    frame.addEventListener('load', () => {
+      resizeFrame(frame);
+      // Re-check after animations settle
+      setTimeout(() => resizeFrame(frame), 1000);
+      setTimeout(() => resizeFrame(frame), 3000);
+    });
+  });
+</script>
+
+</body>
+</html>

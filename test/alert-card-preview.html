@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alert Card Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="alert-card.css">
+<link rel="stylesheet" href="buttons.css">
+<style>
+  body { margin: 0; background: #f0f0f1; font-family: 'Plus Jakarta Sans', sans-serif; padding: 48px; }
+  h2 { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #737373; margin: 32px 0 16px; }
+  h2:first-of-type { margin-top: 0; }
+  .grid { display: flex; flex-direction: column; gap: 12px; max-width: 700px; }
+</style>
+</head>
+<body>
+
+<h2>Medium</h2>
+<div class="grid">
+
+  <div class="alert-card alert-card-md alert-card-green">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Short title</div>
+      <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+    </div>
+  </div>
+
+  <div class="alert-card alert-card-md alert-card-blue">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Short title</div>
+      <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+    </div>
+  </div>
+
+  <div class="alert-card alert-card-md alert-card-yellow">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke-linejoin="round"/><path d="M12 9v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Short title</div>
+      <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+    </div>
+  </div>
+
+  <div class="alert-card alert-card-md alert-card-red">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Short title</div>
+      <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+    </div>
+  </div>
+
+  <div class="alert-card alert-card-md alert-card-transparent">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" stroke-linejoin="round"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Short title</div>
+      <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+    </div>
+  </div>
+
+</div>
+
+<h2>Medium + Actions</h2>
+<div class="grid">
+
+  <div class="alert-card alert-card-md alert-card-blue">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Saved to Boards — Evidence Pack · Cybersecurity Assurance Report</div>
+      <div class="alert-card-sub">Available as supporting material in the Audit Committee board pack.</div>
+    </div>
+    <div class="alert-card-actions">
+      <button class="btn btn-secondary btn-md">Button 1</button>
+      <button class="btn btn-primary btn-md">Button 2</button>
+    </div>
+  </div>
+
+  <div class="alert-card alert-card-md alert-card-green">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Cybersecurity Risk — Situational Overview</div>
+      <div class="alert-card-sub">AI Reporting · Draft · Just created</div>
+    </div>
+    <div class="alert-card-actions">
+      <button class="btn btn-secondary btn-md">Dismiss</button>
+      <button class="btn btn-primary btn-md">Open report</button>
+    </div>
+  </div>
+
+  <!-- Actions hidden example -->
+  <div class="alert-card alert-card-md alert-card-yellow">
+    <div class="alert-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke-linejoin="round"/><path d="M12 9v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="alert-card-body">
+      <div class="alert-card-title">Actions hidden example</div>
+      <div class="alert-card-sub">The buttons below use .alert-card-actions-hidden</div>
+    </div>
+    <div class="alert-card-actions alert-card-actions-hidden">
+      <button class="btn btn-secondary btn-md">Button 1</button>
+      <button class="btn btn-primary btn-md">Button 2</button>
+    </div>
+  </div>
+
+</div>
+
+<h2>Small + Actions</h2>
+<div class="grid">
+
+  <div class="alert-card alert-card-sm alert-card-blue">
+    <div class="alert-card-content">
+      <div class="alert-card-header">
+        <div class="alert-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="alert-card-title">Saved to Boards — Evidence Pack</div>
+      </div>
+      <div class="alert-card-sub">Available as supporting material in the Audit Committee board pack.</div>
+    </div>
+    <div class="alert-card-actions">
+      <button class="btn btn-secondary btn-sm">Button 1</button>
+      <button class="btn btn-primary btn-sm">Button 2</button>
+    </div>
+  </div>
+
+  <div class="alert-card alert-card-sm alert-card-red">
+    <div class="alert-card-content">
+      <div class="alert-card-header">
+        <div class="alert-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="alert-card-title">Enforcement alert</div>
+      </div>
+      <div class="alert-card-sub">SEC enforcement action detected — board disclosure required.</div>
+    </div>
+    <div class="alert-card-actions">
+      <button class="btn btn-primary btn-sm">Review</button>
+    </div>
+  </div>
+
+</div>
+
+<h2>Small</h2>
+<div class="grid">
+
+  <div class="alert-card alert-card-sm alert-card-green">
+    <div class="alert-card-header">
+      <div class="alert-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="alert-card-title">Short title</div>
+    </div>
+    <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+  </div>
+
+  <div class="alert-card alert-card-sm alert-card-blue">
+    <div class="alert-card-header">
+      <div class="alert-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="alert-card-title">Short title</div>
+    </div>
+    <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+  </div>
+
+  <div class="alert-card alert-card-sm alert-card-yellow">
+    <div class="alert-card-header">
+      <div class="alert-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke-linejoin="round"/><path d="M12 9v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="alert-card-title">Short title</div>
+    </div>
+    <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+  </div>
+
+  <div class="alert-card alert-card-sm alert-card-red">
+    <div class="alert-card-header">
+      <div class="alert-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="alert-card-title">Short title</div>
+    </div>
+    <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+  </div>
+
+  <div class="alert-card alert-card-sm alert-card-transparent">
+    <div class="alert-card-header">
+      <div class="alert-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" stroke-linejoin="round"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="alert-card-title">Short title</div>
+    </div>
+    <div class="alert-card-sub">HITL Gate 1.5 of 3 — Confirm the evidence base before synthesis begins.</div>
+  </div>
+
+</div>
+
+</body>
+</html>
